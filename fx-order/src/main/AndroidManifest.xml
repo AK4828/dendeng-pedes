@@ -1,0 +1,134 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hoqii.fxpc.sales">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <application
+        android:name="com.hoqii.fxpc.sales.SignageAppication"
+        android:allowBackup="true"
+        android:icon="@drawable/cyrcle_fx"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.SplashActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.MainActivityMaterialNew"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.MainActivityMaterial"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.OrderActivity"
+            android:theme="@style/AppTheme.NoActionBar.Collapse" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.BusinessPartnerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.ContactsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.SellerOrderListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.SellerOrderMenuListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.ScannerActivityCustom"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.ScannerReceiveActivityCustom"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.ShipmentListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.ShipmentHistoryListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.ShipmentHistoryDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.ReceiveListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.ReceiveDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.HistoryOrderListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.HistoryOrderMenuListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.SiteListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.PointActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.SelfHistoryOrderListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.SelfHistoryOrderMenuListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.PreferenceActivity"/>
+
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.WizardActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/esales" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.SettingActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/esales" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.SyncActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/esales" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.LoginActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.Fullscreen" />
+
+        <provider
+            android:name="com.hoqii.fxpc.sales.content.MidasContentProvider"
+            android:authorities="com.hoqii.fxpc.sales.content.midascontentprovider"
+            android:syncable="true" />
+    </application>
+
+</manifest>

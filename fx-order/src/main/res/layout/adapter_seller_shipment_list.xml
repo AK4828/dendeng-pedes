@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:contentPadding="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        app:cardUseCompatPadding="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!--<ImageView-->
+                <!--android:id="@+id/ol_img"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_marginRight="16dp"-->
+                <!--android:background="@drawable/cyrcle_bg_accent"-->
+                <!--android:src="@drawable/ic_business_black_24dp"-->
+                <!--android:tint="@android:color/white" />-->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/ol_img"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/sl_site"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="From"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorAccent"/>
+
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:id="@+id/sl_tgl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{typcn-time} Tanggal : "
+                    android:textSize="11sp"/>
+
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:id="@+id/sl_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{typcn-tag} Nomor Pengiriman :"
+                    android:textSize="16sp"
+                    android:layout_marginTop="10dp"/>
+                <!--<LinearLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="horizontal"-->
+                    <!--android:layout_marginTop="5dp">-->
+
+                    <!--<ImageView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:src="@drawable/ic_label_outline_black_18dp"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:tint="@color/grey"/>-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/sl_number"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:layout_marginLeft="8dp"-->
+                        <!--android:text="Shipment Number :" />-->
+
+                <!--</LinearLayout>-->
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="horizontal">-->
+
+                    <!--<ImageView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:src="@drawable/ic_schedule_black_18dp"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:tint="@color/grey"/>-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/sl_tgl"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="8dp"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:text="Tanggal : " />-->
+
+                <!--</LinearLayout>-->
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

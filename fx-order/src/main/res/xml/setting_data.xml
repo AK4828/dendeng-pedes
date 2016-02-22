@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--<SwitchPreference
+        android:key="sync"
+        android:title="@string/online_offline"
+        android:summaryOff="@string/online"
+        android:summaryOn="@string/offline"/>
+
+    <ListPreference
+        android:key="sync_periodic"
+        android:title="@string/sync_periodic"
+        android:entries="@array/sync_periodic_entries"
+        android:entryValues="@array/sync_periodic_values"
+        android:dialogTitle="@string/sync_periodic" />-->
+
+    <Preference
+        android:title="@string/start_sync"
+        android:key="start_sync"
+        android:summary="@string/sync_summary"/>
+</PreferenceScreen>

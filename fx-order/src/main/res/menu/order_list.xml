@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--<item android:id="@+id/menu_add_scan"-->
+        <!--android:title="Scan"-->
+        <!--android:icon="@drawable/ic_add_circle_white_24dp"-->
+        <!--app:showAsAction="always"/>-->
+
+    <!--<item android:id="@+id/menu_add_businessPartner"-->
+        <!--android:title="@string/businesPartner"-->
+        <!--android:icon="@drawable/ic_supervisor_account_white_24dp"-->
+        <!--app:showAsAction="always"/>-->
+
+    <item android:id="@+id/menu_add_site"
+        android:title="@string/add_order"
+        android:icon="@drawable/ic_add_circle_white_24dp"
+        app:showAsAction="always"/>
+
+    <!--<item android:id="@+id/menu_add_order"-->
+        <!--android:title="@string/add_order"-->
+        <!--android:icon="@drawable/ic_add_circle_white_24dp"-->
+        <!--app:showAsAction="always"/>-->
+
+    <item android:id="@+id/menu_pay_order"
+        android:title="@string/submit"
+        android:icon="@drawable/ic_send_white_24dp"
+        app:showAsAction="always"/>
+
+</menu>

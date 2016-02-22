@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Sync Preference">
+
+        <Preference
+            android:title="Sync"
+            android:key="pref_sync"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Akun">
+
+        <Preference
+            android:title="Logout"
+            android:key="pref_logout"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

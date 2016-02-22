@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--<android.support.v7.widget.CardView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--app:cardPreventCornerOverlap="false"-->
+        <!--app:cardElevation="0dp"-->
+        <!--app:cardCornerRadius="0dp">-->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/category_image"
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                android:alpha="0.7"
+                android:scaleType="centerCrop" />
+
+            <View
+                android:id="@+id/category_view"
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                android:alpha="0.6"
+                android:background="@color/colorPrimary" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_add_shopping_cart_black_24dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/cyrcle_bg"
+                    android:tint="@android:color/white"
+                    android:alpha="0.8"/>
+
+                <TextView
+                    android:id="@+id/category_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:shadowColor="@android:color/black"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="1"
+                    android:text="title"
+                    android:textColor="@android:color/white"
+                    android:textSize="15pt"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"/>
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+    <!--</android.support.v7.widget.CardView>-->
+
+</LinearLayout>

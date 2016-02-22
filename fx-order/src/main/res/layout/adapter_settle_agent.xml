@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/text_no_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2015100100003"
+            android:textSize="@dimen/sp16"
+            android:textStyle="bold"/>
+
+        <!--<CheckBox
+            android:id="@+id/check_order_contact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:focusableInTouchMode="false"
+            android:checked="false"/>-->
+
+        <TextView
+            android:id="@+id/text_contact_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_no_order"
+            android:text="Satriya Garuda"
+            android:textSize="@dimen/sp14"/>
+
+        <TextView
+            android:id="@+id/text_contact_telp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_contact_name"
+            android:text="08123456789"
+            android:textSize="@dimen/sp14"/>
+
+        <ImageButton
+            android:id="@+id/button_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

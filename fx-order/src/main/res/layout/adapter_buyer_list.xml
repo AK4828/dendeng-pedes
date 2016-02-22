@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:id="@+id/linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/relative_layout"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_contact_name_buyer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="Name Contact"
+            android:textSize="@dimen/sp16"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/text_recipient_name_buyer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Name Recipient"
+            android:textSize="@dimen/sp14"/>
+
+        <TextView
+            android:id="@+id/text_contact_telp_buyer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Name Contact Telp"
+            android:textSize="@dimen/sp14"/>
+    </LinearLayout>
+
+</RelativeLayout>

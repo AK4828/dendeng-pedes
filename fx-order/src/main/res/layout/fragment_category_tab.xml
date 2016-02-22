@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/button_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/sp14"
+        android:textStyle="bold"
+        android:drawableLeft="@drawable/ic_action_back"
+        android:gravity="left|center_vertical"
+        android:drawablePadding="@dimen/dp10"
+        android:background="@android:color/transparent"
+        android:padding="@dimen/dp10"
+        android:text="Kembali"/>
+
+    <android.support.v4.app.FragmentTabHost
+        android:id="@+id/tab_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

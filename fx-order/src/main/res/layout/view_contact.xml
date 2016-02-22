@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/dp10">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!--<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Kontak"
+            android:textSize="@dimen/sp14"/>-->
+
+        <EditText
+            android:id="@+id/edit_contact_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="Nama Kontak"
+            android:singleLine="true"
+            android:text="" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Penerima"
+            android:textSize="@dimen/sp14" />
+
+        <EditText
+            android:id="@+id/edit_receive_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="Nama Penerima"
+            android:singleLine="true"
+            android:text="" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Telepon"
+            android:textSize="@dimen/sp14" />
+
+        <EditText
+            android:id="@+id/edit_receive_telp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="Telepon"
+            android:singleLine="true"
+            android:text="" />
+
+        <!--<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Provinsi"
+            android:textSize="@dimen/sp14" />-->
+
+        <!--<Spinner
+            android:id="@+id/spinner_province"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp10" />-->
+
+        <EditText
+            android:id="@+id/edit_province"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="Provinsi"
+            android:singleLine="true"
+            android:text="" />
+
+
+        <!--<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kabupaten/Kota"
+            android:textSize="@dimen/sp14" />-->
+
+        <EditText
+            android:id="@+id/edit_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="Kabupaten/Kota"
+            android:singleLine="true"
+            android:text="" />
+
+        <!--<Spinner
+            android:id="@+id/spinner_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp10" />-->
+
+       <!-- <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kecamatan"
+            android:textSize="@dimen/sp14" />-->
+
+        <!--<Spinner
+            android:id="@+id/spinner_sub_district"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp10" />-->
+
+        <EditText
+            android:id="@+id/edit_sub_district"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="Kecamatan"
+            android:singleLine="true"
+            android:text="" />
+
+       <!-- <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alamat Lengkap"
+            android:textSize="@dimen/sp14" />-->
+
+        <EditText
+            android:id="@+id/edit_street"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="top"
+            android:hint="Alamat Lengkap"
+            android:lines="3"
+            android:text="" />
+
+        <!--<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kode Pos"
+            android:textSize="@dimen/sp14" />-->
+
+        <EditText
+            android:id="@+id/edit_pos_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="Kode Pos"
+            android:singleLine="true"
+            android:text="" />
+
+    </LinearLayout>
+</ScrollView>

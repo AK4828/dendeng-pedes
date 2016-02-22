@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference android:key="site_name"
+        android:title="@string/site_name"/>
+
+   <EditTextPreference android:key="campaign_name"
+       android:title="@string/campaign_name"/>
+
+    <Preference
+        android:title="@string/start_sync_campaign"
+        android:key="start_sync_campaign"
+        android:summary="@string/sync_summary"/>
+
+</PreferenceScreen>

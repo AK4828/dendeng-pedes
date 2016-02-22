@@ -1,0 +1,117 @@
+<resources>
+    <string name="app_name">FXPC</string>
+    <string name="app_summary">FXPC</string>
+
+    <string name="drawer_open">open</string>
+    <string name="drawer_close">close</string>
+
+    //nav title
+    <string name="nav_order">Purchase Order</string>
+    <string name="nav_rewards">Rewards</string>
+    <string name="nav_shipment">Shipment</string>
+    <string name="nav_received"></string>
+
+
+    //nav menu
+    <string name="nav_home">Beranda</string>
+    <string name="nav_order_requesition">Requesition</string>
+    <string name="nav_order_quantity">Quotation</string>
+    <string name="nav_order_purches">Order</string>
+    <string name="nav_order_purches_history">Order History</string>
+    <string name="nav_order_list">Order List</string>
+    <string name="nav_order_receiving">Receiving</string>
+    <string name="nav_shipment_list">Shipment List</string>
+    <string name="nav_shipment_history_list">Shipment History</string>
+    <string name="nav_seller_purchase_order">Purchase Order</string>
+    <string name="nav_point">Point</string>
+
+
+    <string name="search">Pencarian</string>
+    <string name="refresh">Refresh</string>
+    <string name="required">Required</string>
+    <string name="setting">Pengaturan</string>
+    <string name="cart">Cart</string>
+    <string name="order">Order</string>
+    <string name="select_contact">Pilih Pembeli</string>
+    <string name="submit">Submit</string>
+    <string name="add_product">Add product</string>
+    <string name="added_to_cart">Item Berhasil ditambahkan</string>
+    <string name="order_success">Order Berhasil</string>
+    <string name="go_to_cart">Lihat Keranjang Belanja</string>
+    <string name="continue_shopping">Lanjutkan Belanja</string>
+    <string name="add_contact">Tambah Pembeli</string>
+    <string name="businesPartner">Business Partner</string>
+    <string name="add_order">Add Order</string>
+    <string name="contact">Contact</string>
+
+    <string name="verify">Verifikasi</string>
+    <string name="verify_now">Verifikasi Sekarang</string>
+    <string name="verified">Terverifikasi</string>
+
+    <string name="select">Pilih</string>
+    <string name="ok">Ok</string>
+    <string name="no">No</string>
+    <string name="save">Simpan</string>
+    <string name="cancel">Batal</string>
+
+    <string name="transition_string">animating transition</string>
+    <string name="transition_image">animating image transition</string>
+    <string name="transition_title">animating title transition</string>
+    <string name="transition_price">animating price transition</string>
+    <string name="transition_layout">animating layout transition</string>
+    <string name="transition_number">animating number transition</string>
+    <string name="transition_date">animating date transition</string>
+
+    <string name="exit">Tekan tombol back lagi untuk menutup halaman ini</string>
+    <string name="empty_form">Lengkapi form berikut dengan benar</string>
+
+    <string name="outlet_name">Nama Outlet</string>
+    <string name="description">Deskripsi :</string>
+
+    <string name="start_sync">Mulai Sinkronisasi</string>
+    <string name="start_sync_campaign">Mulai Sinkronisasi Campaign</string>
+    <string name="sync_category">Sinkronisasi Kategori ...</string>
+    <string name="sync_product">Sinkronisasi Produk ...</string>
+    <string name="sync_product_uom">Sinkronisasi Produk Uom ...</string>
+    <string name="sync_image">Sinkronisasi Gambar ...</string>
+    <string name="sync_contact">Sinkronisasi Kontak ...</string>
+    <string name="sync_business_partner">Sinkronisasi Business Partner ...</string>
+    <string name="sync_site">Sinkronisasi Site ...</string>
+
+    <string name="sync_campaign">Sinkronisasi Campaign ...</string>
+    <string name="sync_campaign_detail">Sinkronisasi Campaign Detail ...</string>
+    <string name="sync_image_campaign">Sinkronisasi Gambar Campaign ...</string>
+
+
+    <string name="finish_sync">Sinkronisasi telah selesai</string>
+
+    <string name="data_null_sync">Data Campaign Kosong</string>
+
+    <string name="save_data">Menyimpan data ...</string>
+    <string name="check_internet">Terdapat masalah dengan koneksi Internet!</string>
+
+    <string name="about_esales">
+        Ini adalah aplikasi produk katalog dan order digital dari E-Sales.
+    </string>
+
+    <string name="about">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Fusce euismod rhoncus felis, sit amet pellentesque diam feugiat sed.
+        Vivamus ac scelerisque nisi.
+        Donec dapibus rhoncus interdum.
+        Phasellus nec feugiat velit, eget cursus risus.
+        Quisque congue auctor pretium.
+        Nulla commodo accumsan urna, suscipit convallis elit luctus nec.
+        In lacinia lobortis interdum.
+        Quisque at elementum purus.
+        Nunc et lectus in sapien aliquet viverra sit amet in libero.
+        Donec hendrerit enim eget ultrices fermentum.
+        Mauris viverra ut mauris at vulputate.
+        Vestibulum efficitur nibh orci, nec porttitor dui lobortis vitae.
+        Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+        Vivamus pulvinar ante ac accumsan facilisis.
+    </string>
+
+
+</resources>
+

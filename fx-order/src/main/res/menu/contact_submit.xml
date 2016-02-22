@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--<item android:id="@+id/menu_add_contact"-->
+          <!--android:title="@string/select_contact"-->
+          <!--android:icon="@drawable/ic_add_contact"-->
+          <!--app:showAsAction="always|withText"/>-->
+
+    <item android:id="@+id/menu_submit_order"
+          android:title="@string/submit"
+          android:icon="@android:drawable/ic_menu_send"
+          app:showAsAction="always|withText"/>
+
+</menu>

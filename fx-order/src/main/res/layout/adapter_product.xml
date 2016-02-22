@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <TextView
+        android:id="@+id/product_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="product Category"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_margin="4dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycle_view_product"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!--<ScrollView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:fillViewport="true">-->
+
+
+            <!--<GridView-->
+                <!--android:id="@+id/grid_product"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_marginBottom="16dp"-->
+                <!--android:fillViewport="true"-->
+                <!--android:horizontalSpacing="1dp"-->
+                <!--android:numColumns="auto_fit"-->
+                <!--android:scrollbars="horizontal"-->
+                <!--android:stretchMode="columnWidth"-->
+
+                <!--android:verticalSpacing="5dp" />-->
+
+
+
+        <!--&lt;!&ndash;<LinearLayout&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="wrap_content">&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<android.support.v7.widget.RecyclerView&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/recycle_view_product"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_height="wrap_content"/>&ndash;&gt;-->
+
+        <!--&lt;!&ndash;</LinearLayout>&ndash;&gt;-->
+
+
+    <!--</ScrollView>-->
+
+
+</LinearLayout>
