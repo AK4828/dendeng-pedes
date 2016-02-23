@@ -97,7 +97,7 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.nav_shipment_list);
+        actionBar.setTitle(R.string.nav_shipment_history_list);
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
 
         shipmentAdapter = new ShipmentHistoryAdapter(this);

@@ -59,11 +59,12 @@ public class OrderUpdateJob extends Job {
 
         if (r.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             Order o = response.getContent();
-            orderDatabaseAdapter.updateSyncStatusById(orderId);
+//            orderDatabaseAdapter.updateSyncStatusById(orderId);
 
             Log.d(getClass().getSimpleName(), "Response Code :" + r.getStatusLine().getStatusCode() + "Entity ID :" + orderId + "Ref ID :" + o.getId());
             EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, response, o.getId(), orderId));
         } else {
+            EventBus.getDefault().post(new GenericEvent.RequestFailed(PROCESS_ID, response));
             Log.d(getClass().getSimpleName(), "Response Code :" + r.getStatusLine().getStatusCode() + " " + r.getStatusLine().getReasonPhrase());
             throw new RuntimeException();
         }

@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageAppication;
@@ -38,20 +37,8 @@ import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.job.OrderMenuJob;
 import com.hoqii.fxpc.sales.job.OrderUpdateJob;
 import com.hoqii.fxpc.sales.task.RequestOrderSyncTask;
-import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.fonts.EntypoModule;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.IoniconsModule;
-import com.joanzapata.iconify.fonts.MaterialCommunityModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
-import com.joanzapata.iconify.fonts.MeteoconsModule;
-import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
-import com.joanzapata.iconify.fonts.TypiconsModule;
-import com.joanzapata.iconify.fonts.WeathericonsModule;
 import com.path.android.jobqueue.JobManager;
 
 import org.meruvian.midas.core.service.TaskService;
@@ -105,19 +92,6 @@ public class OrderListFragment extends Fragment implements TaskService {
         dialog = new ProgressDialog(getActivity());
         dialog.setMessage("Mengirim data ...");
         dialog.setCancelable(false);
-
-        Iconify
-                .with(new FontAwesomeModule())
-                .with(new EntypoModule())
-                .with(new TypiconsModule())
-                .with(new MaterialModule())
-                .with(new MaterialCommunityModule())
-                .with(new MeteoconsModule())
-                .with(new WeathericonsModule())
-                .with(new SimpleLineIconsModule())
-                .with(new IoniconsModule());
-
-//        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -223,7 +197,6 @@ public class OrderListFragment extends Fragment implements TaskService {
                         builder.show();
                     }
                     else {
-                        dialog.show();
                         saveOrder();
                     }
                 } else {
@@ -254,8 +227,7 @@ public class OrderListFragment extends Fragment implements TaskService {
 //                return true;
 
             case R.id.menu_add_site:
-                ((MainActivity) getActivity()).openSite();
-                EventBus.getDefault().unregister(this);
+//                ((MainActivity) getActivity()).openSite();
                 return true;
 
             default:
@@ -269,6 +241,19 @@ public class OrderListFragment extends Fragment implements TaskService {
         super.onResume();
         setTotalOrderTab();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        EventBus.getDefault().unregister(this);
+//    }
+
 
 
     public void setTotalOrderTab() {
@@ -292,7 +277,7 @@ public class OrderListFragment extends Fragment implements TaskService {
         requestOrderSyncTask = new RequestOrderSyncTask(getActivity(),
                 this, orderId);
         requestOrderSyncTask.execute();
-
+        dialog.show();
     }
 
 
@@ -348,13 +333,15 @@ public class OrderListFragment extends Fragment implements TaskService {
         dialog.dismiss();
 //        Toast.makeText(getActivity(), "Gagal mengirim order", Toast.LENGTH_SHORT).show();
 //        setEnabledMenuItem(item, true);
-
+        Log.d(getClass().getSimpleName(), "request failed event, process id "+failed.getProcessId());
         switch (failed.getProcessId()){
             case OrderUpdateJob.PROCESS_ID: {
+                Log.d(getClass().getSimpleName(), "request updateorder failed");
                 retryRequestOrder();
                 break;
             }
             case OrderMenuJob.PROCESS_ID:{
+                Log.d(getClass().getSimpleName(), "request update order menu failed");
                 retryRequestOrderMenu();
                 break;
             }
@@ -374,7 +361,7 @@ public class OrderListFragment extends Fragment implements TaskService {
         TextView textReceipt = (TextView) view.findViewById(R.id.text_item_cart_receipt);
 
         textItem.setText("Pesanan Anda sedang kami proses");
-        textReceipt.setText("No Pesanan : "+o.getReceiptNumber());
+        textReceipt.setText("No Pesanan : " + o.getReceiptNumber());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(view);
@@ -382,31 +369,24 @@ public class OrderListFragment extends Fragment implements TaskService {
         builder.setPositiveButton(getString(R.string.continue_shopping), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                OrderListFragment orderFragment = new OrderListFragment();
-                FragmentTransaction orderList = getFragmentManager().beginTransaction();
-                orderList.replace(R.id.content_frame, orderFragment);
-                orderList.addToBackStack(null);
-                orderList.commitAllowingStateLoss();
+
+                orderDbAdapter.updateSyncStatusById(orderId);
+
+//                OrderListFragment orderFragment = new OrderListFragment();
+//                FragmentTransaction orderList = getFragmentManager().beginTransaction();
+//                orderList.replace(R.id.content_frame, orderFragment);
+//                orderList.addToBackStack(null);
+//                orderList.commitAllowingStateLoss();
             }
         });
 
         final AlertDialog dialog = builder.create();
-        dialog.show();
         dialog.setCancelable(false);
+        dialog.show();
+
     }
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
 
 
     @Override
@@ -474,7 +454,9 @@ public class OrderListFragment extends Fragment implements TaskService {
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface d, int which) {
+                dialog.show();
+
                 Order order = orderDbAdapter.findOrderById(orderId);
 
                 Log.d(getClass().getSimpleName(), "Order ID : " + orderId
@@ -502,7 +484,9 @@ public class OrderListFragment extends Fragment implements TaskService {
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface d, int which) {
+                dialog.show();
+
                 Order o = orderDbAdapter.findOrderById(orderId);
                 orderMenuIdes = orderMenuDbAdapter.findOrderMenuIdesByOrderId(orderId);
                 totalOrderMenus = orderMenuIdes.size();
@@ -521,6 +505,10 @@ public class OrderListFragment extends Fragment implements TaskService {
                 dialog.dismiss();
             }
         });
-        builder.show();
+
+        AlertDialog d = builder.create();
+        if (!d.isShowing()){
+            d.show();
+        }
     }
 }

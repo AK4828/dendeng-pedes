@@ -40,8 +40,6 @@ public class SerialAdapter extends RecyclerView.Adapter<SerialAdapter.ViewHolder
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_serial_number, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
-
-
         return viewHolder;
     }
 

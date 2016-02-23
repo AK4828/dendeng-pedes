@@ -84,33 +84,33 @@ public class CategoryGridAdapter extends BaseAdapter {
             imageLoader.displayImage("file://" + ImageUtil.getImagePath(mcontext, products.get(products.size() - 1).getId()), holder.imageView);
         }
 
-        if (products.size() != 0) {
-
-            if (ImageUtil.getImage(mcontext, products.get(products.size() - 1).getId()) != null) {
-
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 8;
-
-                Bitmap bitmap = BitmapFactory.decodeFile(ImageUtil.getImagePath(mcontext, products.get(products.size() - 1).getId()), options);
-
-                try {
-                    Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                        @Override
-                        public void onGenerated(Palette palette) {
-                            mutedColor = palette.getMutedColor(R.attr.colorPrimary);
-                            holder.cardView.setBackgroundColor(mutedColor);
-                        }
-                    });
-                }catch (IllegalArgumentException e){
-                    Log.e("Bitmap status",e.getMessage());
-                }
-
-            }else {
-                holder.cardView.setBackgroundColor(mcontext.getResources().getColor(R.color.colorPrimary));
-            }
-        }else {
-            holder.cardView.setBackgroundColor(mcontext.getResources().getColor(R.color.colorPrimary));
-        }
+//        if (products.size() != 0) {
+//
+//            if (ImageUtil.getImage(mcontext, products.get(products.size() - 1).getId()) != null) {
+//
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inSampleSize = 8;
+//
+//                Bitmap bitmap = BitmapFactory.decodeFile(ImageUtil.getImagePath(mcontext, products.get(products.size() - 1).getId()), options);
+//
+//                try {
+//                    Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+//                        @Override
+//                        public void onGenerated(Palette palette) {
+//                            mutedColor = palette.getMutedColor(R.attr.colorPrimary);
+//                            holder.cardView.setBackgroundColor(mutedColor);
+//                        }
+//                    });
+//                }catch (IllegalArgumentException e){
+//                    Log.e("Bitmap status",e.getMessage());
+//                }
+//
+//            }else {
+//                holder.cardView.setBackgroundColor(mcontext.getResources().getColor(R.color.colorPrimary));
+//            }
+//        }else {
+//            holder.cardView.setBackgroundColor(mcontext.getResources().getColor(R.color.colorPrimary));
+//        }
 
         holder.title.setText(categories.get(position).getName());
         return itemView;

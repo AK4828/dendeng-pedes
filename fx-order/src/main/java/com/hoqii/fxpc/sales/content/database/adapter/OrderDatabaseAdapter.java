@@ -384,4 +384,23 @@ public class OrderDatabaseAdapter extends DefaultDatabaseAdapter {
         context.getContentResolver().update(dbUriOrder, values, OrderDatabaseModel.ID + " = ? ", new String[]{id});
     }
 
+    public String getReceiptNumberByOrderId(String orderId){
+        String receiptNumber = null;
+        String query = OrderDatabaseModel.ID + " = ? ";
+        String[] parameter = { orderId };
+        Cursor cursor = context.getContentResolver().query(dbUriOrder, null,
+                query, parameter, null);
+
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                cursor.moveToLast();
+                receiptNumber = cursor.getString(cursor
+                        .getColumnIndex(OrderDatabaseModel.RECIEPT_NUMBER));
+            }
+        }
+
+        cursor.close();
+        return receiptNumber;
+    }
+
 }

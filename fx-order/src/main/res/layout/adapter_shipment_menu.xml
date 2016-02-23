@@ -52,6 +52,13 @@
                     android:text="---"
                     android:textSize="12sp"/>
 
+                <TextView
+                    android:id="@+id/om_serial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Serial : "
+                    android:textSize="12sp"/>
+
             </LinearLayout>
 
 

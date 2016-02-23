@@ -119,8 +119,33 @@ public class OrderMenuDatabaseAdapter extends DefaultDatabaseAdapter {
     }
 
     public List<String> findOrderMenuIdesByOrderId(String orderId) {
-        String query = OrderMenuDatabaseModel.ORDER_ID + " = ?";
+        String query = OrderMenuDatabaseModel.ORDER_ID + " = ? ";
         String[] parameter = {orderId};
+
+        Cursor cursor = context.getContentResolver().query(dbUriOrderMenu, null, query, parameter, null);
+
+        List<String> orderMenuIdes = new ArrayList<String>();
+
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                try {
+                    while (cursor.moveToNext()) {
+                        orderMenuIdes.add(cursor.getString(cursor.getColumnIndex(OrderDatabaseModel.ID)));
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        cursor.close();
+
+        return orderMenuIdes;
+    }
+
+    public List<String> findOrderMenuIdesByOrderIdActive(String orderId) {
+        String query = OrderMenuDatabaseModel.ORDER_ID + " = ? AND " + OrderDatabaseModel.SYNC_STATUS + " = ?";
+        String[] parameter = {orderId, "0"};
 
         Cursor cursor = context.getContentResolver().query(dbUriOrderMenu, null, query, parameter, null);
 
@@ -292,7 +317,7 @@ public class OrderMenuDatabaseAdapter extends DefaultDatabaseAdapter {
         ContentValues values = new ContentValues();
         values.put(OrderDatabaseModel.SYNC_STATUS, 1);
 
-        context.getContentResolver().update(dbUriOrderMenu, values, OrderDatabaseModel.ID + " = ? ", new String[]{id});
+        context.getContentResolver().update(dbUriOrderMenu, values, OrderMenuDatabaseModel.ID + " = ? ", new String[]{id});
     }
 
 }

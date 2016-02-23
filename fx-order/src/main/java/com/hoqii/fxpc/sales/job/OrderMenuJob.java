@@ -69,6 +69,7 @@ public class OrderMenuJob extends Job {
             Log.d(getClass().getSimpleName(), "Response Code :" + r.getStatusLine().getStatusCode() + "Entity ID :" + orderMenuId + " Ref Id: " + om.getId());
             EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, response, om.getId(),orderMenuId));
         } else {
+            EventBus.getDefault().post(new GenericEvent.RequestFailed(PROCESS_ID, response));
             Log.d(getClass().getSimpleName(), "Response Code :" + r.getStatusLine().getStatusCode() + " " + r.getStatusLine().getReasonPhrase());
             throw new RuntimeException();
         }
