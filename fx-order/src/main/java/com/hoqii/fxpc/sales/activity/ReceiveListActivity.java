@@ -408,6 +408,26 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
         builder.show();
     }
 
+    private void reloadRefreshToken(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ReceiveListActivity.this);
+        builder.setTitle("Refresh Token");
+        builder.setMessage("Process failed\nRepeat process ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                jobManager.addJobInBackground(new RefreshTokenJob());
+            }
+        });
+        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
         Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
         switch (requestInProgress.getProcessId()) {
@@ -442,5 +462,6 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
     public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
         dialogRefresh.dismiss();
         dataFailed.setVisibility(View.VISIBLE);
+        reloadRefreshToken();
     }
 }

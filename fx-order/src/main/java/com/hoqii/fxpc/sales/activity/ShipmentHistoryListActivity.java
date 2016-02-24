@@ -314,6 +314,7 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
     public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
         dialogRefresh.dismiss();
         dataFailed.setVisibility(View.VISIBLE);
+        reloadRefreshToken();
     }
 
     @Override
@@ -607,6 +608,26 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+            }
+        });
+        builder.show();
+    }
+
+    private void reloadRefreshToken(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShipmentHistoryListActivity.this);
+        builder.setTitle("Refresh Token");
+        builder.setMessage("Process failed\nRepeat process ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                jobManager.addJobInBackground(new RefreshTokenJob());
+            }
+        });
+        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
             }
         });
         builder.show();

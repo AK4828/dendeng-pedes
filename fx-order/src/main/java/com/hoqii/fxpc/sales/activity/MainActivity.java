@@ -594,7 +594,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 //                }
                 case RefreshTokenJob.PROCESS_ID:
                     dialogRefresh.dismiss();
-                    Log.d(getClass().getSimpleName(), "[ refresh job success, status " + requestSuccess.getEntityId() + " ]");
+                    Log.d(getClass().getSimpleName(), "[ refresh job success, status :" + requestSuccess.getEntityId() + " ]");
                     refreshStatus = RefreshTokenJob.refreshStatus.valueOf(requestSuccess.getEntityId());
                     break;
 
@@ -647,6 +647,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
     public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
         dialogRefresh.dismiss();
+        reloadRefreshToken();
     }
 
     private void AlertMessage(String message) {
@@ -682,6 +683,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
                 orderDbAdapter.updateSyncStatusById(orderId);
                 orderId = null;
+                refreshStatus = null;
                 orderMenuCount = 0;
                 orderMenuAdapter = new OrderMenuAdapter(MainActivity.this);
                 orderListRecycle.setAdapter(orderMenuAdapter);
@@ -693,6 +695,31 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         dialog.setCancelable(false);
         dialog.show();
 
+    }
+
+    private void reloadRefreshToken(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Refresh Token");
+        builder.setMessage("Process failed\nRepeat process ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (refreshStatus != null) {
+                    jobManager.addJobInBackground(new RefreshTokenJob(refreshStatus.name()));
+                }else{
+                    jobManager.addJobInBackground(new RefreshTokenJob());
+                }
+            }
+        });
+        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                refreshStatus = null;
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     public void retryRequestSync() {

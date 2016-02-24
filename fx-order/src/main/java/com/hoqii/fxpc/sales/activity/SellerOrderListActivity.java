@@ -488,6 +488,26 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
         builder.show();
     }
 
+    private void reloadRefreshToken(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(SellerOrderListActivity.this);
+        builder.setTitle("Refresh Token");
+        builder.setMessage("Process failed\nRepeat process ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                jobManager.addJobInBackground(new RefreshTokenJob());
+            }
+        });
+        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -549,6 +569,7 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
     public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
         dialogRefresh.dismiss();
         dataFailed.setVisibility(View.VISIBLE);
+        reloadRefreshToken();
     }
 
 }

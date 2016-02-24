@@ -48,6 +48,9 @@ public class RefreshTokenJob extends LoginJob {
     @Override
     public void onRun() throws Throwable {
         Log.d(getClass().getSimpleName(), "refresh token running");
+        if (status != null) {
+            Log.d(getClass().getSimpleName(), "[ refresh token running with status " + status.name() + "]");
+        }
         preferences = SignageAppication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         Log.d(getClass().getSimpleName(), preferences.getString("server_url", ""));
 
@@ -69,16 +72,18 @@ public class RefreshTokenJob extends LoginJob {
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             if (status != null){
                 Log.d(getClass().getSimpleName(), "[ status refresh not null ]");
-                switch (status){
-                    case submitOrder:
-                        EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, responseWrapper, "", status.submitOrder.name()));
-                        Log.d(getClass().getSimpleName(), "[ status refresh : "+status.name()+" ]");
-                        break;
-                    default:
-                        EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, responseWrapper, "", ""));
-                        break;
-                }
+                EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, responseWrapper, "", status.name()));
+//                switch (status){
+//                    case submitOrder:
+//
+//                        Log.d(getClass().getSimpleName(), "[ status refresh : "+status.name()+" ]");
+//                        break;
+//                    default:
+//                        EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, responseWrapper, "", ""));
+//                        break;
+//                }
             }else {
+                Log.d(getClass().getSimpleName(), "[ status refresh null ]");
                 EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, responseWrapper, "", ""));
             }
             registerAuthentication(responseWrapper);
