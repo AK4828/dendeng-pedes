@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -55,9 +56,7 @@ public class LoginActivity extends DefaultActivity {
     View loginProgress;
 
     private JobManager jobManager;
-    private SharedPreferences preferences;
-
-    private Toolbar toolbar;
+    private SharedPreferences preferences, pref;
 
     @Override
     protected int layout() {
@@ -87,18 +86,9 @@ public class LoginActivity extends DefaultActivity {
 
     @Override
     public void onViewCreated(Bundle bundle) {
-        Iconify
-                .with(new FontAwesomeModule())
-                .with(new EntypoModule())
-                .with(new TypiconsModule())
-                .with(new MaterialModule())
-                .with(new MaterialCommunityModule())
-                .with(new MeteoconsModule())
-                .with(new WeathericonsModule())
-                .with(new SimpleLineIconsModule())
-                .with(new IoniconsModule());
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
         EventBus.getDefault().register(this);
         SharedPreferences.Editor editor = preferences.edit();
 
@@ -144,7 +134,7 @@ public class LoginActivity extends DefaultActivity {
     }
 
     private void goToMainActivity() {
-        if (preferences.getBoolean("has_sync", false)) {
+        if (pref.getBoolean("has_sync", false)) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         } else {

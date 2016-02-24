@@ -39,17 +39,14 @@ public class SplashActivity extends DefaultActivity {
     public void onViewCreated(Bundle bundle) {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-
         jobManager = SignageAppication.getInstance().getJobManager();
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 Log.d(getClass().getSimpleName(), "HAS Sync : " + preferences.getBoolean("has_sync", false));
                 if (preferences.getBoolean("has_sync", false)) {
-                    jobManager.addJobInBackground(new RefreshTokenJob());
+//                    jobManager.addJobInBackground(new RefreshTokenJob());
 
-                    //testing
-//                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-//                    finish();
+
                 } else if (!preferences.getBoolean("has_sync", false)) {
                     startActivity(new Intent(SplashActivity.this, LoginActivity.class));
                     finish();

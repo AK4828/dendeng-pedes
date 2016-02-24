@@ -33,7 +33,14 @@ public class AuthenticationCeck {
         long realDurationInSecon = TimeUnit.MILLISECONDS.toSeconds(realDuration);
         Log.d(getClass().getSimpleName(), "real duration insecon: "+realDurationInSecon);
 
-        if (expiresIn > realDurationInSecon){
+//        if (expiresIn > realDurationInSecon){
+//            access = true;
+//            Log.d(getClass().getSimpleName(), "access status : granted");
+//        }else {
+//            access = false;
+//        }
+
+        if (expiresIn > (realDurationInSecon + 43079)){
             access = true;
             Log.d(getClass().getSimpleName(), "access status : granted");
         }else {

@@ -176,6 +176,7 @@ public class SyncActivity extends DefaultActivity implements TaskService {
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
                         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(SyncActivity.this).edit();
+
                         editor.putBoolean("has_sync", true);
                         editor.commit();
 

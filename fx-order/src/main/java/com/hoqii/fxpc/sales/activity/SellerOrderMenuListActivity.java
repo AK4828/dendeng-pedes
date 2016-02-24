@@ -173,6 +173,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
         loadProgress = new ProgressDialog(this);
         loadProgress.setMessage("Fetching data...");
+        loadProgress.setCancelable(false);
 
         new Handler().post(new Runnable() {
             @Override

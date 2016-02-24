@@ -1,6 +1,5 @@
 package com.hoqii.fxpc.sales.activity;
 
-import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
@@ -32,37 +30,22 @@ import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageAppication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.OrderMenuAdapter;
-import com.hoqii.fxpc.sales.content.database.adapter.ContactDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderMenuDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SiteDatabaseAdapter;
-import com.hoqii.fxpc.sales.core.commons.Role;
 import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.fragment.OrderListFragment;
-import com.hoqii.fxpc.sales.fragment.ProductFragmentGrid;
+import com.hoqii.fxpc.sales.event.LoginEvent;
 import com.hoqii.fxpc.sales.job.OrderMenuJob;
 import com.hoqii.fxpc.sales.job.OrderUpdateJob;
 import com.hoqii.fxpc.sales.job.RefreshTokenJob;
 import com.hoqii.fxpc.sales.task.RequestOrderSyncTask;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
-import com.joanzapata.iconify.Icon;
 import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.fonts.EntypoModule;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.IoniconsModule;
-import com.joanzapata.iconify.fonts.MaterialCommunityModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
-import com.joanzapata.iconify.fonts.MeteoconsModule;
-import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
-import com.joanzapata.iconify.fonts.TypiconsModule;
-import com.joanzapata.iconify.fonts.WeathericonsModule;
 import com.path.android.jobqueue.JobManager;
 
 import org.meruvian.midas.core.service.TaskService;
@@ -76,7 +59,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by miftakhul on 11/13/15.
  */
-public class MainActivity extends AppCompatActivity implements TaskService{
+public class MainActivity extends AppCompatActivity implements TaskService {
 
     private DrawerLayout drawerLayout;
     private boolean isMinLoli = false;
@@ -88,8 +71,8 @@ public class MainActivity extends AppCompatActivity implements TaskService{
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
     private JobManager jobManager;
     private SharedPreferences preferences;
-    private ProgressDialog dialog;
-    private TextView textTotalItem,textTotalOrder,textOrderto;
+    private ProgressDialog dialog, dialogRefresh;
+    private TextView textTotalItem, textTotalOrder, textOrderto;
     private OrderDatabaseAdapter orderDbAdapter;
     private OrderMenuDatabaseAdapter orderMenuDbAdapter;
     private SiteDatabaseAdapter siteDatabaseAdapter;
@@ -103,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements TaskService{
     private RecyclerView orderListRecycle;
     private OrderMenuAdapter orderMenuAdapter;
     private SlidingPaneLayout slidingPaneLayout;
-
+    private RefreshTokenJob.refreshStatus refreshStatus = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,14 +94,14 @@ public class MainActivity extends AppCompatActivity implements TaskService{
         setContentView(R.layout.activity_main);
         jobManager = SignageAppication.getInstance().getJobManager();
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
-        EventBus.getDefault().register(this);
+//        EventBus.getDefault().register(this);
 
-        if (authenticationCeck.isAccess()) {
-            Log.d(getClass().getSimpleName(), "application access granted");
-        } else {
-            Log.d(getClass().getSimpleName(), "application access need to refresh");
-            jobManager.addJobInBackground(new RefreshTokenJob());
-        }
+//        if (authenticationCeck.isAccess()) {
+//            Log.d(getClass().getSimpleName(), "application access granted");
+//        } else {
+//            Log.d(getClass().getSimpleName(), "application access need to refresh");
+//            jobManager.addJobInBackground(new RefreshTokenJob());
+//        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isMinLoli = true;
@@ -148,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements TaskService{
         actionBar.setDisplayShowTitleEnabled(true);
 
 
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
@@ -158,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements TaskService{
         orderListRecycle.setItemAnimator(new DefaultItemAnimator());
         orderListRecycle.setAdapter(orderMenuAdapter);
 
-        if (orderId != null){
+        if (orderId != null) {
             orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
             orderMenuAdapter.addItems(orderMenus);
         }
@@ -167,8 +149,12 @@ public class MainActivity extends AppCompatActivity implements TaskService{
         setFlot();
 
         dialog = new ProgressDialog(this);
-        dialog.setMessage("Mengirim data ...");
+        dialog.setMessage("Send order ...");
         dialog.setCancelable(false);
+
+        dialogRefresh = new ProgressDialog(this);
+        dialogRefresh.setMessage("Pleace wait ...");
+        dialogRefresh.setCancelable(false);
 
     }
 
@@ -177,6 +163,13 @@ public class MainActivity extends AppCompatActivity implements TaskService{
     protected void onResume() {
         super.onResume();
         updateInfo();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -209,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements TaskService{
                             }
                         });
                         builder.show();
-                    }else if (order.getSite().getId() == null){
+                    } else if (order.getSite().getId() == null) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle("Peringatan");
                         builder.setMessage("Anda belum memilih tujuan order");
@@ -220,9 +213,18 @@ public class MainActivity extends AppCompatActivity implements TaskService{
                             }
                         });
                         builder.show();
-                    }
-                    else {
-                        saveOrder();
+                    } else {
+                        if (authenticationCeck.isAccess()) {
+                            Log.d(getClass().getSimpleName(), "[ application access granted ]");
+                            Log.d(getClass().getSimpleName(), "[ submiting order run ]");
+                            saveOrder();
+                        } else {
+                            Log.d(getClass().getSimpleName(), "[ application access need to refresh ]");
+                            Log.d(getClass().getSimpleName(), "[ refreshing refersh param submit ]");
+                            jobManager.addJobInBackground(new RefreshTokenJob(RefreshTokenJob.refreshStatus.submitOrder.name()));
+                        }
+
+//                        saveOrder();
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -348,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements TaskService{
         });
     }
 
-    public void updateInfo(){
+    public void updateInfo() {
         orderId = orderDbAdapter.getOrderId();
         Log.d(getClass().getSimpleName(), "[ order id app update info " + orderId + " ]");
 
@@ -368,13 +370,13 @@ public class MainActivity extends AppCompatActivity implements TaskService{
             if (order.getSite().getId() != null) {
                 Site site = siteDatabaseAdapter.findSiteById(order.getSite().getId());
                 textOrderto.setText("Order ke : " + site.getName());
-            }else {
+            } else {
                 textOrderto.setText("Order ke : ");
             }
 
             textTotalItem.setText("Jumlah Item: " + totalItem);
             textTotalOrder.setText("Total Order: " + "Rp " + decimalFormat.format(totalPrice));
-        }else {
+        } else {
             textOrderto.setText("Order ke : ");
             textTotalItem.setText("Jumlah Item: ");
             textTotalOrder.setText("Total Order: ");
@@ -384,13 +386,13 @@ public class MainActivity extends AppCompatActivity implements TaskService{
     private void saveOrder() {
         orderId = orderDbAdapter.getOrderId();
         String receiptNumber = orderDbAdapter.getReceiptNumberByOrderId(orderId);
-        if (receiptNumber.isEmpty() || receiptNumber.equalsIgnoreCase(null) || receiptNumber.equalsIgnoreCase("")){
+        if (receiptNumber.isEmpty() || receiptNumber.equalsIgnoreCase(null) || receiptNumber.equalsIgnoreCase("")) {
             requestOrderSyncTask = new RequestOrderSyncTask(this,
                     this, orderId);
             requestOrderSyncTask.execute();
-            Log.d(getClass().getSimpleName(), "[ receipt number from order id "+ orderId + " [is null] ]");
-        }else {
-            Log.d(getClass().getSimpleName(), "[ receipt number from order id "+ orderId + " [is not null / receiptNumber"+ receiptNumber +" ] ]");
+            Log.d(getClass().getSimpleName(), "[ receipt number from order id " + orderId + " [is null] ]");
+        } else {
+            Log.d(getClass().getSimpleName(), "[ receipt number from order id " + orderId + " [is not null / receiptNumber" + receiptNumber + " ] ]");
             Order order = orderDbAdapter.findOrderById(orderId);
             Log.d(getClass().getSimpleName(), "Order ID : " + orderId
                     + " Update Parameter : >> RefId " + order.getRefId()
@@ -420,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements TaskService{
         }
     }
 
-    public void orderUpdate(String productId, int qty){
+    public void orderUpdate(String productId, int qty) {
         Intent i = new Intent(this, OrderActivity.class);
         i.putExtra("productId", productId);
         i.putExtra("qtyUpdate", qty);
@@ -510,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements TaskService{
 
     @Override
     public void onSuccess(int code, Object result) {
-        Log.d(getClass().getSimpleName(), result + " succecc code "+code);
+        Log.d(getClass().getSimpleName(), result + " succecc code " + code);
 
         if (result != null) {
             if (code == SignageVariables.REQUEST_ORDER) {
@@ -544,12 +546,18 @@ public class MainActivity extends AppCompatActivity implements TaskService{
 
     public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
         Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
+        switch (requestInProgress.getProcessId()) {
+            case RefreshTokenJob.PROCESS_ID:
+                dialogRefresh.show();
+                break;
+        }
     }
 
     public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
         try {
             switch (requestSuccess.getProcessId()) {
-                case OrderUpdateJob.PROCESS_ID: {
+                case OrderUpdateJob.PROCESS_ID:
+//                {
                     Log.d(getClass().getSimpleName(), "RequestSuccess OrderUpdateJob: >> RefId : "
                             + requestSuccess.getRefId() + "\n >> Entity id: " + requestSuccess.getEntityId());
 
@@ -567,8 +575,9 @@ public class MainActivity extends AppCompatActivity implements TaskService{
                     }
 
                     break;
-                }
-                case OrderMenuJob.PROCESS_ID: {
+//                }
+                case OrderMenuJob.PROCESS_ID:
+//                {
                     orderMenuCount++;
                     Log.d(getClass().getSimpleName(), "Count OM: " + orderMenuCount + " <<>> "
                             + "Total OM: " + totalOrderMenus);
@@ -582,7 +591,13 @@ public class MainActivity extends AppCompatActivity implements TaskService{
                     Log.d(getClass().getSimpleName(), "RequestSuccess OrderMenuId: "
                             + requestSuccess.getRefId());
                     break;
-                }
+//                }
+                case RefreshTokenJob.PROCESS_ID:
+                    dialogRefresh.dismiss();
+                    Log.d(getClass().getSimpleName(), "[ refresh job success, status " + requestSuccess.getEntityId() + " ]");
+                    refreshStatus = RefreshTokenJob.refreshStatus.valueOf(requestSuccess.getEntityId());
+                    break;
+
             }
 
         } catch (Exception e) {
@@ -593,26 +608,58 @@ public class MainActivity extends AppCompatActivity implements TaskService{
     public void onEventMainThread(GenericEvent.RequestFailed failed) {
         dialog.dismiss();
         Log.d(getClass().getSimpleName(), "request failed event, process id " + failed.getProcessId());
-        switch (failed.getProcessId()){
-            case OrderUpdateJob.PROCESS_ID: {
+        switch (failed.getProcessId()) {
+            case OrderUpdateJob.PROCESS_ID:
+//            {
                 Log.d(getClass().getSimpleName(), "request updateorder failed");
                 retryRequestOrder();
                 break;
-            }
-            case OrderMenuJob.PROCESS_ID:{
+//            }
+            case OrderMenuJob.PROCESS_ID:
+//            {
                 orderMenuCount++;
                 Log.d(getClass().getSimpleName(), "request update order menu failed");
-                if (orderMenuCount == totalOrderMenus){
+                if (orderMenuCount == totalOrderMenus) {
                     retryRequestOrderMenu();
                     Log.d(getClass().getSimpleName(), "request update order menu failed complate");
                 }
                 break;
-            }
+//            }
+            case RefreshTokenJob.PROCESS_ID:
+                dialogRefresh.dismiss();
+                refreshStatus = null;
+                AlertMessage("Refresh token failed");
         }
 
         Log.e(getClass().getSimpleName(),
                 failed.getResponse().getHttpResponse().getStatusLine().getStatusCode() + " :"
                         + failed.getResponse().getHttpResponse().getStatusLine().getReasonPhrase());
+    }
+
+    public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
+        switch (refreshStatus) {
+            case submitOrder:
+                Log.d(getClass().getSimpleName(), "[ re running submit order ]");
+                saveOrder();
+                break;
+        }
+    }
+
+    public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
+        dialogRefresh.dismiss();
+    }
+
+    private void AlertMessage(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Refresh Token");
+        builder.setMessage(message);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.show();
     }
 
     private void dialogSuccessOrder() {
@@ -648,7 +695,7 @@ public class MainActivity extends AppCompatActivity implements TaskService{
 
     }
 
-    public void retryRequestSync(){
+    public void retryRequestSync() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Konfirmasi");
         builder.setMessage("Request gagal\nUlangi proses ?");
@@ -668,7 +715,7 @@ public class MainActivity extends AppCompatActivity implements TaskService{
         builder.show();
     }
 
-    public void retryRequestOrder(){
+    public void retryRequestOrder() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Konfirmasi");
         builder.setMessage("Gagal mengirim order\nUlangi proses ?");
@@ -698,7 +745,7 @@ public class MainActivity extends AppCompatActivity implements TaskService{
         builder.show();
     }
 
-    public void retryRequestOrderMenu(){
+    public void retryRequestOrderMenu() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Konfirmasi");
         builder.setMessage("Gagal mengirim order...\nUlangi proses ?");
@@ -711,6 +758,7 @@ public class MainActivity extends AppCompatActivity implements TaskService{
                 Order o = orderDbAdapter.findOrderById(orderId);
                 orderMenuIdes = orderMenuDbAdapter.findOrderMenuIdesByOrderIdActive(orderId);
                 totalOrderMenus = orderMenuIdes.size();
+                orderMenuCount = 0;
 
                 Log.d(getClass().getSimpleName(), "Order Menu Ides Size : " + orderMenuIdes.size());
 

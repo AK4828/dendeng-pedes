@@ -25,7 +25,8 @@
     <string name="nav_seller_purchase_order">Purchase Order</string>
     <string name="nav_point">Point</string>
 
-
+    <string name="access_failed">Access failed</string>
+    <string name="data_empty">Empty</string>
     <string name="search">Pencarian</string>
     <string name="refresh">Refresh</string>
     <string name="required">Required</string>
@@ -111,6 +112,7 @@
         Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
         Vivamus pulvinar ante ac accumsan facilisis.
     </string>
+
 
 
 </resources>

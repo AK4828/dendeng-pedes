@@ -27,29 +27,22 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.hoqii.fxpc.sales.R;
+import com.hoqii.fxpc.sales.SignageAppication;
 import com.hoqii.fxpc.sales.SignageVariables;
-import com.hoqii.fxpc.sales.adapter.SellerOrderAdapter;
-import com.hoqii.fxpc.sales.adapter.ShipmentAdapter;
 import com.hoqii.fxpc.sales.adapter.ShipmentHistoryAdapter;
 import com.hoqii.fxpc.sales.core.LogInformation;
 import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.hoqii.fxpc.sales.event.GenericEvent;
+import com.hoqii.fxpc.sales.event.LoginEvent;
+import com.hoqii.fxpc.sales.job.RefreshTokenJob;
 import com.hoqii.fxpc.sales.job.ShipmentUpdateJob;
+import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.fonts.EntypoModule;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.IoniconsModule;
-import com.joanzapata.iconify.fonts.MaterialCommunityModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
-import com.joanzapata.iconify.fonts.MeteoconsModule;
-import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
-import com.joanzapata.iconify.fonts.TypiconsModule;
-import com.joanzapata.iconify.fonts.WeathericonsModule;
+import com.path.android.jobqueue.JobManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,6 +71,9 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
     private LinearLayout dataNull, dataFailed;
     private ProgressDialog loadProgress;
     private int page = 1, totalPage;
+    private JobManager jobManager;
+    private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
+    private ProgressDialog dialogRefresh;
 
     private String shipmentUrl = "/api/shipmentHistory";
 
@@ -85,6 +81,7 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_shipment_list);
+        EventBus.getDefault().register(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setEnterTransition(new Explode());
@@ -92,6 +89,7 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
         }
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
+        jobManager = SignageAppication.getInstance().getJobManager();
 
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -126,15 +124,32 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
 
         loadProgress = new ProgressDialog(this);
         loadProgress.setMessage("Fetching data...");
+        loadProgress.setCancelable(false);
+
+        dialogRefresh = new ProgressDialog(this);
+        dialogRefresh.setMessage("Pleace wait ...");
+        dialogRefresh.setCancelable(false);
 
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                ShipmentSync sync = new ShipmentSync(ShipmentHistoryListActivity.this, ShipmentHistoryListActivity.this, false);
-                sync.execute("0");
+                if (authenticationCeck.isAccess()) {
+                    ShipmentSync sync = new ShipmentSync(ShipmentHistoryListActivity.this, ShipmentHistoryListActivity.this, false);
+                    sync.execute("0");
+                    Log.d(getClass().getSimpleName(), "[ acces true / refreshing token not needed]");
+                } else {
+                    Log.d(getClass().getSimpleName(), "[ acces false / refreshing token]");
+                    jobManager.addJobInBackground(new RefreshTokenJob());
+                }
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -215,66 +230,90 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
         dataFailed.setVisibility(View.VISIBLE);
     }
 
+//    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
+//        Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
+//        switch (requestInProgress.getProcessId()) {
+//            case ShipmentUpdateJob.PROCESS_ID:
+//                progressDialog.show();
+//                Log.d(getClass().getSimpleName(), "Shipment in progress");
+//                break;
+//        }
+//    }
+//
+//    public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
+//        Log.d(getClass().getSimpleName(), "success event : " + requestSuccess);
+//        try {
+//            switch (requestSuccess.getProcessId()) {
+//                case ShipmentUpdateJob.PROCESS_ID: {
+//                    progressDialog.dismiss();
+//                    AlertMessage("Proses selesai");
+//
+//                    shipmentAdapter = new ShipmentHistoryAdapter(this);
+//                    recyclerView.setAdapter(shipmentAdapter);
+//
+//                    page = 1;
+//                    totalPage = 0;
+//
+//                    new Handler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            ShipmentSync sync = new ShipmentSync(ShipmentHistoryListActivity.this, ShipmentHistoryListActivity.this, false);
+//                            sync.execute("0");
+//                        }
+//                    }, 500);
+//                    break;
+//                }
+//            }
+//        } catch (Exception e) {
+//            Log.e(getClass().getSimpleName(), e.getMessage(), e);
+//        }
+//
+//    }
+//
+//    public void onEventMainThread(GenericEvent.RequestFailed failed) {
+//        Log.d(getClass().getSimpleName(), "Request failed: " + failed.getProcessId());
+//        switch (failed.getProcessId()) {
+//            case ShipmentUpdateJob.PROCESS_ID:
+//                progressDialog.dismiss();
+//                AlertMessage("Gagal mengkonfirmasi shipment");
+//                break;
+//        }
+//    }
+
     public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
         Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
         switch (requestInProgress.getProcessId()) {
-            case ShipmentUpdateJob.PROCESS_ID:
-                progressDialog.show();
-                Log.d(getClass().getSimpleName(), "Shipment in progress");
+            case RefreshTokenJob.PROCESS_ID:
+                dialogRefresh.show();
                 break;
         }
     }
 
     public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
-        Log.d(getClass().getSimpleName(), "success event : " + requestSuccess);
-        try {
-            switch (requestSuccess.getProcessId()) {
-                case ShipmentUpdateJob.PROCESS_ID: {
-                    progressDialog.dismiss();
-                    AlertMessage("Proses selesai");
-
-                    shipmentAdapter = new ShipmentHistoryAdapter(this);
-                    recyclerView.setAdapter(shipmentAdapter);
-
-                    page = 1;
-                    totalPage = 0;
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            ShipmentSync sync = new ShipmentSync(ShipmentHistoryListActivity.this, ShipmentHistoryListActivity.this, false);
-                            sync.execute("0");
-                        }
-                    }, 500);
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Log.e(getClass().getSimpleName(), e.getMessage(), e);
-        }
+        Log.d(getClass().getSimpleName(), "RequestSuccess: " + requestSuccess.getProcessId());
 
     }
 
     public void onEventMainThread(GenericEvent.RequestFailed failed) {
-        Log.d(getClass().getSimpleName(), "Request failed: " + failed.getProcessId());
+        Log.d(getClass().getSimpleName(), "RequestFailed: " + failed.getProcessId());
         switch (failed.getProcessId()) {
-            case ShipmentUpdateJob.PROCESS_ID:
-                progressDialog.dismiss();
-                AlertMessage("Gagal mengkonfirmasi shipment");
+            case RefreshTokenJob.PROCESS_ID:
+                dialogRefresh.dismiss();
+                AlertMessage("Refresh token failed");
+                dataFailed.setVisibility(View.VISIBLE);
                 break;
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
+    public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
+        dialogRefresh.dismiss();
+        ShipmentSync sync = new ShipmentSync(ShipmentHistoryListActivity.this, ShipmentHistoryListActivity.this, false);
+        sync.execute("0");
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
+    public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
+        dialogRefresh.dismiss();
+        dataFailed.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -424,7 +463,7 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
         protected JSONObject doInBackground(String... JsonObject) {
             Log.d(getClass().getSimpleName(), "?acces_token= " + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
             return ConnectionUtil.get(preferences.getString("server_url", "") + shipmentUrl + "?access_token="
-                    + AuthenticationUtils.getCurrentAuthentication().getAccessToken()+"&q="+JsonObject[0] + "&page=" + JsonObject[1]);
+                    + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&q=" + JsonObject[0] + "&page=" + JsonObject[1]);
         }
 
         @Override
@@ -561,8 +600,8 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
     }
 
     private void AlertMessage(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Shipment");
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShipmentHistoryListActivity.this);
+        builder.setTitle("Refresh Token");
         builder.setMessage(message);
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override

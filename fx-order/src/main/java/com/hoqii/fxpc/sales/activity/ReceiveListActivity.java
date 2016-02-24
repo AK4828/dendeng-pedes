@@ -2,6 +2,7 @@ package com.hoqii.fxpc.sales.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.hoqii.fxpc.sales.R;
+import com.hoqii.fxpc.sales.SignageAppication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.ReceiveAdapter;
 import com.hoqii.fxpc.sales.adapter.SellerOrderAdapter;
@@ -31,6 +34,10 @@ import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.Receive;
 import com.hoqii.fxpc.sales.entity.Shipment;
+import com.hoqii.fxpc.sales.event.GenericEvent;
+import com.hoqii.fxpc.sales.event.LoginEvent;
+import com.hoqii.fxpc.sales.job.RefreshTokenJob;
+import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.Iconify;
@@ -44,6 +51,7 @@ import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
 import com.joanzapata.iconify.fonts.TypiconsModule;
 import com.joanzapata.iconify.fonts.WeathericonsModule;
+import com.path.android.jobqueue.JobManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,6 +62,8 @@ import org.meruvian.midas.core.util.ConnectionUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by miftakhul on 12/8/15.
@@ -70,6 +80,9 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
     private LinearLayout dataNull, dataFailed;
     private ProgressDialog loadProgress;
     private int page = 1, totalPage;
+    private JobManager jobManager;
+    private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
+    private ProgressDialog dialogRefresh;
 
     private String receiveUrl = "/api/order/receives";
 
@@ -77,6 +90,7 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receive_list);
+        EventBus.getDefault().register(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setEnterTransition(new Explode());
@@ -84,8 +98,9 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
         }
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
+        jobManager = SignageAppication.getInstance().getJobManager();
 
-        toolbar = (Toolbar)findViewById(R.id.main_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -114,22 +129,38 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
 
         loadProgress = new ProgressDialog(this);
         loadProgress.setMessage("Fetching data...");
+        loadProgress.setCancelable(false);
+
+        dialogRefresh = new ProgressDialog(this);
+        dialogRefresh.setMessage("Pleace wait ...");
+        dialogRefresh.setCancelable(false);
 
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                ReceiveSync receiveSync = new ReceiveSync(ReceiveListActivity.this, ReceiveListActivity.this, false);
-                receiveSync.execute("0");
+                if (authenticationCeck.isAccess()) {
+                    ReceiveSync receiveSync = new ReceiveSync(ReceiveListActivity.this, ReceiveListActivity.this, false);
+                    receiveSync.execute("0");
+                    Log.d(getClass().getSimpleName(), "[ acces true / refreshing token not needed]");
+                } else {
+                    Log.d(getClass().getSimpleName(), "[ acces false / refreshing token]");
+                    jobManager.addJobInBackground(new RefreshTokenJob());
+                }
             }
         });
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home :
+        switch (item.getItemId()) {
+            case android.R.id.home:
                 super.onBackPressed();
         }
         return super.onOptionsItemSelected(item);
@@ -150,9 +181,9 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
 
         dataFailed.setVisibility(View.GONE);
 
-        if (receiveList.size() > 0){
+        if (receiveList.size() > 0) {
             dataNull.setVisibility(View.GONE);
-        }else {
+        } else {
             dataNull.setVisibility(View.VISIBLE);
         }
     }
@@ -185,8 +216,8 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
         @Override
         protected JSONObject doInBackground(String... JsonObject) {
             Log.d(getClass().getSimpleName(), "?acces_token= " + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
-            return ConnectionUtil.get(preferences.getString("server_url", "") + receiveUrl+"?access_token="
-                    + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&page="+JsonObject[0]);
+            return ConnectionUtil.get(preferences.getString("server_url", "") + receiveUrl + "?access_token="
+                    + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&page=" + JsonObject[0]);
         }
 
         @Override
@@ -196,7 +227,7 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
 
         @Override
         protected void onPreExecute() {
-            if (!isLoadMore){
+            if (!isLoadMore) {
                 swipeRefreshLayout.setRefreshing(true);
             }
             taskService.onExecute(SignageVariables.RECEIVE_GET_TASK);
@@ -229,7 +260,7 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
                         }
 
                         JSONObject shipmentObject = new JSONObject();
-                        if (!object.isNull("shipment")){
+                        if (!object.isNull("shipment")) {
                             shipmentObject = object.getJSONObject("shipment");
                             Shipment shipment = new Shipment();
                             shipment.setId(shipmentObject.getString("id"));
@@ -256,18 +287,18 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
                             receive.setShipment(shipment);
                         }
 
-                        if (object.getString("status").equalsIgnoreCase("WAIT")){
+                        if (object.getString("status").equalsIgnoreCase("WAIT")) {
                             receive.setStatus(Receive.ReceiveStatus.WAIT);
-                        }else if (object.getString("status").equalsIgnoreCase("RECEIVED")){
+                        } else if (object.getString("status").equalsIgnoreCase("RECEIVED")) {
                             receive.setStatus(Receive.ReceiveStatus.RECEIVED);
-                        }else if (object.getString("status").equalsIgnoreCase("FAILED")){
+                        } else if (object.getString("status").equalsIgnoreCase("FAILED")) {
                             receive.setStatus(Receive.ReceiveStatus.FAILED);
                         }
 
                         receive.setRecipient(object.getString("recipient"));
 
                         JSONObject orderObject = new JSONObject();
-                        if (!object.isNull("order")){
+                        if (!object.isNull("order")) {
                             orderObject = object.getJSONObject("order");
 
                             Order order = new Order();
@@ -285,7 +316,7 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
                             }
 
                             JSONObject siteObject = new JSONObject();
-                            if (!orderObject.isNull("site")){
+                            if (!orderObject.isNull("site")) {
                                 siteObject = orderObject.getJSONObject("site");
 
                                 Site site = new Site();
@@ -299,7 +330,7 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
                         receives.add(receive);
                     }
 
-                    if (isLoadMore){
+                    if (isLoadMore) {
                         page++;
                         loadProgress.dismiss();
                     }
@@ -318,7 +349,7 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
         }
     }
 
-    private void refreshContent(){
+    private void refreshContent() {
         receiveAdapter = new ReceiveAdapter(this);
         recyclerView.setAdapter(receiveAdapter);
 
@@ -334,8 +365,8 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
         }
     }
 
-    public void loadMoreContent(){
-        if (page < totalPage){
+    public void loadMoreContent() {
+        if (page < totalPage) {
             loadProgress.show();
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -349,18 +380,67 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == requestDetailCode){
+        if (requestCode == requestDetailCode) {
             Log.d(getClass().getSimpleName(), "result ok");
-            if (data != null){
+            if (data != null) {
                 String receiveId = data.getStringExtra("receiveId");
-                Log.d(getClass().getSimpleName(), "receive id "+receiveId);
+                Log.d(getClass().getSimpleName(), "receive id " + receiveId);
                 receiveAdapter.updateStatusDelivered(receiveId);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void openReceiveDetail(Intent intent){
+    public void openReceiveDetail(Intent intent) {
         startActivityForResult(intent, requestDetailCode);
+    }
+
+    private void AlertMessage(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ReceiveListActivity.this);
+        builder.setTitle("Refresh Token");
+        builder.setMessage(message);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.show();
+    }
+
+    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
+        Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
+        switch (requestInProgress.getProcessId()) {
+            case RefreshTokenJob.PROCESS_ID:
+                dialogRefresh.show();
+                break;
+        }
+    }
+
+    public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
+        Log.d(getClass().getSimpleName(), "RequestSuccess: " + requestSuccess.getProcessId());
+
+    }
+
+    public void onEventMainThread(GenericEvent.RequestFailed failed) {
+        Log.d(getClass().getSimpleName(), "RequestFailed: " + failed.getProcessId());
+        switch (failed.getProcessId()) {
+            case RefreshTokenJob.PROCESS_ID:
+                dialogRefresh.dismiss();
+                AlertMessage("Refresh token failed");
+                dataFailed.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
+        dialogRefresh.dismiss();
+        ReceiveSync receiveSync = new ReceiveSync(ReceiveListActivity.this, ReceiveListActivity.this, false);
+        receiveSync.execute("0");
+    }
+
+    public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
+        dialogRefresh.dismiss();
+        dataFailed.setVisibility(View.VISIBLE);
     }
 }
