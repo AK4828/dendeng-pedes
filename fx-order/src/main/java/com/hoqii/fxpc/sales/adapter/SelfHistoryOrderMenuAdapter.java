@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.SelfHistoryOrderMenuListActivity;
@@ -34,17 +35,11 @@ public class SelfHistoryOrderMenuAdapter extends RecyclerView.Adapter<SelfHistor
     private Context context;
     private String orderId;
     private List<OrderMenu> orderMenuList = new ArrayList<OrderMenu>();
-    private ImageLoader imageLoader = ImageLoader.getInstance();
     private SharedPreferences preferences;
 
     public SelfHistoryOrderMenuAdapter(Context context, String orderId) {
         this.context = context;
         this.orderId = orderId;
-
-
-        if (!imageLoader.isInited()) {
-            imageLoader.init(ImageLoaderConfiguration.createDefault(context));
-        }
 
         preferences = context.getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
     }
@@ -68,27 +63,7 @@ public class SelfHistoryOrderMenuAdapter extends RecyclerView.Adapter<SelfHistor
 
         String imageUrl = preferences.getString("server_url", "")+"/api/products/"+orderMenuList.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
 
-        imageLoader.displayImage(imageUrl, holder.preview, new ImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
-
-            }
-
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                holder.preview.setImageResource(R.drawable.no_image);
-            }
-
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-
-            }
-
-            @Override
-            public void onLoadingCancelled(String imageUri, View view) {
-                holder.preview.setImageResource(R.drawable.no_image);
-            }
-        });
+        Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
 
         if (position == orderMenuList.size() - 1){
             ((SelfHistoryOrderMenuListActivity)context).loadMoreContent();

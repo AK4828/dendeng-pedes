@@ -8,8 +8,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBar;
@@ -23,12 +26,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageAppication;
 import com.hoqii.fxpc.sales.SignageVariables;
+import com.hoqii.fxpc.sales.adapter.MainSlidePagerAdapter;
 import com.hoqii.fxpc.sales.adapter.OrderMenuAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderMenuDatabaseAdapter;
@@ -38,6 +44,8 @@ import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.event.LoginEvent;
+import com.hoqii.fxpc.sales.fragment.ReceiveListFragment;
+import com.hoqii.fxpc.sales.fragment.SellerOrderListFragment;
 import com.hoqii.fxpc.sales.job.OrderMenuJob;
 import com.hoqii.fxpc.sales.job.OrderUpdateJob;
 import com.hoqii.fxpc.sales.job.RefreshTokenJob;
@@ -47,7 +55,9 @@ import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
 import com.path.android.jobqueue.JobManager;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.meruvian.midas.core.event.Event;
 import org.meruvian.midas.core.service.TaskService;
 
 import java.text.DecimalFormat;
@@ -60,7 +70,6 @@ import de.greenrobot.event.EventBus;
  * Created by miftakhul on 11/13/15.
  */
 public class MainActivity extends AppCompatActivity implements TaskService {
-
     private DrawerLayout drawerLayout;
     private boolean isMinLoli = false;
     private static final int ORDER_REQUEST = 300;
@@ -85,8 +94,14 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");
     private RecyclerView orderListRecycle;
     private OrderMenuAdapter orderMenuAdapter;
-    private SlidingPaneLayout slidingPaneLayout;
     private RefreshTokenJob.refreshStatus refreshStatus = null;
+    private int xCoordinate, yCoordinate;
+    private ViewPager slideViewPager;
+    private TabLayout slideTablayout;
+    private boolean menuItemVisibility = true;
+    private SlidingUpPanelLayout slidingUpPanel;
+    private SellerOrderListFragment sellerOrderListFragment;
+    private ReceiveListFragment receiveListFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,14 +109,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         setContentView(R.layout.activity_main);
         jobManager = SignageAppication.getInstance().getJobManager();
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
-//        EventBus.getDefault().register(this);
-
-//        if (authenticationCeck.isAccess()) {
-//            Log.d(getClass().getSimpleName(), "application access granted");
-//        } else {
-//            Log.d(getClass().getSimpleName(), "application access need to refresh");
-//            jobManager.addJobInBackground(new RefreshTokenJob());
-//        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isMinLoli = true;
@@ -114,7 +121,9 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         textTotalOrder = (TextView) findViewById(R.id.text_total_order);
         textOrderto = (TextView) findViewById(R.id.text_orderto);
         orderListRecycle = (RecyclerView) findViewById(R.id.list_order);
-//        slidingPaneLayout = (SlidingPaneLayout) findViewById(R.id.slidingLyaout);
+        slideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
+        slideTablayout = (TabLayout) findViewById(R.id.slideTab);
+        slidingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.slidingUp);
 
         orderMenuDbAdapter = new OrderMenuDatabaseAdapter(this);
         siteDatabaseAdapter = new SiteDatabaseAdapter(this);
@@ -130,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
 
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
@@ -140,13 +148,65 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         orderListRecycle.setItemAnimator(new DefaultItemAnimator());
         orderListRecycle.setAdapter(orderMenuAdapter);
 
-        if (orderId != null) {
-            orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
-            orderMenuAdapter.addItems(orderMenus);
-        }
+        MainSlidePagerAdapter mainSlidePagerAdapter = new MainSlidePagerAdapter(getSupportFragmentManager());
+        slideViewPager.setAdapter(mainSlidePagerAdapter);
+        slideTablayout.setupWithViewPager(slideViewPager);
 
-        setNav();
-        setFlot();
+        sellerOrderListFragment = (SellerOrderListFragment) mainSlidePagerAdapter.getItem(0);
+        receiveListFragment = (ReceiveListFragment) mainSlidePagerAdapter.getItem(1);
+
+
+        slideViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                setSlideEventRegistration(true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+        slidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+            }
+
+            @Override
+            public void onPanelCollapsed(View panel) {
+                if (!EventBus.getDefault().isRegistered(MainActivity.this)) {
+                    EventBus.getDefault().register(MainActivity.this);
+                    setMenuItemVisibility(true);
+                    setSlideEventRegistration(false);
+
+                    cheksesionSubcriber();
+                }
+            }
+
+            @Override
+            public void onPanelExpanded(View panel) {
+                if (EventBus.getDefault().isRegistered(MainActivity.this)) {
+                    EventBus.getDefault().unregister(MainActivity.this);
+                    setMenuItemVisibility(false);
+                    setSlideEventRegistration(true);
+
+                    cheksesionSubcriber();
+                }
+            }
+
+            @Override
+            public void onPanelAnchored(View panel) {
+            }
+
+            @Override
+            public void onPanelHidden(View panel) {
+            }
+        });
 
         dialog = new ProgressDialog(this);
         dialog.setMessage("Send order ...");
@@ -156,19 +216,34 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         dialogRefresh.setMessage("Pleace wait ...");
         dialogRefresh.setCancelable(false);
 
+        if (orderId != null) {
+            orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
+            orderMenuAdapter.addItems(orderMenus);
+        }
+
+        setNav();
+        setFlot();
+
     }
 
+    private void cheksesionSubcriber(){
+        if (EventBus.getDefault().isRegistered(this)){
+            Log.d(getClass().getSimpleName(), "[ MAIN ACTIVITY REGISTERED ]");
+        }else {
+            Log.d(getClass().getSimpleName(), "[ MAIN ACTIVITY NOT REGISTERED ]");
+        }
+    }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         updateInfo();
         EventBus.getDefault().register(this);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         EventBus.getDefault().unregister(this);
     }
 
@@ -179,10 +254,29 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     }
 
     @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        xCoordinate = (int) event.getX();
+        yCoordinate = (int) event.getY();
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.order_list, menu);
 
-        menu.findItem(R.id.menu_add_site).setIcon(new IconDrawable(this, TypiconsIcons.typcn_business_card).colorRes(R.color.white).actionBarSize());
+        MenuItem addOrder = menu.findItem(R.id.menu_add_order);
+        MenuItem addDestionation = menu.findItem(R.id.menu_add_site);
+        MenuItem pay = menu.findItem(R.id.menu_pay_order);
+
+        addOrder.setIcon(new IconDrawable(this, TypiconsIcons.typcn_pen).colorRes(R.color.white).actionBarSize());
+        addDestionation.setIcon(new IconDrawable(this, TypiconsIcons.typcn_business_card).colorRes(R.color.white).actionBarSize());
+
+        if (!menuItemVisibility) {
+            addOrder.setVisible(false);
+            addDestionation.setVisible(false);
+            pay.setVisible(false);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -223,8 +317,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                             Log.d(getClass().getSimpleName(), "[ refreshing refersh param submit ]");
                             jobManager.addJobInBackground(new RefreshTokenJob(RefreshTokenJob.refreshStatus.submitOrder.name()));
                         }
-
-//                        saveOrder();
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -238,8 +330,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                     });
                     builder.show();
                 }
-
-
                 return true;
 
             case R.id.menu_add_site:
@@ -248,6 +338,10 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 } else {
                     startActivityForResult(new Intent(this, SiteListActivity.class), SITE_REQUEST);
                 }
+                return true;
+
+            case R.id.menu_add_order:
+                orderOption(xCoordinate, yCoordinate);
                 return true;
 
             default:
@@ -267,11 +361,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 switch (menuItem.getItemId()) {
                     case R.id.nav_home:
                         updateInfo();
-//                        OrderListFragment orderFragment = new OrderListFragment();
-//                        FragmentTransaction orderList = getSupportFragmentManager().beginTransaction();
-//                        orderList.replace(R.id.content_frame, orderFragment);
-//                        orderList.addToBackStack(null);
-//                        orderList.commit();
                         break;
 
                     case R.id.nav_order_purches_history:
@@ -294,7 +383,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
                     case R.id.seller_purchase_order_list:
                         Intent purchaseOrderIntent = new Intent(MainActivity.this, SellerOrderListActivity.class);
-                        purchaseOrderIntent.putExtra("orderListType", "purchaseOrderList");
                         if (isMinLoli) {
                             startActivity(purchaseOrderIntent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
                         } else {
@@ -369,17 +457,17 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
             if (order.getSite().getId() != null) {
                 Site site = siteDatabaseAdapter.findSiteById(order.getSite().getId());
-                textOrderto.setText("Order ke : " + site.getName());
+                textOrderto.setText("Order destination : " + site.getName());
             } else {
-                textOrderto.setText("Order ke : ");
+                textOrderto.setText("Order destination : ");
             }
 
-            textTotalItem.setText("Jumlah Item: " + totalItem);
-            textTotalOrder.setText("Total Order: " + "Rp " + decimalFormat.format(totalPrice));
+            textTotalItem.setText("Items : " + totalItem);
+            textTotalOrder.setText("Price : " + "Rp " + decimalFormat.format(totalPrice));
         } else {
-            textOrderto.setText("Order ke : ");
-            textTotalItem.setText("Jumlah Item: ");
-            textTotalOrder.setText("Total Order: ");
+            textOrderto.setText("Order destination : ");
+            textTotalItem.setText("Items : ");
+            textTotalOrder.setText("Price :");
         }
     }
 
@@ -406,6 +494,32 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         dialog.show();
     }
 
+    private void setSlideEventRegistration(boolean registerEvent) {
+        if (registerEvent) {
+            setSlideEventRegistration(false);
+            Log.d(getClass().getSimpleName(), "[ is subcriber ]");
+            switch (slideViewPager.getCurrentItem()) {
+                case 0:
+                    sellerOrderListFragment.setRegistrationEvent(registerEvent);
+                    Log.d(getClass().getSimpleName(), "[ is subcriber seller work ]");
+                    break;
+                case 1:
+                    receiveListFragment.setRegistrationEvent(registerEvent);
+                    Log.d(getClass().getSimpleName(), "[ is subcriber receive work ]");
+                    break;
+            }
+        } else {
+            Log.d(getClass().getSimpleName(), "[ removing all subcriber in child ]");
+            sellerOrderListFragment.setRegistrationEvent(false);
+            receiveListFragment.setRegistrationEvent(false);
+        }
+    }
+
+    private void setMenuItemVisibility(boolean visibility) {
+        this.menuItemVisibility = visibility;
+        invalidateOptionsMenu();
+    }
+
     public void order(Intent intent, View image, View title, View price) {
         if (isMinLoli) {
 //            String transitionName = getString(R.string.transition_string);
@@ -429,7 +543,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         startActivityForResult(i, ORDER_REQUEST);
     }
 
-
     public void orderOption(int x, int y) {
 //        startActivityForResult(new Intent(this, MainActivityMaterialNew.class), ORDER_REQUEST_OPTIONS);
 //        Intent i = new Intent(this, MainActivityMaterialNew.class);
@@ -439,16 +552,13 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         startActivityForResult(i, ORDER_REQUEST_OPTIONS, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("result", "on=========================");
 
         if (requestCode == ORDER_REQUEST) {
             if (resultCode == RESULT_OK) {
-//                OrderListFragment orderFragment = new OrderListFragment();
-//                FragmentTransaction orderList = getSupportFragmentManager().beginTransaction();
-//                orderList.replace(R.id.content_frame, orderFragment);
-//                orderList.commitAllowingStateLoss();
                 updateInfo();
                 orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
                 orderMenuAdapter.addItems(orderMenus);
@@ -468,29 +578,9 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         orderMenuAdapter.addItems(orderMenus);
 
                     }
-//                    else if (type.equalsIgnoreCase("category")) {
-//                        Bundle bundle = new Bundle();
-//                        bundle.putString("parent_category", data.getExtras().getString("parent_category", null));
-//                        bundle.putInt("tx_id", data.getExtras().getInt("tx_id"));
-//                        ProductFragmentGrid productFragment = new ProductFragmentGrid();
-//                        productFragment.setArguments(bundle);
-//                        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, productFragment).addToBackStack(null).commitAllowingStateLoss();
-//                    }
                 }
             }
-        }
-//        else if (requestCode == BUSINESS_REQUEST) {
-//            if (resultCode == RESULT_OK) {
-//                Log.d(getClass().getSimpleName(), "business result");
-//                OrderListFragment orderFragment = new OrderListFragment();
-//
-//                FragmentTransaction orderList = getSupportFragmentManager().beginTransaction();
-//                orderList.replace(R.id.content_frame, orderFragment);
-//                orderList.commitAllowingStateLoss();
-//
-//            }
-//        }
-        else if (requestCode == SITE_REQUEST) {
+        } else if (requestCode == SITE_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Log.d(getClass().getSimpleName(), "site result");
                 updateInfo();
@@ -501,10 +591,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             }
         }
 
-
         super.onActivityResult(requestCode, resultCode, data);
     }
-
 
     @Override
     public void onExecute(int code) {
@@ -697,7 +785,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
     }
 
-    private void reloadRefreshToken(){
+    private void reloadRefreshToken() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Refresh Token");
         builder.setMessage("Process failed\nRepeat process ?");
@@ -707,7 +795,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             public void onClick(DialogInterface dialog, int which) {
                 if (refreshStatus != null) {
                     jobManager.addJobInBackground(new RefreshTokenJob(refreshStatus.name()));
-                }else{
+                } else {
                     jobManager.addJobInBackground(new RefreshTokenJob());
                 }
             }
@@ -803,5 +891,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         });
         builder.show();
     }
+
 
 }

@@ -115,7 +115,7 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentLeft="true"
                             android:layout_below="@id/label_order_type"
-                            android:text="---"
+                            android:text="Purchase Order"
                             android:textColor="@android:color/white"
                             android:textSize="20sp"
                             android:textStyle="bold" />

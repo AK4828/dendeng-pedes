@@ -2,6 +2,7 @@ package com.hoqii.fxpc.sales.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.activity.SellerOrderListActivity;
 import com.hoqii.fxpc.sales.activity.SellerOrderMenuListActivity;
 import com.hoqii.fxpc.sales.entity.Order;
+import com.hoqii.fxpc.sales.fragment.SellerOrderListFragment;
 import com.joanzapata.iconify.widget.IconTextView;
 
 import java.text.SimpleDateFormat;
@@ -23,29 +25,16 @@ import java.util.List;
 /**
  * Created by miftakhul on 12/6/15.
  */
-public class SellerOrderAdapter extends RecyclerView.Adapter<SellerOrderAdapter.ViewHolder> {
+public class SellerOrderFragmentAdapter extends RecyclerView.Adapter<SellerOrderFragmentAdapter.ViewHolder> {
 
 
     private Context context;
     private List<Order> orderList = new ArrayList<Order>();
-    private String orderType;
+    private Fragment fragment;
 
-
-    public SellerOrderAdapter(Context context) {
+    public SellerOrderFragmentAdapter(Context context, Fragment fragment) {
         this.context = context;
-    }
-
-    public SellerOrderAdapter(Context context, String orderType) {
-        this.context = context;
-        this.orderType = orderType;
-
-        Log.d(getClass().getSimpleName(), orderType + "===================");
-    }
-
-    public SellerOrderAdapter(Context context, List<Order> orders, String orderType) {
-        this.context = context;
-        this.orderList = orders;
-        this.orderType = orderType;
+        this.fragment = fragment;
     }
 
 
@@ -82,14 +71,10 @@ public class SellerOrderAdapter extends RecyclerView.Adapter<SellerOrderAdapter.
                 View orderNumber = holder.orderNumber;
                 View orderDate = holder.orderDate;
 
-                ((SellerOrderListActivity) context).openOrderMenuActivity(intent, orderNumber, orderDate);
-
+                ((SellerOrderListFragment) fragment).openOrderMenuActivity(intent, orderNumber, orderDate);
             }
         });
 
-        if (position == orderList.size() - 1){
-            ((SellerOrderListActivity) context).loadMoreContent();
-        }
     }
 
     @Override

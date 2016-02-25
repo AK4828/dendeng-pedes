@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.ScannerActivityCustom;
@@ -45,7 +46,6 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
     private List<String> orderMenuListSerial = new ArrayList<String>();
     private List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
     private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
-    private ImageLoader imageLoader = ImageLoader.getInstance();
     private SharedPreferences preferences;
 
     public SellerOrderMenuAdapter(Context context, String orderId) {
@@ -59,10 +59,6 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
             if (!orderMenuListSerial.contains(id)){
                 orderMenuListSerial.add(id);
             }
-        }
-
-        if (!imageLoader.isInited()) {
-            imageLoader.init(ImageLoaderConfiguration.createDefault(context));
         }
 
         preferences = context.getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
@@ -132,45 +128,7 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
             }
         }
 
-        imageLoader.displayImage(imageUrl, holder.preview, new ImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
-
-            }
-
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                holder.preview.setImageResource(R.drawable.no_image);
-            }
-
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-
-            }
-
-            @Override
-            public void onLoadingCancelled(String imageUri, View view) {
-                holder.preview.setImageResource(R.drawable.no_image);
-            }
-        });
-
-//        Log.d(getClass().getSimpleName(), "first order menu id  size" + orderMenuList.size());
-//        Log.d(getClass().getSimpleName(), "first order menu id " + orderMenuList.get(position).getId());
-//
-//        for (int x = 0; x < orderMenuListSerial.size(); x++) {
-//            Log.d(getClass().getSimpleName(), "first order menu id size" + orderMenuList.size());
-//            Log.d(getClass().getSimpleName(), "order menu serial size==== " + orderMenuListSerial.size());
-//            Log.d(getClass().getSimpleName(), "order menu id " + orderMenuList.get(position).getId());
-//            Log.d(getClass().getSimpleName(), "order menu serial id " + orderMenuListSerial.get(x).toString());
-//
-//            if (orderMenuList.get(position).getId().equals(orderMenuListSerial.get(x).toString())) {
-//                Log.d(getClass().getSimpleName(), "same id detected ");
-////                holder.imageStatus.setColorFilter(R.color.colorPrimaryDark);
-//                holder.imageStatus.setVisibility(View.VISIBLE);
-//            } else {
-//                holder.imageStatus.setVisibility(View.GONE);
-//            }
-//        }
+        Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
 
         final List<Integer> count = new ArrayList<Integer>();
         int maxCount = orderMenuList.get(position).getQty();
@@ -178,9 +136,6 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
         for (int x = 1; x <= maxCount; x++) {
             count.add(x);
         }
-
-        ArrayAdapter<Integer> newCountAdapter = new ArrayAdapter<Integer>(context, android.R.layout.simple_spinner_dropdown_item, count);
-//        holder.newCount.setAdapter(newCountAdapter);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

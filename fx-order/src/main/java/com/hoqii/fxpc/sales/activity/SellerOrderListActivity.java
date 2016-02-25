@@ -82,7 +82,6 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
     private LinearLayout dataNull, dataFailed;
     private boolean isMinLoli = false;
     private String orderUrl = "/api/purchaseOrders";
-    private String orderType;
     private ProgressDialog loadProgress;
     private int page = 1, totalPage;
     private JobManager jobManager;
@@ -115,18 +114,7 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
         actionBar.setTitle(R.string.nav_order_list);
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
 
-        if (getIntent().getExtras().get("orderListType") != null) {
-            orderType = getIntent().getExtras().get("orderListType").toString();
-            Log.d(getClass().getSimpleName(), "order type " + orderType);
-
-            if (getIntent().getExtras().get("orderListType").toString().equalsIgnoreCase("purchaseOrderList")) {
-                orderUrl = "/api/purchaseOrders";
-            } else if (getIntent().getExtras().get("orderListType").toString().equalsIgnoreCase("orderList")) {
-                orderUrl = "/api/orders";
-            }
-        }
-
-        sellerOrderAdapter = new SellerOrderAdapter(this, orderType);
+        sellerOrderAdapter = new SellerOrderAdapter(this);
 
         recyclerView = (RecyclerView) findViewById(R.id.order_list);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -185,7 +173,7 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                sellerOrderAdapter = new SellerOrderAdapter(SellerOrderListActivity.this, orderType);
+                sellerOrderAdapter = new SellerOrderAdapter(SellerOrderListActivity.this);
                 recyclerView.setAdapter(sellerOrderAdapter);
                 OrderSyncSearch orderSyncSearch = new OrderSyncSearch(SellerOrderListActivity.this, SellerOrderListActivity.this, false);
                 orderSyncSearch.execute(query, "0");
@@ -432,7 +420,7 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
 
     private void refreshContent() {
         //clean data
-        sellerOrderAdapter = new SellerOrderAdapter(this, orderType);
+        sellerOrderAdapter = new SellerOrderAdapter(this);
         recyclerView.setAdapter(sellerOrderAdapter);
 
         //adding new data
@@ -514,18 +502,11 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
 
         if (requestCode == requestOrderMenuActivityCode) {
             if (resultCode == RESULT_OK) {
-
-//                if (data != null){
-//                    int position = data.getIntExtra("position", 0);
-//                    Log.d(getClass().getSimpleName(), "posisi remove : " + position);
-//                    sellerOrderAdapter.removeItem(position);
-//                }
-
                 page = 1;
                 totalPage = 0;
 
                 //clean data
-                sellerOrderAdapter = new SellerOrderAdapter(this, orderType);
+                sellerOrderAdapter = new SellerOrderAdapter(this);
                 recyclerView.setAdapter(sellerOrderAdapter);
 
                 OrderSync orderSync = new OrderSync(SellerOrderListActivity.this, SellerOrderListActivity.this, false);

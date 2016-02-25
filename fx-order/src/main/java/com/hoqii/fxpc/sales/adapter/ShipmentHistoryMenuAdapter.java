@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
@@ -32,17 +33,12 @@ public class ShipmentHistoryMenuAdapter extends RecyclerView.Adapter<ShipmentHis
 
     private Context context;
     private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
-    private ImageLoader imageLoader = ImageLoader.getInstance();
     private SharedPreferences preferences;
     private ShipmentMenuListFragment f;
 
     public ShipmentHistoryMenuAdapter(Context context, ShipmentMenuListFragment f) {
         this.context = context;
         this.f = f;
-
-        if (!imageLoader.isInited()) {
-            imageLoader.init(ImageLoaderConfiguration.createDefault(context));
-        }
 
         preferences = context.getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
     }
@@ -63,27 +59,8 @@ public class ShipmentHistoryMenuAdapter extends RecyclerView.Adapter<ShipmentHis
 
         String imageUrl = preferences.getString("server_url", "")+"/api/products/"+serialNumberList.get(position).getOrderMenu().getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
 
-        imageLoader.displayImage(imageUrl, holder.preview, new ImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
+        Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
 
-            }
-
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                holder.preview.setImageResource(R.drawable.no_image);
-            }
-
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-
-            }
-
-            @Override
-            public void onLoadingCancelled(String imageUri, View view) {
-                holder.preview.setImageResource(R.drawable.no_image);
-            }
-        });
 
         if (position == serialNumberList.size() - 1){
             f.loadMoreContent();

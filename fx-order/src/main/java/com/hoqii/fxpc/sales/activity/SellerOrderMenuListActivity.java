@@ -109,15 +109,6 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         orderId = getIntent().getExtras().getString("orderId");
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(this);
 
-        if (getIntent().getExtras().get("orderMenuListType") != null) {
-            Log.d(getClass().getSimpleName(), getIntent().getExtras().get("orderMenuListType").toString());
-
-            if (getIntent().getExtras().get("orderMenuListType").toString().equalsIgnoreCase("purchaseOrderMenuList")) {
-                orderUrl = "/api/purchaseOrders/";
-            } else if (getIntent().getExtras().get("orderMenuListType").toString().equalsIgnoreCase("orderMenuList")) {
-                orderUrl = "/api/orders/";
-            }
-        }
 
         if (getIntent().getExtras() != null) {
             position = getIntent().getIntExtra("position", 0);

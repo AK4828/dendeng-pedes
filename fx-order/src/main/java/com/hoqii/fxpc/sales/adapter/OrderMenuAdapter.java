@@ -9,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.activity.MainActivity;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderMenuDatabaseAdapter;
@@ -34,14 +36,11 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
     private List<OrderMenu> orderMenuList = new ArrayList<OrderMenu>();
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");
     private OrderMenuDatabaseAdapter orderMenuDbAdapter;
-    private ImageLoader imageLoader = ImageLoader.getInstance();
 
     public OrderMenuAdapter(Context context){
         this.context = context;
         orderMenuDbAdapter = new OrderMenuDatabaseAdapter(context);
-        if (!imageLoader.isInited()) {
-            imageLoader.init(ImageLoaderConfiguration.createDefault(context));
-        }
+
     }
 
     @Override
@@ -59,22 +58,9 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
         holder.menuName.setText(orderMenuList.get(position).getProduct().getName());
         holder.menuQty.setText(q);
         holder.totalPrice.setText("Rp " + decimalFormat.format(totalPrice));
-        imageLoader.displayImage("file://" + ImageUtil.getImagePath(context, orderMenuList.get(position).getProduct().getId()), holder.preview, new SimpleImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
 
-            }
+        Glide.with(context).load("file://" + ImageUtil.getImagePath(context, orderMenuList.get(position).getProduct().getId())).error(R.drawable.no_image).into(holder.preview);
 
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-
-            }
-
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                holder.preview.setImageResource(R.drawable.no_image);
-            }
-        });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -83,6 +69,12 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
                 return false;
             }
         });
+
+        if (position == 0){
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(0,24,0,0);
+            holder.layout.setLayoutParams(params);
+        }
     }
 
     @Override
@@ -93,6 +85,7 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
     class ViewHolder extends RecyclerView.ViewHolder{
         TextView menuName, menuQty, totalPrice;
         ImageView preview;
+        RelativeLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -100,6 +93,7 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
             menuQty = (TextView) itemView.findViewById(R.id.text_menu_quantity);
             totalPrice = (TextView) itemView.findViewById(R.id.text_total_price);
             preview = (ImageView) itemView.findViewById(R.id.img_preview);
+            layout = (RelativeLayout) itemView.findViewById(R.id.layout);
         }
     }
 

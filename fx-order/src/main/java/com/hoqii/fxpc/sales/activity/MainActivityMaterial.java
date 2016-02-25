@@ -120,14 +120,6 @@ public class MainActivityMaterial extends AppCompatActivity {
         }
     }
 
-    public void sendResult(Intent intent){
-        if (intent != null){
-            intent.getExtras().getString("type", null);
-
-            setResult(RESULT_OK, intent);
-            finish();
-        }
-    }
 
     public void order(Intent intent, View image, View title, View price){
         if (isMinLoli) {

@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.activity.MainActivity;
 import com.hoqii.fxpc.sales.activity.MainActivityMaterial;
@@ -35,7 +36,6 @@ import java.util.List;
  */
 public class ProductAdapter extends BaseAdapter {
     private Context mcontext;
-    private ImageLoader imageLoader = ImageLoader.getInstance();
     private List<Product> products;
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");
     private int mutedColor;
@@ -50,10 +50,6 @@ public class ProductAdapter extends BaseAdapter {
 
         this.products = products;
 
-        if (!imageLoader.isInited()) {
-            imageLoader.init(ImageLoaderConfiguration.createDefault(mcontext));
-        }
-
     }
 
     public ProductAdapter(Context c, List<Product> products, boolean isMainActivity) {
@@ -62,10 +58,6 @@ public class ProductAdapter extends BaseAdapter {
 
         this.products = products;
         this.isMainActivity = isMainActivity;
-
-        if (!imageLoader.isInited()) {
-            imageLoader.init(ImageLoaderConfiguration.createDefault(mcontext));
-        }
 
     }
 
@@ -93,7 +85,6 @@ public class ProductAdapter extends BaseAdapter {
 
         holder.title = (TextView) itemView.findViewById(R.id.text_name);
         holder.price = (TextView) itemView.findViewById(R.id.text_price);
-        holder.progressImage = (ProgressBar) itemView.findViewById(R.id.progressbar);
         holder.imageView = (ImageView) itemView.findViewById(R.id.image);
         holder.detailLayout = (RelativeLayout) itemView.findViewById(R.id.detail_layout);
 
@@ -101,25 +92,8 @@ public class ProductAdapter extends BaseAdapter {
 
         holder.price.setText("Rp. " + decimalFormat.format(products.get(position).getSellPrice()));
 
-        imageLoader.displayImage("file://" + ImageUtil.getImagePath(mcontext, products.get(position).getId()), holder.imageView, new SimpleImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
-                holder.progressImage.setVisibility(View.VISIBLE);
-                holder.imageView.setVisibility(View.INVISIBLE);
-            }
+        Glide.with(mcontext).load("file://" + ImageUtil.getImagePath(mcontext, products.get(position).getId())).into(holder.imageView);
 
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                holder.progressImage.setVisibility(View.GONE);
-                holder.imageView.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                holder.progressImage.setVisibility(View.GONE);
-                holder.imageView.setImageResource(R.drawable.no_image);
-            }
-        });
 
         Log.d("path image", ImageUtil.getImagePath(mcontext, products.get(position).getId()));
         Log.d("image file", String.valueOf(ImageUtil.getImage(mcontext, products.get(position).getId())));
@@ -144,7 +118,7 @@ public class ProductAdapter extends BaseAdapter {
 
 
         } else {
-            holder.detailLayout.setBackgroundColor(mcontext.getResources().getColor(R.color.colorPrimary));
+            holder.detailLayout.setBackgroundColor(mcontext.getResources().getColor(R.color.grey));
         }
 
         itemView.setOnClickListener(new View.OnClickListener() {
@@ -170,7 +144,6 @@ public class ProductAdapter extends BaseAdapter {
     public class Holder {
 
         TextView title, price;
-        ProgressBar progressImage;
         ImageView imageView;
         RelativeLayout detailLayout;
     }
