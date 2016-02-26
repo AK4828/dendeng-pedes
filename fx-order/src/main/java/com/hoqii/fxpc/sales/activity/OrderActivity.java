@@ -188,7 +188,7 @@ public class OrderActivity extends AppCompatActivity {
         productCategory.setText(category.getName());
         smallProductCategory.setText(category.getName());
 
-//        orderMenuType = OrderMenu.OrderType.PURCHASE_ORDER;
+        orderMenuType = OrderMenu.OrderType.PURCHASE_ORDER;
 //        orderType.setText(orderMenuType.name());
 
         for (int x = 1; x <= 100; x++) {

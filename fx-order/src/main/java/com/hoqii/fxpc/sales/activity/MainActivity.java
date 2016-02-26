@@ -10,11 +10,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -28,8 +26,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageAppication;
@@ -57,7 +55,6 @@ import com.joanzapata.iconify.fonts.TypiconsIcons;
 import com.path.android.jobqueue.JobManager;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import org.meruvian.midas.core.event.Event;
 import org.meruvian.midas.core.service.TaskService;
 
 import java.text.DecimalFormat;
@@ -88,13 +85,12 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     private RequestOrderSyncTask requestOrderSyncTask;
     private List<OrderMenu> orderMenus = new ArrayList<OrderMenu>();
     private List<String> orderMenuIdes;
-    private int orderMenuCount = 0, orderMenuFailedCount = 0;
+    private int orderMenuCount = 0;
     private int totalOrderMenus = 0;
     private String orderId = null;
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");
     private RecyclerView orderListRecycle;
     private OrderMenuAdapter orderMenuAdapter;
-    private RefreshTokenJob.refreshStatus refreshStatus = null;
     private int xCoordinate, yCoordinate;
     private ViewPager slideViewPager;
     private TabLayout slideTablayout;
@@ -102,6 +98,14 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     private SlidingUpPanelLayout slidingUpPanel;
     private SellerOrderListFragment sellerOrderListFragment;
     private ReceiveListFragment receiveListFragment;
+    private LinearLayout dataNull;
+    private View appShadow;
+
+    private refreshTokenStatus refreshStatus = null;
+
+    public enum refreshTokenStatus {
+        submitOrder, orderFragment, receiveFragment
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,12 +113,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         setContentView(R.layout.activity_main);
         jobManager = SignageAppication.getInstance().getJobManager();
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            isMinLoli = true;
-        } else {
-            isMinLoli = false;
-        }
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         textTotalItem = (TextView) findViewById(R.id.text_total_item);
@@ -124,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         slideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
         slideTablayout = (TabLayout) findViewById(R.id.slideTab);
         slidingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.slidingUp);
+        dataNull = (LinearLayout) findViewById(R.id.dataOrderNull);
+        appShadow = (View) findViewById(R.id.app_shadow);
 
         orderMenuDbAdapter = new OrderMenuDatabaseAdapter(this);
         siteDatabaseAdapter = new SiteDatabaseAdapter(this);
@@ -155,23 +155,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         sellerOrderListFragment = (SellerOrderListFragment) mainSlidePagerAdapter.getItem(0);
         receiveListFragment = (ReceiveListFragment) mainSlidePagerAdapter.getItem(1);
 
-
-        slideViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                setSlideEventRegistration(true);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
-
         slidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -179,24 +162,12 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
             @Override
             public void onPanelCollapsed(View panel) {
-                if (!EventBus.getDefault().isRegistered(MainActivity.this)) {
-                    EventBus.getDefault().register(MainActivity.this);
-                    setMenuItemVisibility(true);
-                    setSlideEventRegistration(false);
-
-                    cheksesionSubcriber();
-                }
+                setMenuItemVisibility(true);
             }
 
             @Override
             public void onPanelExpanded(View panel) {
-                if (EventBus.getDefault().isRegistered(MainActivity.this)) {
-                    EventBus.getDefault().unregister(MainActivity.this);
-                    setMenuItemVisibility(false);
-                    setSlideEventRegistration(true);
-
-                    cheksesionSubcriber();
-                }
+                setMenuItemVisibility(false);
             }
 
             @Override
@@ -216,40 +187,42 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         dialogRefresh.setMessage("Pleace wait ...");
         dialogRefresh.setCancelable(false);
 
-        if (orderId != null) {
-            orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
-            orderMenuAdapter.addItems(orderMenus);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            isMinLoli = true;
+            appShadow.setVisibility(View.GONE);
+        } else {
+            isMinLoli = false;
+            appShadow.setVisibility(View.VISIBLE);
         }
 
         setNav();
         setFlot();
-
     }
 
-    private void cheksesionSubcriber(){
-        if (EventBus.getDefault().isRegistered(this)){
-            Log.d(getClass().getSimpleName(), "[ MAIN ACTIVITY REGISTERED ]");
-        }else {
-            Log.d(getClass().getSimpleName(), "[ MAIN ACTIVITY NOT REGISTERED ]");
-        }
-    }
 
     @Override
     protected void onStart() {
         super.onStart();
         updateInfo();
         EventBus.getDefault().register(this);
+        Log.d(getClass().getSimpleName(), "[ on start ]");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        EventBus.getDefault().unregister(this);
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    private void forceUnRegisterWhenExist() {
         EventBus.getDefault().unregister(this);
     }
 
@@ -315,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         } else {
                             Log.d(getClass().getSimpleName(), "[ application access need to refresh ]");
                             Log.d(getClass().getSimpleName(), "[ refreshing refersh param submit ]");
-                            jobManager.addJobInBackground(new RefreshTokenJob(RefreshTokenJob.refreshStatus.submitOrder.name()));
+                            refreshToken(refreshTokenStatus.submitOrder.name());
                         }
                     }
                 } else {
@@ -364,6 +337,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         break;
 
                     case R.id.nav_order_purches_history:
+                        forceUnRegisterWhenExist();
                         Intent historyIntent = new Intent(MainActivity.this, SelfHistoryOrderListActivity.class);
                         if (isMinLoli) {
                             startActivity(historyIntent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
@@ -373,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         break;
 
                     case R.id.nav_receiving:
+                        forceUnRegisterWhenExist();
                         Intent receiveIntent = new Intent(MainActivity.this, ReceiveListActivity.class);
                         if (isMinLoli) {
                             startActivity(receiveIntent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
@@ -382,6 +357,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         break;
 
                     case R.id.seller_purchase_order_list:
+                        forceUnRegisterWhenExist();
                         Intent purchaseOrderIntent = new Intent(MainActivity.this, SellerOrderListActivity.class);
                         if (isMinLoli) {
                             startActivity(purchaseOrderIntent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
@@ -391,6 +367,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         break;
 
                     case R.id.seller_shipment_history_list:
+                        forceUnRegisterWhenExist();
                         Intent shipmentHistoryIntent = new Intent(MainActivity.this, ShipmentHistoryListActivity.class);
                         if (isMinLoli) {
                             startActivity(shipmentHistoryIntent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
@@ -400,6 +377,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         break;
 
                     case R.id.nav_points:
+                        forceUnRegisterWhenExist();
                         Intent point = new Intent(MainActivity.this, PointActivity.class);
                         if (isMinLoli) {
                             startActivity(point, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
@@ -462,13 +440,23 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 textOrderto.setText("Order destination : ");
             }
 
+            orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
+            if (orderMenus.size() > 0){
+                dataNull.setVisibility(View.GONE);
+            }else {
+                dataNull.setVisibility(View.VISIBLE);
+            }
+            orderMenuAdapter.addItems(orderMenus);
+
             textTotalItem.setText("Items : " + totalItem);
             textTotalOrder.setText("Price : " + "Rp " + decimalFormat.format(totalPrice));
         } else {
             textOrderto.setText("Order destination : ");
             textTotalItem.setText("Items : ");
             textTotalOrder.setText("Price :");
+            dataNull.setVisibility(View.VISIBLE);
         }
+
     }
 
     private void saveOrder() {
@@ -492,27 +480,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         }
 
         dialog.show();
-    }
-
-    private void setSlideEventRegistration(boolean registerEvent) {
-        if (registerEvent) {
-            setSlideEventRegistration(false);
-            Log.d(getClass().getSimpleName(), "[ is subcriber ]");
-            switch (slideViewPager.getCurrentItem()) {
-                case 0:
-                    sellerOrderListFragment.setRegistrationEvent(registerEvent);
-                    Log.d(getClass().getSimpleName(), "[ is subcriber seller work ]");
-                    break;
-                case 1:
-                    receiveListFragment.setRegistrationEvent(registerEvent);
-                    Log.d(getClass().getSimpleName(), "[ is subcriber receive work ]");
-                    break;
-            }
-        } else {
-            Log.d(getClass().getSimpleName(), "[ removing all subcriber in child ]");
-            sellerOrderListFragment.setRegistrationEvent(false);
-            receiveListFragment.setRegistrationEvent(false);
-        }
     }
 
     private void setMenuItemVisibility(boolean visibility) {
@@ -544,12 +511,15 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     }
 
     public void orderOption(int x, int y) {
-//        startActivityForResult(new Intent(this, MainActivityMaterialNew.class), ORDER_REQUEST_OPTIONS);
-//        Intent i = new Intent(this, MainActivityMaterialNew.class);
         Intent i = new Intent(this, MainActivityMaterial.class);
         i.putExtra("xCoordinate", x);
         i.putExtra("yCoordinate", y);
         startActivityForResult(i, ORDER_REQUEST_OPTIONS, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
+    }
+
+    public void refreshToken(String refresh) {
+        refreshStatus = refreshTokenStatus.valueOf(refresh);
+        jobManager.addJobInBackground(new RefreshTokenJob());
     }
 
 
@@ -560,8 +530,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         if (requestCode == ORDER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 updateInfo();
-                orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
-                orderMenuAdapter.addItems(orderMenus);
+//                orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
+//                orderMenuAdapter.addItems(orderMenus);
 
                 Log.d("result", "ok =========================");
             }
@@ -574,8 +544,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                     Log.d("result type", type);
                     if (type.equalsIgnoreCase("orderList")) {
                         updateInfo();
-                        orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
-                        orderMenuAdapter.addItems(orderMenus);
+//                        orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
+//                        orderMenuAdapter.addItems(orderMenus);
 
                     }
                 }
@@ -626,7 +596,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     @Override
     public void onError(int code, String message) {
         dialog.dismiss();
-//        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
         retryRequestSync();
         Log.e(getClass().getSimpleName(), message);
 
@@ -645,7 +614,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         try {
             switch (requestSuccess.getProcessId()) {
                 case OrderUpdateJob.PROCESS_ID:
-//                {
                     Log.d(getClass().getSimpleName(), "RequestSuccess OrderUpdateJob: >> RefId : "
                             + requestSuccess.getRefId() + "\n >> Entity id: " + requestSuccess.getEntityId());
 
@@ -663,9 +631,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                     }
 
                     break;
-//                }
                 case OrderMenuJob.PROCESS_ID:
-//                {
                     orderMenuCount++;
                     Log.d(getClass().getSimpleName(), "Count OM: " + orderMenuCount + " <<>> "
                             + "Total OM: " + totalOrderMenus);
@@ -679,11 +645,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                     Log.d(getClass().getSimpleName(), "RequestSuccess OrderMenuId: "
                             + requestSuccess.getRefId());
                     break;
-//                }
                 case RefreshTokenJob.PROCESS_ID:
-                    dialogRefresh.dismiss();
-                    Log.d(getClass().getSimpleName(), "[ refresh job success, status :" + requestSuccess.getEntityId() + " ]");
-                    refreshStatus = RefreshTokenJob.refreshStatus.valueOf(requestSuccess.getEntityId());
+                    Log.d(getClass().getSimpleName(), "[ refresh job success, status set :" + refreshStatus.name() + " ]");
                     break;
 
             }
@@ -698,13 +661,10 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         Log.d(getClass().getSimpleName(), "request failed event, process id " + failed.getProcessId());
         switch (failed.getProcessId()) {
             case OrderUpdateJob.PROCESS_ID:
-//            {
                 Log.d(getClass().getSimpleName(), "request updateorder failed");
                 retryRequestOrder();
                 break;
-//            }
             case OrderMenuJob.PROCESS_ID:
-//            {
                 orderMenuCount++;
                 Log.d(getClass().getSimpleName(), "request update order menu failed");
                 if (orderMenuCount == totalOrderMenus) {
@@ -712,30 +672,57 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                     Log.d(getClass().getSimpleName(), "request update order menu failed complate");
                 }
                 break;
-//            }
             case RefreshTokenJob.PROCESS_ID:
                 dialogRefresh.dismiss();
                 refreshStatus = null;
                 AlertMessage("Refresh token failed");
+                break;
         }
 
-        Log.e(getClass().getSimpleName(),
-                failed.getResponse().getHttpResponse().getStatusLine().getStatusCode() + " :"
-                        + failed.getResponse().getHttpResponse().getStatusLine().getReasonPhrase());
     }
 
     public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
-        switch (refreshStatus) {
-            case submitOrder:
-                Log.d(getClass().getSimpleName(), "[ re running submit order ]");
-                saveOrder();
-                break;
+        dialogRefresh.dismiss();
+        Log.d(getClass().getSimpleName(), "[ refresh status " + refreshStatus.name() + " ]");
+        if (refreshStatus != null) {
+            switch (refreshStatus) {
+                case submitOrder:
+                    Log.d(getClass().getSimpleName(), "[ re running submit order ]");
+                    saveOrder();
+                    break;
+                case orderFragment:
+                    Log.d(getClass().getSimpleName(), "[ reload order ]");
+                    sellerOrderListFragment.reloadOrder();
+                    break;
+                case receiveFragment:
+                    Log.d(getClass().getSimpleName(), "[ reload receive ]");
+                    receiveListFragment.reloadReceive();
+                    break;
+            }
         }
+        refreshStatus = null;
     }
 
     public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
         dialogRefresh.dismiss();
-        reloadRefreshToken();
+        Log.d(getClass().getSimpleName(), "[ refresh status failed ]");
+        if (refreshStatus != null) {
+            switch (refreshStatus) {
+                case submitOrder:
+                    Log.d(getClass().getSimpleName(), "[ refresh token submit order failed ]");
+                    reloadRefreshToken();
+                    break;
+                case orderFragment:
+                    Log.d(getClass().getSimpleName(), "[ refresh token orderfragment failed ]");
+                    sellerOrderListFragment.reloadRefreshToken();
+                    break;
+                case receiveFragment:
+                    Log.d(getClass().getSimpleName(), "[ refresh token receive failed ]");
+                    receiveListFragment.reloadRefreshToken();
+            }
+        }
+
+        refreshStatus = null;
     }
 
     private void AlertMessage(String message) {
@@ -794,7 +781,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (refreshStatus != null) {
-                    jobManager.addJobInBackground(new RefreshTokenJob(refreshStatus.name()));
+//                    jobManager.addJobInBackground(new RefreshTokenJob(refreshStatus.name()));
+                    refreshToken(refreshTokenStatus.submitOrder.name());
                 } else {
                     jobManager.addJobInBackground(new RefreshTokenJob());
                 }

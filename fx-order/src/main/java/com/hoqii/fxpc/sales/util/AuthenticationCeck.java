@@ -40,7 +40,7 @@ public class AuthenticationCeck {
         }
 
 //testing
-//        if (expiresIn > (realDurationInSecon + 43079)){
+//        if (expiresIn > (realDurationInSecon + 4307900)){
 //            access = true;
 //            Log.d(getClass().getSimpleName(), "access status : granted");
 //        }else {

@@ -12,6 +12,7 @@ import com.hoqii.fxpc.sales.content.database.model.DefaultPersistenceModel;
 import com.hoqii.fxpc.sales.content.database.model.OrderDatabaseModel;
 import com.hoqii.fxpc.sales.core.LogInformation;
 import com.hoqii.fxpc.sales.entity.Order;
+import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -99,9 +100,13 @@ public class OrderDatabaseAdapter extends DefaultDatabaseAdapter {
     }
 
     public String getOrderId() {
-        String query = OrderDatabaseModel.STATUS_FLAG + " = 0";
+        String query = OrderDatabaseModel.STATUS_FLAG + " = ? AND " + OrderDatabaseModel.SITE_ID+ " = ?";
+        String[] params = {"0",AuthenticationUtils.getCurrentAuthentication().getSite().getId().toString()};
+//        String query = OrderDatabaseModel.STATUS_FLAG + " = ? ";
+//        String[] params = {"0"};
+
         Cursor cursor = context.getContentResolver().query(dbUriOrder, null,
-                query, null, null);
+                query, params, null);
 
         String id = null;
         if (cursor != null) {

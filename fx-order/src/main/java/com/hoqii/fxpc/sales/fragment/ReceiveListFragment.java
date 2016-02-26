@@ -1,6 +1,5 @@
 package com.hoqii.fxpc.sales.fragment;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,19 +26,14 @@ import android.widget.LinearLayout;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageAppication;
 import com.hoqii.fxpc.sales.SignageVariables;
+import com.hoqii.fxpc.sales.activity.MainActivity;
 import com.hoqii.fxpc.sales.activity.ReceiveListActivity;
-import com.hoqii.fxpc.sales.activity.SellerOrderListActivity;
-import com.hoqii.fxpc.sales.adapter.ReceiveAdapter;
 import com.hoqii.fxpc.sales.adapter.ReceiveFragmentAdapter;
-import com.hoqii.fxpc.sales.adapter.SellerOrderFragmentAdapter;
 import com.hoqii.fxpc.sales.core.LogInformation;
 import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.Receive;
 import com.hoqii.fxpc.sales.entity.Shipment;
-import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.event.LoginEvent;
-import com.hoqii.fxpc.sales.job.RefreshTokenJob;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.path.android.jobqueue.JobManager;
@@ -53,8 +47,6 @@ import org.meruvian.midas.core.util.ConnectionUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import de.greenrobot.event.EventBus;
 
 /**
  * Created by miftakhul on 12/8/15.
@@ -72,7 +64,6 @@ public class ReceiveListFragment extends Fragment implements TaskService {
     private String receiveUrl = "/api/order/receives";
     private JobManager jobManager;
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
-    private ProgressDialog dialogRefresh;
     private Button checkButton, reloadButton, showMoreButton;
 
     @Override
@@ -119,9 +110,6 @@ public class ReceiveListFragment extends Fragment implements TaskService {
         dataFailed = (LinearLayout) view.findViewById(R.id.dataFailed);
         dataCheck = (LinearLayout) view.findViewById(R.id.dataCheck);
 
-        dialogRefresh = new ProgressDialog(getActivity());
-        dialogRefresh.setMessage("Pleace wait ...");
-        dialogRefresh.setCancelable(false);
 
         checkButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +118,7 @@ public class ReceiveListFragment extends Fragment implements TaskService {
                     ReceiveSync receiveSync = new ReceiveSync(getActivity(), ReceiveListFragment.this);
                     receiveSync.execute();
                 } else {
-                    jobManager.addJobInBackground(new RefreshTokenJob());
+                    ((MainActivity) getActivity()).refreshToken(MainActivity.refreshTokenStatus.receiveFragment.name());
                 }
             }
         });
@@ -158,20 +146,6 @@ public class ReceiveListFragment extends Fragment implements TaskService {
         return view;
     }
 
-    public void setRegistrationEvent(boolean isRegister){
-        if (isRegister){
-            if (!EventBus.getDefault().isRegistered(ReceiveListFragment.this)){
-                EventBus.getDefault().register(ReceiveListFragment.this);
-                Log.d(getClass().getSimpleName(), "[ RECEIVE SUBCRIBBER REGISTERED ]");
-            }
-        }else {
-            if (EventBus.getDefault().isRegistered(ReceiveListFragment.this)){
-                EventBus.getDefault().unregister(ReceiveListFragment.this);
-                Log.d(getClass().getSimpleName(), "[ RECEIVE SUBCRIBBER REGISTERED ]");
-            }
-        }
-    }
-
     public void openReceiveDetail(Intent intent) {
         startActivityForResult(intent, requestDetailCode);
     }
@@ -194,7 +168,7 @@ public class ReceiveListFragment extends Fragment implements TaskService {
             }
             receiveAdapter.addItems(tempList);
             showMoreButton.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             receiveAdapter.addItems(receiveList);
             showMoreButton.setVisibility(View.GONE);
         }
@@ -371,20 +345,8 @@ public class ReceiveListFragment extends Fragment implements TaskService {
         });
     }
 
-    private void AlertMessage(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Refresh Token");
-        builder.setMessage(message);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
 
-            }
-        });
-        builder.show();
-    }
-
-    private void reloadRefreshToken(){
+    public void reloadRefreshToken() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Refresh Token");
         builder.setMessage("Process failed\nRepeat process ?");
@@ -392,7 +354,7 @@ public class ReceiveListFragment extends Fragment implements TaskService {
         builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                jobManager.addJobInBackground(new RefreshTokenJob());
+                ((MainActivity) getActivity()).refreshToken(MainActivity.refreshTokenStatus.receiveFragment.name());
             }
         });
         builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
@@ -404,44 +366,15 @@ public class ReceiveListFragment extends Fragment implements TaskService {
         builder.show();
     }
 
-    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
-        Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
-        switch (requestInProgress.getProcessId()) {
-            case RefreshTokenJob.PROCESS_ID:
-                dialogRefresh.show();
-                break;
-        }
-    }
-
-    public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
-        Log.d(getClass().getSimpleName(), "RequestSuccess: " + requestSuccess.getProcessId());
-    }
-
-    public void onEventMainThread(GenericEvent.RequestFailed failed) {
-        Log.d(getClass().getSimpleName(), "RequestFailed: " + failed.getProcessId());
-        switch (failed.getProcessId()) {
-            case RefreshTokenJob.PROCESS_ID:
-                dialogRefresh.dismiss();
-                AlertMessage("Refresh token failed");
-                break;
-        }
-    }
-
-    public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
-        dialogRefresh.dismiss();
+    public void reloadReceive() {
         ReceiveSync receiveSync = new ReceiveSync(getActivity(), ReceiveListFragment.this);
         receiveSync.execute();
-    }
-
-    public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
-        dialogRefresh.dismiss();
-        reloadRefreshToken();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == requestDetailCode){
+        if (requestCode == requestDetailCode) {
             receiveAdapter = new ReceiveFragmentAdapter(getActivity(), ReceiveListFragment.this);
             recyclerView.setAdapter(receiveAdapter);
             ReceiveSync receiveSync = new ReceiveSync(getActivity(), ReceiveListFragment.this);

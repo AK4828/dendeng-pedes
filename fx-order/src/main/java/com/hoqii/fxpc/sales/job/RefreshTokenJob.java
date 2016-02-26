@@ -25,19 +25,9 @@ import de.greenrobot.event.EventBus;
 public class RefreshTokenJob extends LoginJob {
     private SharedPreferences preferences;
     public static final int PROCESS_ID = 70;
-    private refreshStatus status = null;
-
-    public enum refreshStatus{
-        submitOrder
-    }
 
     public RefreshTokenJob() {
         super(new Params(Priority.HIGH).requireNetwork().persist());
-    }
-
-    public RefreshTokenJob(String refreshStatusName) {
-        super(new Params(Priority.HIGH).requireNetwork().persist());
-        this.status = refreshStatus.valueOf(refreshStatusName);
     }
 
     @Override
@@ -48,9 +38,7 @@ public class RefreshTokenJob extends LoginJob {
     @Override
     public void onRun() throws Throwable {
         Log.d(getClass().getSimpleName(), "refresh token running");
-        if (status != null) {
-            Log.d(getClass().getSimpleName(), "[ refresh token running with status " + status.name() + "]");
-        }
+
         preferences = SignageAppication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         Log.d(getClass().getSimpleName(), preferences.getString("server_url", ""));
 
@@ -70,25 +58,10 @@ public class RefreshTokenJob extends LoginJob {
         HttpResponse response = responseWrapper.getHttpResponse();
 
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            if (status != null){
-                Log.d(getClass().getSimpleName(), "[ status refresh not null ]");
-                EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, responseWrapper, "", status.name()));
-//                switch (status){
-//                    case submitOrder:
-//
-//                        Log.d(getClass().getSimpleName(), "[ status refresh : "+status.name()+" ]");
-//                        break;
-//                    default:
-//                        EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, responseWrapper, "", ""));
-//                        break;
-//                }
-            }else {
-                Log.d(getClass().getSimpleName(), "[ status refresh null ]");
-                EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, responseWrapper, "", ""));
-            }
+            EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, responseWrapper, "", ""));
             registerAuthentication(responseWrapper);
         } else {
-            Log.e(RefreshTokenJob.class.getSimpleName(), "Access Code: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
+            Log.e(getClass().getSimpleName(), "Access Code: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
             EventBus.getDefault().post(new GenericEvent.RequestFailed(PROCESS_ID, responseWrapper));
         }
     }

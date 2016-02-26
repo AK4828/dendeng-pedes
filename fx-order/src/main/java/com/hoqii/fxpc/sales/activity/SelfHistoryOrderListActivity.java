@@ -156,7 +156,6 @@ public class SelfHistoryOrderListActivity extends AppCompatActivity implements T
                 }
             }
         });
-
     }
 
     @Override

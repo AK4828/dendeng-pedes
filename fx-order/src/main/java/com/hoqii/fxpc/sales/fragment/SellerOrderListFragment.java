@@ -1,7 +1,5 @@
 package com.hoqii.fxpc.sales.fragment;
 
-import android.app.ProgressDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,45 +12,28 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.MainActivity;
 import com.hoqii.fxpc.sales.activity.SellerOrderListActivity;
-import com.hoqii.fxpc.sales.adapter.SellerOrderAdapter;
 import com.hoqii.fxpc.sales.adapter.SellerOrderFragmentAdapter;
 import com.hoqii.fxpc.sales.core.LogInformation;
 import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.Order;
-import com.hoqii.fxpc.sales.entity.OrderMenu;
-import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.event.LoginEvent;
-import com.hoqii.fxpc.sales.job.RefreshTokenJob;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.TypiconsIcons;
-import com.path.android.jobqueue.JobManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,8 +44,6 @@ import org.meruvian.midas.core.util.ConnectionUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import de.greenrobot.event.EventBus;
 
 /**
  * Created by miftakhul on 12/8/15.
@@ -80,9 +59,7 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
     private LinearLayout dataNull, dataFailed, dataCheck;
     private boolean isMinLoli = false;
     private String orderUrl = "/api/purchaseOrders";
-    private JobManager jobManager;
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
-    private ProgressDialog dialogRefresh;
     private Button checkButton, reloadButton, showMoreButton;
 
     @Override
@@ -90,7 +67,6 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
         super.onCreate(savedInstanceState);
 
         preferences = getActivity().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
-        jobManager = SignageAppication.getInstance().getJobManager();
         sellerOrderAdapter = new SellerOrderFragmentAdapter(getActivity(), this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -129,10 +105,6 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
         dataFailed = (LinearLayout) view.findViewById(R.id.dataFailed);
         dataCheck = (LinearLayout) view.findViewById(R.id.dataCheck);
 
-        dialogRefresh = new ProgressDialog(getActivity());
-        dialogRefresh.setMessage("Pleace wait ...");
-        dialogRefresh.setCancelable(false);
-
         checkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,7 +112,7 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
                     OrderSync orderSync = new OrderSync(getActivity(), SellerOrderListFragment.this);
                     orderSync.execute();
                 } else {
-                    jobManager.addJobInBackground(new RefreshTokenJob());
+                    ((MainActivity)getActivity()).refreshToken(MainActivity.refreshTokenStatus.orderFragment.name());
                 }
             }
         });
@@ -169,19 +141,6 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
         return view;
     }
 
-    public void setRegistrationEvent(boolean isRegister){
-        if (isRegister){
-            if (!EventBus.getDefault().isRegistered(SellerOrderListFragment.this)){
-                EventBus.getDefault().register(SellerOrderListFragment.this);
-                Log.d(getClass().getSimpleName(), "[ SELLER SUBCRIBBER REGISTERED ]");
-            }
-        }else {
-            if (EventBus.getDefault().isRegistered(SellerOrderListFragment.this)){
-                EventBus.getDefault().unregister(SellerOrderListFragment.this);
-                Log.d(getClass().getSimpleName(), "[ SELLER SUBCRIBBER UNREGISTERED ]");
-            }
-        }
-    }
 
     @Override
     public void onExecute(int code) {
@@ -333,20 +292,9 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
         }
     }
 
-    private void AlertMessage(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Refresh Token");
-        builder.setMessage(message);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
 
-            }
-        });
-        builder.show();
-    }
-
-    private void reloadRefreshToken(){
+    public void reloadRefreshToken(){
+        Log.d(getClass().getSimpleName(), "[ refresh token orderfragment failed call ]");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Refresh Token");
         builder.setMessage("Process failed\nRepeat process ?");
@@ -354,7 +302,7 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
         builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                jobManager.addJobInBackground(new RefreshTokenJob());
+                ((MainActivity) getActivity()).refreshToken(MainActivity.refreshTokenStatus.orderFragment.name());
             }
         });
         builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
@@ -366,38 +314,9 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
         builder.show();
     }
 
-    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
-        Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
-        switch (requestInProgress.getProcessId()) {
-            case RefreshTokenJob.PROCESS_ID:
-                dialogRefresh.show();
-                break;
-        }
-    }
-
-    public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
-        Log.d(getClass().getSimpleName(), "RequestSuccess: " + requestSuccess.getProcessId());
-    }
-
-    public void onEventMainThread(GenericEvent.RequestFailed failed) {
-        Log.d(getClass().getSimpleName(), "RequestFailed: " + failed.getProcessId());
-        switch (failed.getProcessId()) {
-            case RefreshTokenJob.PROCESS_ID:
-                dialogRefresh.dismiss();
-                AlertMessage("Refresh token failed");
-                break;
-        }
-    }
-
-    public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
-        dialogRefresh.dismiss();
+    public void reloadOrder(){
         OrderSync orderSync = new OrderSync(getActivity(), SellerOrderListFragment.this);
         orderSync.execute();
-    }
-
-    public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
-        dialogRefresh.dismiss();
-        reloadRefreshToken();
     }
 
     @Override
