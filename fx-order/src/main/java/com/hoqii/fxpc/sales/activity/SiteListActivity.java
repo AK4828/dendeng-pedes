@@ -1,23 +1,30 @@
 package com.hoqii.fxpc.sales.activity;
 
+import android.app.SearchManager;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageVariables;
+import com.hoqii.fxpc.sales.adapter.SelfHistoryOrderAdapter;
 import com.hoqii.fxpc.sales.adapter.SiteAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SiteDatabaseAdapter;
 import com.hoqii.fxpc.sales.core.commons.Site;
@@ -48,8 +55,7 @@ public class SiteListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_site_list);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setEnterTransition(new Explode());
-            getWindow().setExitTransition(new Explode());
+            getWindow().setEnterTransition(new Fade());
         }
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
@@ -93,6 +99,51 @@ public class SiteListActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search, menu);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                List<Site> temp = siteDatabaseAdapter.getSiteByNameorDescription(query);
+                siteList.clear();
+                for (Site s : temp){
+                    if (s.getType().equalsIgnoreCase("MASTER") || s.getId().equalsIgnoreCase(AuthenticationUtils.getCurrentAuthentication().getSite().getId())){
+                        Log.d(getClass().getSimpleName(), "found type " + s.getType() + " name " + s.getName());
+                    }else {
+                        siteList.add(s);
+                    }
+                }
+                siteAdapter = new SiteAdapter(SiteListActivity.this, siteList);
+                recyclerView.setAdapter(siteAdapter);
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                refreshContent();
+                return false;
+            }
+        });
+
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home :
@@ -102,7 +153,7 @@ public class SiteListActivity extends AppCompatActivity {
     }
 
     private void refreshContent(){
-        new Handler().postDelayed(new Runnable() {
+        new Handler().post(new Runnable() {
             @Override
             public void run() {
                 swipeRefreshLayout.setRefreshing(true);
@@ -121,7 +172,7 @@ public class SiteListActivity extends AppCompatActivity {
                 recyclerView.setAdapter(siteAdapter);
                 swipeRefreshLayout.setRefreshing(false);
             }
-        }, 2000);
+        });
 
     }
 

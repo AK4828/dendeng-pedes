@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="Tanggal penerimaan : "
+                    android:text="Receive date : "
                     android:textSize="12sp"
                     android:textColor="@color/white"/>
 
@@ -64,7 +64,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Nomor order :"
+                            android:text="Order number :"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
                         <TextView
@@ -72,7 +72,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
-                            android:text="Nomot order"
+                            android:text="order number"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
                     </TableRow>
@@ -81,7 +81,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tanggal order"
+                            android:text="Order date :"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
                         <TextView
@@ -89,7 +89,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
-                            android:text="Tanggal order"
+                            android:text="order date"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
                     </TableRow>

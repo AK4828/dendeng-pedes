@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -76,6 +77,16 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
             holder.imageStatus.setVisibility(View.VISIBLE);
         }
 
+        if (position == 0){
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,24,10,0);
+            holder.layout.setLayoutParams(params);
+        }else{
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,0,10,0);
+            holder.layout.setLayoutParams(params);
+        }
+
         //disable load more
 //        if (position == serialNumberList.size() - 1){
 //            ((ReceiveDetailActivity)context).loadMoreContent();
@@ -90,12 +101,14 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView productName, productSerial;
         private ImageView imageStatus;
+        private LinearLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
             productName = (TextView) itemView.findViewById(R.id.om_name);
             productSerial = (TextView) itemView.findViewById(R.id.om_serial);
             imageStatus = (ImageView) itemView.findViewById(R.id.ol_img);
+            layout = (LinearLayout) itemView.findViewById(R.id.layout);
         }
     }
 

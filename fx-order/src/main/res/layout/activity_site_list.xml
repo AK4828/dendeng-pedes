@@ -26,18 +26,30 @@
 
             </android.support.design.widget.AppBarLayout>
 
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/swiptRefress"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                app:cardBackgroundColor="@color/white"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true"
+                >
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/site_list"
+                <android.support.v4.widget.SwipeRefreshLayout
+                    android:id="@+id/swiptRefress"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/site_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
 
 
-            </android.support.v4.widget.SwipeRefreshLayout>
+                </android.support.v4.widget.SwipeRefreshLayout>
+
+            </android.support.v7.widget.CardView>
 
         </LinearLayout>
 

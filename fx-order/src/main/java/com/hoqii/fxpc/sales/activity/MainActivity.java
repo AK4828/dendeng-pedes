@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");
     private RecyclerView orderListRecycle;
     private OrderMenuAdapter orderMenuAdapter;
-    private int xCoordinate, yCoordinate;
     private ViewPager slideViewPager;
     private TabLayout slideTablayout;
     private boolean menuItemVisibility = true;
@@ -196,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         }
 
         setNav();
-        setFlot();
     }
 
 
@@ -224,13 +222,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
     private void forceUnRegisterWhenExist() {
         EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        xCoordinate = (int) event.getX();
-        yCoordinate = (int) event.getY();
-        return true;
     }
 
     @Override
@@ -314,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 return true;
 
             case R.id.menu_add_order:
-                orderOption(xCoordinate, yCoordinate);
+                orderOption();
                 return true;
 
             default:
@@ -401,20 +392,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         });
     }
 
-    private void setFlot() {
-        final FloatingActionButton floatingActionButton;
-        floatingActionButton = (FloatingActionButton) findViewById(R.id.add_item);
-        floatingActionButton.setImageDrawable(new IconDrawable(this, TypiconsIcons.typcn_pen).colorRes(R.color.white));
-
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int x = (floatingActionButton.getLeft() + floatingActionButton.getRight()) / 2;
-                int y = (floatingActionButton.getTop() + floatingActionButton.getBottom()) / 2;
-                orderOption(x, y);
-            }
-        });
-    }
 
     public void updateInfo() {
         orderId = orderDbAdapter.getOrderId();
@@ -510,10 +487,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         startActivityForResult(i, ORDER_REQUEST);
     }
 
-    public void orderOption(int x, int y) {
+    public void orderOption() {
         Intent i = new Intent(this, MainActivityMaterial.class);
-        i.putExtra("xCoordinate", x);
-        i.putExtra("yCoordinate", y);
         startActivityForResult(i, ORDER_REQUEST_OPTIONS, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
     }
 

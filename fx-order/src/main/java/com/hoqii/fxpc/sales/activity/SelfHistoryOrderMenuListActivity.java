@@ -136,10 +136,10 @@ public class SelfHistoryOrderMenuListActivity extends AppCompatActivity implemen
         Date date = new Date();
         date.setTime(getIntent().getLongExtra("orderDate", 0));
 
-        omDate.setText("Tanggal " + simpleDateFormat.format(date).toString());
-        omReceipt.setText("Nomor order : " + getIntent().getExtras().getString("orderReceipt"));
+        omDate.setText("Date : " + simpleDateFormat.format(date).toString());
+        omReceipt.setText("Order number : " + getIntent().getExtras().getString("orderReceipt"));
         mailSite.setText("{typcn-mail} "+getIntent().getStringExtra("siteEmail"));
-        siteName.setText("Order ke : " +getIntent().getStringExtra("siteName"));
+        siteName.setText("Order to : " +getIntent().getStringExtra("siteName"));
 
         loadProgress = new ProgressDialog(this);
         loadProgress.setMessage("Fetching data...");

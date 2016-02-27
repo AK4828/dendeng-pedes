@@ -118,7 +118,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("Mengirim Shipment");
+        progressDialog.setMessage("Send shipment");
 
         omDate = (TextView) findViewById(R.id.om_date);
         omReceipt = (TextView) findViewById(R.id.om_receipt);
@@ -155,10 +155,10 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         Date date = new Date();
         date.setTime(getIntent().getLongExtra("orderDate", 0));
 
-        omDate.setText("Tanggal" + simpleDateFormat.format(date).toString());
-        omReceipt.setText("Nomor order : " + getIntent().getExtras().getString("orderReceipt"));
+        omDate.setText("Date : " + simpleDateFormat.format(date).toString());
+        omReceipt.setText("Order number : " + getIntent().getExtras().getString("orderReceipt"));
         mailSiteFrom.setText("{typcn-mail} " + getIntent().getStringExtra("siteFromEmail"));
-        siteFromName.setText("Kirim ke : " + getIntent().getStringExtra("siteFromName"));
+        siteFromName.setText("Ship to : " + getIntent().getStringExtra("siteFromName"));
 
         checkOrderMenuSerialList();
 
@@ -210,7 +210,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                     });
                     alert.show();
                 } else {
-                    AlertMessage("Scan serial number dahulu");
+                    AlertMessage("Scan serial number");
                 }
 
                 break;
@@ -256,8 +256,8 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         EventBus.getDefault().register(this);
     }
 
@@ -268,8 +268,8 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
+        super.onStop();
         EventBus.getDefault().unregister(this);
     }
 

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -59,11 +60,21 @@ public class SelfHistoryOrderMenuAdapter extends RecyclerView.Adapter<SelfHistor
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.productName.setText("Product : " + orderMenuList.get(position).getProduct().getName());
-        holder.productCount.setText("Jumlah order : " + Integer.toString(orderMenuList.get(position).getQtyOrder()));
+        holder.productCount.setText("Order quantity : " + Integer.toString(orderMenuList.get(position).getQtyOrder()));
 
         String imageUrl = preferences.getString("server_url", "")+"/api/products/"+orderMenuList.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
 
         Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
+
+        if (position == 0){
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,24,10,0);
+            holder.layout.setLayoutParams(params);
+        }else{
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,0,10,0);
+            holder.layout.setLayoutParams(params);
+        }
 
         if (position == orderMenuList.size() - 1){
             ((SelfHistoryOrderMenuListActivity)context).loadMoreContent();
@@ -79,6 +90,7 @@ public class SelfHistoryOrderMenuAdapter extends RecyclerView.Adapter<SelfHistor
         private TextView productName, productCount;
         private ImageView imageStatus, preview;
         private Spinner newCount;
+        private LinearLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -86,6 +98,7 @@ public class SelfHistoryOrderMenuAdapter extends RecyclerView.Adapter<SelfHistor
             productCount = (TextView) itemView.findViewById(R.id.om_count);
             imageStatus = (ImageView) itemView.findViewById(R.id.ol_img);
             preview = (ImageView) itemView.findViewById(R.id.ol_preview);
+            layout = (LinearLayout) itemView.findViewById(R.id.layout);
 //            newCount = (Spinner) itemView.findViewById(R.id.om_spin_new_count);
         }
     }

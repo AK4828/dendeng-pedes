@@ -322,15 +322,9 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
     }
 
     @Override

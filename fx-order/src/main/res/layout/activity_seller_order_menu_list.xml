@@ -34,31 +34,35 @@
                     android:text="site"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:transitionName="@string/transition_number"/>
+                    android:transitionName="@string/transition_number"
+                    android:textColor="@color/white"/>
 
                 <com.joanzapata.iconify.widget.IconTextView
                     android:id="@+id/om_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="{typcn-mail} mail"
-                    android:textSize="10sp"/>
+                    android:textSize="10sp"
+                    android:textColor="@color/white"/>
 
                 <TextView
                     android:id="@+id/om_receipt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nomor order : "
+                    android:text="Order number : "
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
-                    android:transitionName="@string/transition_number"/>
+                    android:transitionName="@string/transition_number"
+                    android:textColor="@color/white"/>
 
                 <TextView
                     android:id="@+id/om_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tanggal : "
+                    android:text="Date : "
                     android:textSize="10sp"
-                    android:transitionName="@string/transition_date"/>
+                    android:transitionName="@string/transition_date"
+                    android:textColor="@color/white"/>
 
             </LinearLayout>
 
@@ -72,8 +76,7 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/orderMenu_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="4dp"/>
+                android:layout_height="match_parent"/>
 
         </android.support.v4.widget.SwipeRefreshLayout>
 

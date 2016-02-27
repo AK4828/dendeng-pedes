@@ -35,7 +35,7 @@
                         android:id="@+id/s_site"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Dikirim ke :"
+                        android:text="Ship to :"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/white"/>
@@ -59,7 +59,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="8dp"
                             android:layout_gravity="center_vertical"
-                            android:text="Tanggal pengiriman : "
+                            android:text="Shipment date : "
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
 
@@ -94,7 +94,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginLeft="8dp"
-                            android:text="Nomor order :"
+                            android:text="Order number :"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
 
@@ -118,7 +118,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="8dp"
                             android:layout_gravity="center_vertical"
-                            android:text="Tanggal order: "
+                            android:text="Order date : "
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
 
@@ -137,6 +137,13 @@
                 app:tabSelectedTextColor="@color/colorAccent"/>
 
         </android.support.design.widget.AppBarLayout>
+
+        <View
+            android:id="@+id/app_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/shadow_view"
+            android:visibility="gone"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/viewPager"

@@ -123,9 +123,33 @@ public class SiteDatabaseAdapter {
     }
 
     public List<Site> getSite(){
-//        String query = BusinessPartnerDatabaseModel.STATUS_FLAG + " = " + SignageVariables.ACTIVE;
-
         Cursor cursor = context.getContentResolver().query(dbUriSite, null, null, null, SiteDatabaseModel.NAME);
+
+        List<Site> sites = new ArrayList<Site>();
+
+        if (cursor != null){
+            while (cursor.moveToNext()){
+                Site site = new Site();
+                site.setId(cursor.getString(cursor.getColumnIndex(SiteDatabaseModel.ID)));
+                site.setName(cursor.getString(cursor.getColumnIndex(SiteDatabaseModel.NAME)));
+                site.setDescription(cursor.getString(cursor.getColumnIndex(SiteDatabaseModel.DESCRIPTION)));
+                site.setEmail(cursor.getString(cursor.getColumnIndex(SiteDatabaseModel.EMAIL)));
+                site.setType(cursor.getString(cursor.getColumnIndex(SiteDatabaseModel.TYPE)));
+
+                sites.add(site);
+            }
+        }
+
+        cursor.close();
+
+        return sites;
+
+    }
+
+    public List<Site> getSiteByNameorDescription(String q){
+        String query = SiteDatabaseModel.NAME + " like ? OR "+SiteDatabaseModel.DESCRIPTION + " like ?";
+        String[] params = {"%"+q+"%","%"+q+"%"};
+        Cursor cursor = context.getContentResolver().query(dbUriSite, null, query, params, SiteDatabaseModel.NAME);
 
         List<Site> sites = new ArrayList<Site>();
 

@@ -3,14 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:id="@+id/layout">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:contentPadding="16dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
         android:foreground="?android:attr/selectableItemBackground"
@@ -49,7 +50,7 @@
                     android:id="@+id/ol_tgl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="{typcn-time} Tanggal : "
+                    android:text="{typcn-time} Date : "
                     android:textSize="11sp"
                     android:transitionName="@string/transition_date"/>
 
@@ -57,7 +58,7 @@
                     android:id="@+id/ol_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="{typcn-tag} Nomor order :"
+                    android:text="{typcn-tag} Order number :"
                     android:textSize="16sp"
                     android:layout_marginTop="10dp"
                     android:transitionName="@string/transition_number"/>

@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
@@ -54,7 +56,7 @@ public class SelfHistoryOrderAdapter extends RecyclerView.Adapter<SelfHistoryOrd
 
         holder.siteTo.setText(orderList.get(position).getSite().getName());
         holder.orderNumber.setText(orderList.get(position).getReceiptNumber());
-        holder.orderDate.setText("{typcn-time} Tanggal : " + simpleDateFormat.format(date));
+        holder.orderDate.setText("{typcn-time} Date : " + simpleDateFormat.format(date));
         holder.email.setText(orderList.get(position).getSite().getEmail());
 
         switch (orderList.get(position).getStatus()){
@@ -99,6 +101,16 @@ public class SelfHistoryOrderAdapter extends RecyclerView.Adapter<SelfHistoryOrd
             }
         });
 
+        if (position == 0){
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,24,10,0);
+            holder.layout.setLayoutParams(params);
+        }else{
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,0,10,0);
+            holder.layout.setLayoutParams(params);
+        }
+
         if (position == orderList.size() - 1){
             ((SelfHistoryOrderListActivity)context).loadMoreContent();
         }
@@ -112,6 +124,7 @@ public class SelfHistoryOrderAdapter extends RecyclerView.Adapter<SelfHistoryOrd
     class ViewHolder extends RecyclerView.ViewHolder {
         private IconTextView orderNumber, orderDate, email, statusProcessed, statusSending, statusReceived;
         private TextView siteTo;
+        private LinearLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -122,6 +135,7 @@ public class SelfHistoryOrderAdapter extends RecyclerView.Adapter<SelfHistoryOrd
             statusProcessed = (IconTextView) itemView.findViewById(R.id.ol_processed);
             statusSending = (IconTextView) itemView.findViewById(R.id.ol_sending);
             statusReceived = (IconTextView) itemView.findViewById(R.id.ol_received);
+            layout = (LinearLayout) itemView.findViewById(R.id.layout);
         }
     }
 

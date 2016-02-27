@@ -139,6 +139,16 @@ public class ShipmentHistoryAdapter extends RecyclerView.Adapter<ShipmentHistory
             }
         });
 
+        if (position == 0){
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,24,10,0);
+            holder.layout.setLayoutParams(params);
+        }else{
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,0,10,0);
+            holder.layout.setLayoutParams(params);
+        }
+
         if (position == shipmentList.size() - 1){
             ((ShipmentHistoryListActivity)context).loadMoreContent();
         }
@@ -152,6 +162,7 @@ public class ShipmentHistoryAdapter extends RecyclerView.Adapter<ShipmentHistory
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView site;
         private IconTextView shipmentNumber, orderNumber, shipmentDate, statusWait, statusDelivered;
+        private LinearLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -161,7 +172,10 @@ public class ShipmentHistoryAdapter extends RecyclerView.Adapter<ShipmentHistory
             shipmentDate = (IconTextView) itemView.findViewById(R.id.sl_tgl);
             statusWait = (IconTextView) itemView.findViewById(R.id.ol_wait);
             statusDelivered = (IconTextView) itemView.findViewById(R.id.ol_delivered);
+            layout = (LinearLayout) itemView.findViewById(R.id.layout);
         }
+
+
     }
 
 

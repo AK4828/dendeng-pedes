@@ -136,7 +136,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
             Date oDate = new Date();
             oDate.setTime(getIntent().getLongExtra("orderDate", 0));
             orderId = getIntent().getStringExtra("orderId");
-            site.setText("Received From :" + getIntent().getStringExtra("siteDescription"));
+            site.setText("Received From : " + getIntent().getStringExtra("siteDescription"));
             receiveDate.setText(simpleDateFormat.format(date));
             orderDate.setText(simpleDateFormat.format(oDate));
 
@@ -891,16 +891,11 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         EventBus.getDefault().register(this);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
 
     @Override
     protected void onStop() {

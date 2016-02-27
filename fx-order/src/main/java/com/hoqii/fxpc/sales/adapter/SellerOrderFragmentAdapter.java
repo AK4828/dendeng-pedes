@@ -52,8 +52,8 @@ public class SellerOrderFragmentAdapter extends RecyclerView.Adapter<SellerOrder
         date.setTime(orderList.get(position).getLogInformation().getCreateDate().getTime());
 
         holder.siteFrom.setText(orderList.get(position).getSiteFrom().getName());
-        holder.orderNumber.setText("{typcn-tag} Nomor order : " + orderList.get(position).getReceiptNumber());
-        holder.orderDate.setText("{typcn-time} Tanggal : " + simpleDateFormat.format(date));
+        holder.orderNumber.setText("{typcn-tag} Order number : " + orderList.get(position).getReceiptNumber());
+        holder.orderDate.setText("{typcn-time} Date : " + simpleDateFormat.format(date));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

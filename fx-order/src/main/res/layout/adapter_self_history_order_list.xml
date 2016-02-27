@@ -3,14 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:id="@+id/layout">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:contentPadding="16dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
         android:foreground="?android:attr/selectableItemBackground"
         app:cardBackgroundColor="@color/white">
@@ -30,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:text="nama site"
+                    android:text="site"
                     android:textSize="22sp"
                     android:textColor="@color/colorAccent"/>
 
@@ -38,7 +40,7 @@
                     android:id="@+id/ol_tgl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="{typcn-time} Tanggal : "
+                    android:text="{typcn-time} Date : "
                     android:textSize="11sp"
                     android:transitionName="@string/transition_date"/>
 
@@ -68,14 +70,14 @@
                         <com.joanzapata.iconify.widget.IconTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Nomor order : "
+                            android:text="Order number : "
                             android:textSize="14sp"/>
 
                         <com.joanzapata.iconify.widget.IconTextView
                             android:id="@+id/ol_number"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Nomor Order"
+                            android:text="order number"
                             android:textSize="14sp"
                             android:layout_gravity="right"/>
                     </TableRow>

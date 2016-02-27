@@ -14,6 +14,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.transition.Transition;
 import android.util.Log;
 import android.view.Menu;
@@ -45,8 +47,7 @@ public class MainActivityMaterial extends AppCompatActivity {
     private ViewPager viewPager;
     private boolean isMinLoli = false;
     private static final int ORDER_REQUEST = 300;
-    private Transition.TransitionListener transitionListener;
-    int xCoordinate, yCoordinate;
+
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
@@ -56,45 +57,12 @@ public class MainActivityMaterial extends AppCompatActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.main_tab);
 
-        if (getIntent() != null){
-            xCoordinate = getIntent().getIntExtra("xCoordinate", 0);
-            yCoordinate = getIntent().getIntExtra("yCoordinate", 0);
-        }
-
-        transitionListener = new Transition.TransitionListener() {
-            @Override
-            public void onTransitionStart(Transition transition) {
-                enterReveal(xCoordinate, yCoordinate);
-            }
-
-            @Override
-            public void onTransitionEnd(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionCancel(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionPause(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionResume(Transition transition) {
-
-            }
-        };
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isMinLoli = true;
-            getWindow().getEnterTransition().addListener(transitionListener);
+            getWindow().setEnterTransition(new Fade());
         } else {
             isMinLoli = false;
         }
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -115,9 +83,6 @@ public class MainActivityMaterial extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (isMinLoli) {
-            exitReveal(xCoordinate, yCoordinate);
-        }
     }
 
 
@@ -145,22 +110,11 @@ public class MainActivityMaterial extends AppCompatActivity {
     }
 
 
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_main_activity_material, menu);
-//
-//        return true;
-//    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case android.R.id.home :
                 super.onBackPressed();
-                if (isMinLoli) {
-                    exitReveal(xCoordinate, yCoordinate);
-                }
                 break;
         }
         return super.onOptionsItemSelected(menuItem);
@@ -179,52 +133,6 @@ public class MainActivityMaterial extends AppCompatActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void enterReveal(int x, int y) {
-        final View view = findViewById(R.id.coordianotorLayout);
-        int finalRadius = Math.max(view.getWidth(), view.getHeight()) / 2;
-        Animator animator = ViewAnimationUtils.createCircularReveal(view, x, y, 0, finalRadius);
-        view.setVisibility(View.VISIBLE);
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                getWindow().getEnterTransition().removeListener(transitionListener);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        animator.start();
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void exitReveal(int x, int y){
-        final View view = findViewById(R.id.coordianotorLayout);
-        int initialRadius = view.getWidth() / 2 ;
-        Animator animator = ViewAnimationUtils.createCircularReveal(view, x, y, initialRadius, 0);
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                view.setVisibility(View.INVISIBLE);
-            }
-        });
-        animator.start();
     }
 
 }

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
@@ -63,8 +64,8 @@ public class SellerOrderAdapter extends RecyclerView.Adapter<SellerOrderAdapter.
         date.setTime(orderList.get(position).getLogInformation().getCreateDate().getTime());
 
         holder.siteFrom.setText(orderList.get(position).getSiteFrom().getName());
-        holder.orderNumber.setText("{typcn-tag} Nomor order : " + orderList.get(position).getReceiptNumber());
-        holder.orderDate.setText("{typcn-time} Tanggal : " + simpleDateFormat.format(date));
+        holder.orderNumber.setText("{typcn-tag} Order number : " + orderList.get(position).getReceiptNumber());
+        holder.orderDate.setText("{typcn-time} Date : " + simpleDateFormat.format(date));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +88,16 @@ public class SellerOrderAdapter extends RecyclerView.Adapter<SellerOrderAdapter.
             }
         });
 
+        if (position == 0){
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,24,10,0);
+            holder.layout.setLayoutParams(params);
+        }else{
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,0,10,0);
+            holder.layout.setLayoutParams(params);
+        }
+
         if (position == orderList.size() - 1){
             ((SellerOrderListActivity) context).loadMoreContent();
         }
@@ -100,12 +111,14 @@ public class SellerOrderAdapter extends RecyclerView.Adapter<SellerOrderAdapter.
     class ViewHolder extends RecyclerView.ViewHolder {
         private IconTextView orderNumber, orderDate;
         private TextView siteFrom;
+        private LinearLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
             siteFrom = (TextView) itemView.findViewById(R.id.siteFrom);
             orderNumber = (IconTextView) itemView.findViewById(R.id.ol_number);
             orderDate = (IconTextView) itemView.findViewById(R.id.ol_tgl);
+            layout = (LinearLayout) itemView.findViewById(R.id.layout);
         }
     }
 

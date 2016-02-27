@@ -1,13 +1,16 @@
 package com.hoqii.fxpc.sales.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +36,7 @@ public class ShipmentHistoryDetailActivity extends AppCompatActivity{
     private Shipment shipment;
     private TextView shipDate, orderNumber, orderDate, to;
     private String shipmentJson;
+    private View appShadow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +55,14 @@ public class ShipmentHistoryDetailActivity extends AppCompatActivity{
         shipDate = (TextView) findViewById(R.id.s_shipment_date);
         orderNumber = (TextView) findViewById(R.id.s_order_number);
         orderDate= (TextView) findViewById(R.id.s_order_date);
+        appShadow = (View) findViewById(R.id.app_shadow);
         to = (TextView) findViewById(R.id.s_site);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setEnterTransition(new Fade());
+        }else {
+            appShadow.setVisibility(View.VISIBLE);
+        }
 
         if (getIntent() != null){
             shipmentJson = getIntent().getStringExtra("shipmentJson");
@@ -74,10 +85,10 @@ public class ShipmentHistoryDetailActivity extends AppCompatActivity{
         Date dateOrder = new Date();
         dateOrder.setTime(shipment.getOrder().getLogInformation().getCreateDate().getTime());
 
-        to.setText("Dikirim ke : "+shipment.getOrder().getSiteFrom().getName());
-        shipDate.setText("Tanggal Pengiriman : " + simpleDateFormat.format(dateSend));
-        orderNumber.setText("Nomor order : "+shipment.getReceiptNumber());
-        orderDate.setText("Tanggal order : "+simpleDateFormat.format(dateOrder));
+        to.setText("Ship to : "+shipment.getOrder().getSiteFrom().getName());
+        shipDate.setText("Shipment date : " + simpleDateFormat.format(dateSend));
+        orderNumber.setText("Order number : "+shipment.getReceiptNumber());
+        orderDate.setText("Order date : "+simpleDateFormat.format(dateOrder));
 
         ShipmentDetailPagerAdapter shipmentDetailPagerAdapter = new ShipmentDetailPagerAdapter(getSupportFragmentManager(), shipmentJson);
         viewPager.setAdapter(shipmentDetailPagerAdapter);

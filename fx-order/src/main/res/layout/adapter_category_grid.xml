@@ -20,7 +20,7 @@
                 android:id="@+id/category_image"
                 android:layout_width="match_parent"
                 android:layout_height="170dp"
-                android:scaleType="centerCrop" />
+                android:scaleType="fitXY" />
 
             <View
                 android:id="@+id/category_view"
@@ -39,7 +39,7 @@
                 android:text="title"
                 android:layout_margin="16dp"
                 android:textColor="@android:color/white"
-                android:textSize="12pt"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_alignParentBottom="true"
                 />

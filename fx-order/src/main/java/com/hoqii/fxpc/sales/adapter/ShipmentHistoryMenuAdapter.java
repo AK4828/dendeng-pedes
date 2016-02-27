@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -61,6 +62,15 @@ public class ShipmentHistoryMenuAdapter extends RecyclerView.Adapter<ShipmentHis
 
         Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
 
+        if (position == 0){
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,24,10,0);
+            holder.layout.setLayoutParams(params);
+        }else{
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,0,10,0);
+            holder.layout.setLayoutParams(params);
+        }
 
         if (position == serialNumberList.size() - 1){
             f.loadMoreContent();
@@ -76,6 +86,7 @@ public class ShipmentHistoryMenuAdapter extends RecyclerView.Adapter<ShipmentHis
         private TextView productName, description, serial;
         private IconTextView count;
         private ImageView preview;
+        private LinearLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -83,6 +94,7 @@ public class ShipmentHistoryMenuAdapter extends RecyclerView.Adapter<ShipmentHis
             description = (TextView) itemView.findViewById(R.id.om_description);
             serial = (TextView) itemView.findViewById(R.id.om_serial);
             preview = (ImageView) itemView.findViewById(R.id.om_preview);
+            layout = (LinearLayout) itemView.findViewById(R.id.layout);
         }
     }
 

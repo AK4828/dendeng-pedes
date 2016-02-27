@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -106,7 +107,7 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.productName.setText(orderMenuList.get(position).getProduct().getName());
-        holder.description.setText(orderMenuList.get(position).getDescription());
+        holder.description.setText("Description : "+orderMenuList.get(position).getDescription());
         holder.productCount.setText("{typcn-shopping-cart} " + Integer.toString(orderMenuList.get(position).getQty()));
         holder.scanCount.setText("{typcn-tick-outline} 0");
 
@@ -150,6 +151,16 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
             }
         });
 
+        if (position == 0){
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,24,10,0);
+            holder.layout.setLayoutParams(params);
+        }else{
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,0,10,0);
+            holder.layout.setLayoutParams(params);
+        }
+
         if (position == orderMenuList.size() - 1){
             ((SellerOrderMenuListActivity)context).loadMoreContent();
         }
@@ -164,6 +175,7 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
         private TextView productName, description;
         private IconTextView productCount, scanCount;
         private ImageView preview;
+        private LinearLayout layout;
 //        private ImageView imageStatus;
 
         public ViewHolder(View itemView) {
@@ -174,6 +186,7 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
 //            imageStatus = (ImageView) itemView.findViewById(R.id.ol_img);
             description = (TextView) itemView.findViewById(R.id.om_description);
             preview = (ImageView) itemView.findViewById(R.id.om_preview);
+            layout = (LinearLayout) itemView.findViewById(R.id.layout);
         }
     }
 

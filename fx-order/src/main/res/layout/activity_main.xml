@@ -205,15 +205,6 @@
 
         </android.support.design.widget.CoordinatorLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/add_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_margin="16dp"
-            android:visibility="gone"/>
-
     </RelativeLayout>
 
     <android.support.design.widget.NavigationView

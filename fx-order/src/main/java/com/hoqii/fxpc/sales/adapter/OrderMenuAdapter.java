@@ -71,7 +71,7 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
         });
 
         if (position == 0){
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             params.setMargins(0,24,0,0);
             holder.layout.setLayoutParams(params);
         }

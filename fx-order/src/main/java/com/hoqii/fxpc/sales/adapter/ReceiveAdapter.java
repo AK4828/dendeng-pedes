@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -64,9 +65,9 @@ public class ReceiveAdapter extends RecyclerView.Adapter<ReceiveAdapter.ViewHold
         orderDate.setTime(receiveList.get(position).getOrder().getLogInformation().getCreateDate().getTime());
 
         holder.site.setText("Receive from : "+ receiveList.get(position).getOrder().getSite().getName());
-        holder.shipmentDate.setText("Tanggal terima : "+ simpleDateFormat.format(date));
-        holder.orderNumber.setText("Nomor order : " + receiveList.get(position).getOrder().getReceiptNumber());
-        holder.orderDate.setText("Tanggal order : " + simpleDateFormat.format(orderDate));
+        holder.shipmentDate.setText("Receive date : "+ simpleDateFormat.format(date));
+        holder.orderNumber.setText("Order number : " + receiveList.get(position).getOrder().getReceiptNumber());
+        holder.orderDate.setText("Order date : " + simpleDateFormat.format(orderDate));
 
         switch (receiveList.get(position).getShipment().getStatus()){
             case WAIT:
@@ -118,6 +119,16 @@ public class ReceiveAdapter extends RecyclerView.Adapter<ReceiveAdapter.ViewHold
             }
         });
 
+        if (position == 0){
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,24,10,0);
+            holder.layout.setLayoutParams(params);
+        }else{
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(10,0,10,0);
+            holder.layout.setLayoutParams(params);
+        }
+
         if (position == receiveList.size() -1){
             ((ReceiveListActivity)context).loadMoreContent();
         }
@@ -130,6 +141,7 @@ public class ReceiveAdapter extends RecyclerView.Adapter<ReceiveAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView orderNumber, orderDate, shipmentDate, site, statusDelivery;
+        private LinearLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -138,6 +150,7 @@ public class ReceiveAdapter extends RecyclerView.Adapter<ReceiveAdapter.ViewHold
             shipmentDate = (TextView) itemView.findViewById(R.id.rl_tgl_receive);
             site = (TextView) itemView.findViewById(R.id.rl_site);
             statusDelivery = (TextView) itemView.findViewById(R.id.rl_delivery);
+            layout = (LinearLayout) itemView.findViewById(R.id.layout);
         }
     }
 
