@@ -12,7 +12,9 @@
         android:layout_marginLeft="4dp"
         app:cardElevation="4dp"
         app:contentPadding="8dp"
-        app:cardUseCompatPadding="true">
+        app:cardUseCompatPadding="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/white">
 
         <RelativeLayout
             android:layout_width="match_parent"

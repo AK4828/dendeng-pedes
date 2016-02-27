@@ -37,7 +37,8 @@
                         android:layout_height="wrap_content"
                         android:text="Dikirim ke :"
                         android:textSize="16sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:textColor="@color/white"/>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -59,7 +60,8 @@
                             android:layout_marginLeft="8dp"
                             android:layout_gravity="center_vertical"
                             android:text="Tanggal pengiriman : "
-                            android:textSize="12sp"/>
+                            android:textSize="12sp"
+                            android:textColor="@color/white"/>
 
                     </LinearLayout>
 
@@ -70,7 +72,8 @@
                         android:text="Detail order"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:layout_marginTop="8dp"/>
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/white"/>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -92,7 +95,8 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginLeft="8dp"
                             android:text="Nomor order :"
-                            android:textSize="12sp"/>
+                            android:textSize="12sp"
+                            android:textColor="@color/white"/>
 
                     </LinearLayout>
 
@@ -115,7 +119,8 @@
                             android:layout_marginLeft="8dp"
                             android:layout_gravity="center_vertical"
                             android:text="Tanggal order: "
-                            android:textSize="12sp"/>
+                            android:textSize="12sp"
+                            android:textColor="@color/white"/>
 
                     </LinearLayout>
 

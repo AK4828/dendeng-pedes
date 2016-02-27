@@ -24,7 +24,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:theme="@style/AppTheme.AppbarOverlay"
-                    app:elevation="8dp">
+                    app:elevation="4dp">
 
                     <android.support.v7.widget.Toolbar
                         android:id="@+id/main_toolbar"
@@ -183,7 +183,14 @@
                             android:id="@+id/slideTab"
                             android:layout_width="match_parent"
                             android:layout_height="?attr/actionBarSize"
-                            android:elevation="4dp"/>
+                            android:elevation="4dp"
+                            />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:background="@drawable/shadow_view"
+                            />
                         
                         <android.support.v4.view.ViewPager
                             android:id="@+id/slideViewPager"

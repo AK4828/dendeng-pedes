@@ -12,7 +12,9 @@
         app:cardCornerRadius="0dp"
         app:contentPadding="16dp"
         app:cardUseCompatPadding="true"
-        android:transitionName="@string/transition_layout">
+        android:transitionName="@string/transition_layout"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/white">
 
         <RelativeLayout
             android:layout_width="match_parent"
