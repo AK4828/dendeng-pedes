@@ -57,9 +57,9 @@ public class ReceiveFragmentAdapter extends RecyclerView.Adapter<ReceiveFragment
         orderDate.setTime(receiveList.get(position).getOrder().getLogInformation().getCreateDate().getTime());
 
         holder.site.setText("Receive from : "+ receiveList.get(position).getOrder().getSite().getName());
-        holder.shipmentDate.setText("Tanggal terima : "+ simpleDateFormat.format(date));
-        holder.orderNumber.setText("Nomor order : " + receiveList.get(position).getOrder().getReceiptNumber());
-        holder.orderDate.setText("Tanggal order : " + simpleDateFormat.format(orderDate));
+        holder.shipmentDate.setText("Receive date : "+ simpleDateFormat.format(date));
+        holder.orderNumber.setText("Order number : " + receiveList.get(position).getOrder().getReceiptNumber());
+        holder.orderDate.setText("Order date : " + simpleDateFormat.format(orderDate));
 
         switch (receiveList.get(position).getShipment().getStatus()){
             case WAIT:
