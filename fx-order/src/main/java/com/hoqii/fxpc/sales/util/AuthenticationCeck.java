@@ -1,6 +1,11 @@
 package com.hoqii.fxpc.sales.util;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
+
+import com.hoqii.fxpc.sales.SignageAppication;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,6 +16,12 @@ public class AuthenticationCeck {
 
     public AuthenticationCeck() {
 
+    }
+
+    public boolean isNetworkAvailable(){
+        ConnectivityManager cm = (ConnectivityManager) SignageAppication.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
     }
 
     public boolean isAccess() {
@@ -49,4 +60,5 @@ public class AuthenticationCeck {
         Log.d(getClass().getSimpleName(), "access status : " + String.valueOf(access));
         return access;
     }
+
 }

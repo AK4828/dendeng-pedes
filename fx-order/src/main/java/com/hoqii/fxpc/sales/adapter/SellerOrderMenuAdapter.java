@@ -116,14 +116,17 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
         for (String orderMenuId : orderMenuListSerial){
             if (orderMenuList.get(position).getId().equalsIgnoreCase(orderMenuId)) {
                 Log.d(getClass().getSimpleName(), "same id detected in position " + position);
-//                holder.imageStatus.setVisibility(View.VISIBLE);
 
                 List<SerialNumber> serials = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
-                holder.scanCount.setText("{typcn-tick-outline} " + serials.size());
-                holder.scanCount.setTextColor(context.getResources().getColor(R.color.colorAccent));
+                if (serials.size() > 0){
+                    holder.scanCount.setText("{typcn-tick-outline} " + serials.size());
+                    holder.scanCount.setTextColor(context.getResources().getColor(R.color.colorAccent));
+                }else {
+                    holder.scanCount.setText("{typcn-tick-outline} 0");
+                    holder.scanCount.setTextColor(context.getResources().getColor(R.color.grey));
+                }
                 break;
             } else {
-//                holder.imageStatus.setVisibility(View.GONE);
                 holder.scanCount.setText("{typcn-tick-outline} 0");
                 holder.scanCount.setTextColor(context.getResources().getColor(R.color.grey));
             }
@@ -212,6 +215,21 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
             }
 
             Log.d(getClass().getSimpleName(), "item serial added");
+        }
+    }
+
+    public void updateOrderMenuSerial(List<String> orderMenuserilsIds){
+        this.orderMenuListSerial = orderMenuserilsIds;
+        Log.d(getClass().getSimpleName(), "Serching contains same id");
+
+        if (orderMenuListSerial.size() > 0){
+            for (int x = 0; x < orderMenuList.size(); x++){
+                Log.d(getClass().getSimpleName(), "found at "+x);
+                orderMenuListSerial.contains(orderMenuList.get(x).getId());
+                notifyItemChanged(x);
+            }
+        }else {
+            notifyDataSetChanged();
         }
     }
 

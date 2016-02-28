@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -63,6 +64,7 @@ public class SyncActivity extends DefaultActivity implements TaskService {
 
     @Override
     public void onViewCreated(Bundle bundle) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (ConnectionUtil.isInternetAvailable(this)) {
             new Handler().postDelayed(new Runnable() {
                 public void run() {

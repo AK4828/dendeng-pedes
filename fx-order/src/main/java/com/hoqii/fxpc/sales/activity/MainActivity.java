@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -100,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     private LinearLayout dataNull;
     private View appShadow;
 
+    private boolean orderMenuError = false;
     private refreshTokenStatus refreshStatus = null;
 
     public enum refreshTokenStatus {
@@ -110,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         jobManager = SignageAppication.getInstance().getJobManager();
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
 
@@ -272,15 +276,29 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         });
                         builder.show();
                     } else {
-                        if (authenticationCeck.isAccess()) {
-                            Log.d(getClass().getSimpleName(), "[ application access granted ]");
-                            Log.d(getClass().getSimpleName(), "[ submiting order run ]");
-                            saveOrder();
-                        } else {
-                            Log.d(getClass().getSimpleName(), "[ application access need to refresh ]");
-                            Log.d(getClass().getSimpleName(), "[ refreshing refersh param submit ]");
-                            refreshToken(refreshTokenStatus.submitOrder.name());
+                        if (authenticationCeck.isNetworkAvailable()){
+                            if (authenticationCeck.isAccess()) {
+                                Log.d(getClass().getSimpleName(), "[ application access granted ]");
+                                Log.d(getClass().getSimpleName(), "[ submiting order run ]");
+                                saveOrder();
+                            } else {
+                                Log.d(getClass().getSimpleName(), "[ application access need to refresh ]");
+                                Log.d(getClass().getSimpleName(), "[ refreshing refersh param submit ]");
+                                refreshToken(refreshTokenStatus.submitOrder.name());
+                            }
+                        }else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setTitle("Internet access");
+                            builder.setMessage("No internet connection");
+                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            builder.show();
                         }
+
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -391,7 +409,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             }
         });
     }
-
 
     public void updateInfo() {
         orderId = orderDbAdapter.getOrderId();
@@ -613,7 +630,11 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
                     if (orderMenuCount == totalOrderMenus) {
                         dialog.dismiss();
-                        dialogSuccessOrder();
+                        if (orderMenuError){
+                            retryRequestOrderMenu();
+                        }else {
+                            dialogSuccessOrder();
+                        }
                         Log.d(getClass().getSimpleName(), "Success ");
                     }
 
@@ -632,7 +653,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     }
 
     public void onEventMainThread(GenericEvent.RequestFailed failed) {
-        dialog.dismiss();
         Log.d(getClass().getSimpleName(), "request failed event, process id " + failed.getProcessId());
         switch (failed.getProcessId()) {
             case OrderUpdateJob.PROCESS_ID:
@@ -641,8 +661,10 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 break;
             case OrderMenuJob.PROCESS_ID:
                 orderMenuCount++;
+                orderMenuError = true;
                 Log.d(getClass().getSimpleName(), "request update order menu failed");
                 if (orderMenuCount == totalOrderMenus) {
+                    dialog.dismiss();
                     retryRequestOrderMenu();
                     Log.d(getClass().getSimpleName(), "request update order menu failed complate");
                 }
@@ -735,6 +757,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 orderId = null;
                 refreshStatus = null;
                 orderMenuCount = 0;
+                orderMenuError = false;
                 orderMenuAdapter = new OrderMenuAdapter(MainActivity.this);
                 orderListRecycle.setAdapter(orderMenuAdapter);
                 updateInfo();
@@ -824,6 +847,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     }
 
     public void retryRequestOrderMenu() {
+        orderMenuError = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Konfirmasi");
         builder.setMessage("Gagal mengirim order...\nUlangi proses ?");

@@ -89,8 +89,6 @@ public class ScannerActivityCustom extends AppCompatActivity {
                     }else {
                         Snackbar.make(coordinatorLayout, "serial number sudah di scan", Snackbar.LENGTH_LONG).show();
                     }
-
-
                 }else {
                     Snackbar.make(coordinatorLayout, "Jumlah serial number sudah tercukupi", Snackbar.LENGTH_LONG).show();
                 }
@@ -149,12 +147,10 @@ public class ScannerActivityCustom extends AppCompatActivity {
         productNameView.setText(productName);
 
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(this);
-
         serialNumberList = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
         for (int x = 0; x < serialNumberList.size(); x++) {
             serialAdapter.addSerialNumber(serialNumberList.get(x));
         }
-
 
     }
 
@@ -187,17 +183,8 @@ public class ScannerActivityCustom extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (serialAdapter.getItemCount() == 0) {
-                    Log.d(getClass().getSimpleName(), "serial kosong");
-                    Intent dataSerial = new Intent();
-                    dataSerial.putExtra("orderMenuId", orderMenuId);
-                    dataSerial.putExtra("position", position);
-
-                    setResult(RESULT_OK, dataSerial);
-                    finish();
-                }else {
-                    super.onBackPressed();
-                }
+                setResult(RESULT_OK);
+                finish();
                 break;
             case R.id.menu_submit_serial:
                 if (serialAdapter.getItemCount() > 0){
@@ -235,6 +222,7 @@ public class ScannerActivityCustom extends AppCompatActivity {
                 dataSerial.putExtra("position", position);
                 dataSerial.putExtra("status", true);
 
+                serialNumberList = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
                 for (SerialNumber serial : serialAdapter.getSerialNumber()) {
 
                     SerialNumber serialNumberObj = new SerialNumber();
@@ -278,16 +266,7 @@ public class ScannerActivityCustom extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (serialAdapter.getItemCount() == 0) {
-            Log.d(getClass().getSimpleName(), "serial kosong");
-            Intent dataSerial = new Intent();
-            dataSerial.putExtra("orderMenuId", orderMenuId);
-            dataSerial.putExtra("position", position);
-
-            setResult(RESULT_OK, dataSerial);
-            finish();
-        }else {
-            super.onBackPressed();
-        }
+        setResult(RESULT_OK);
+        finish();
     }
 }

@@ -44,6 +44,7 @@ public class MenuUpdateJob extends Job {
         this.url = url;
         this.orderId = orderId;
         this.orderMenuId = orderMenuId;
+
         Log.d(getClass().getSimpleName(), "url : " + url + " order id " + orderId + " order menu id : " + orderMenuId);
 
     }
@@ -78,7 +79,7 @@ public class MenuUpdateJob extends Job {
             JsonRequestUtils requestUpdate = new JsonRequestUtils(url + "/api/orders/" + orderId + "/menu/" + orderMenuId );
 
             SerialNumberDatabaseAdapter snAdapter = new SerialNumberDatabaseAdapter(SignageAppication.getInstance());
-            List<SerialNumber> sn = snAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
+            List<SerialNumber> sn = snAdapter.getSerialNumberListByOrderIdAndOrderMenuIdAndHasSync(orderId, orderMenuId);
 
             Log.d(getClass().getSimpleName(), "menu quantity =========================: "+orderMenu.getQty());
             Log.d(getClass().getSimpleName(), "serial quantity =========================: "+sn.size());
@@ -110,6 +111,7 @@ public class MenuUpdateJob extends Job {
 
                 Log.d(getClass().getSimpleName(), "order menu id : " + om.getId().toString());
 
+                snAdapter.updateStatusFlag(orderMenuId);
                 EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, responseUpdate, om.getRefId(), om.getId()));
             } else {
                 Log.d(getClass().getSimpleName(), "update Response Code :" + rUm.getStatusLine().getStatusCode());

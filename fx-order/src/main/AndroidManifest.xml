@@ -129,6 +129,9 @@
             android:name="com.hoqii.fxpc.sales.content.MidasContentProvider"
             android:authorities="com.hoqii.fxpc.sales.content.midascontentprovider"
             android:syncable="true" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="352d74e4f647a4e60429ac85c50649511ba11645" />
     </application>
 
 </manifest>

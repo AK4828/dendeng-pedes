@@ -63,6 +63,7 @@ public class SerialNumberDatabaseAdapter {
                 values.put(SerialNumberDatabaseModel.SerialNumber, serialNumber.getSerialNumber());
                 values.put(SerialNumberDatabaseModel.ShipmentId, serialNumber.getShipment().getId());
                 values.put(DefaultPersistenceModel.SYNC_STATUS, 0);
+                values.put(DefaultPersistenceModel.STATUS_FLAG, 0);
 
                 context.getContentResolver().insert(dbUriSerial, values);
             } else {
@@ -73,6 +74,7 @@ public class SerialNumberDatabaseAdapter {
                 values.put(SerialNumberDatabaseModel.SerialNumber, serialNumber.getSerialNumber());
                 values.put(SerialNumberDatabaseModel.ShipmentId, serialNumber.getShipment().getId());
                 values.put(DefaultPersistenceModel.SYNC_STATUS, 0);
+                values.put(DefaultPersistenceModel.STATUS_FLAG, 0);
 
                 context.getContentResolver().update(dbUriSerial, values, SerialNumberDatabaseModel.ID + " = ? ", new String[]{serialNumber.getId()});
             }
@@ -82,6 +84,52 @@ public class SerialNumberDatabaseAdapter {
     public List<SerialNumber> getSerialNumberListByOrderId(String orderId) {
         String query = SerialNumberDatabaseModel.OrderId + " = ? AND " + DefaultPersistenceModel.SYNC_STATUS + " = 0";
         String param[] = {orderId};
+
+        List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+
+        Cursor cursor = context.getContentResolver().query(dbUriSerial, null, query, param, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                SerialNumber serialNumber = new SerialNumber();
+                serialNumber.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
+                serialNumber.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
+                serialNumber.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
+                serialNumber.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
+
+                serialNumbers.add(serialNumber);
+            }
+        }
+
+        cursor.close();
+        return serialNumbers;
+    }
+
+    public List<SerialNumber> getSerialNumberListByOrderIdAndhasSync(String orderId) {
+        String query = SerialNumberDatabaseModel.OrderId + " = ? AND " + DefaultPersistenceModel.SYNC_STATUS + " = ? AND " + DefaultPersistenceModel.STATUS_FLAG + " = ? ";
+        String param[] = {orderId, "1", "0"};
+
+        List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+
+        Cursor cursor = context.getContentResolver().query(dbUriSerial, null, query, param, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                SerialNumber serialNumber = new SerialNumber();
+                serialNumber.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
+                serialNumber.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
+                serialNumber.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
+                serialNumber.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
+
+                serialNumbers.add(serialNumber);
+            }
+        }
+
+        cursor.close();
+        return serialNumbers;
+    }
+
+    public List<SerialNumber> getSerialNumberListByOrderIdAndOrderMenuIdAndHasSync(String orderId, String orderMenuId) {
+        String query = SerialNumberDatabaseModel.OrderId + " = ? AND " + SerialNumberDatabaseModel.OrderMenuId + " = ? AND " + DefaultPersistenceModel.SYNC_STATUS + " = 1 AND "+DefaultPersistenceModel.STATUS_FLAG + " = 0 ";
+        String param[] = {orderId, orderMenuId};
 
         List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
 
@@ -168,10 +216,20 @@ public class SerialNumberDatabaseAdapter {
 
     }
 
+    public void updateStatusFlag(String orderMenuId) {
+
+        ContentValues values = new ContentValues();
+        values.put(DefaultPersistenceModel.STATUS_FLAG, 1);
+
+        context.getContentResolver().update(dbUriSerial, values, SerialNumberDatabaseModel.OrderMenuId + " = ? ", new String[]{orderMenuId});
+
+    }
+
     public void updateStatusByShipmentId(String shipmentId) {
 
         ContentValues values = new ContentValues();
         values.put(DefaultPersistenceModel.SYNC_STATUS, 1);
+        values.put(DefaultPersistenceModel.STATUS_FLAG, 1);
 
         context.getContentResolver().update(dbUriSerial, values, SerialNumberDatabaseModel.ShipmentId + " = ? ", new String[]{shipmentId});
 

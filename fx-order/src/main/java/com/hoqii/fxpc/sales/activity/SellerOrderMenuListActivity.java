@@ -22,6 +22,7 @@ import android.transition.Fade;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
@@ -40,6 +41,7 @@ import com.hoqii.fxpc.sales.job.OrderStatusUpdateJob;
 import com.hoqii.fxpc.sales.job.OrderUpdateJob;
 import com.hoqii.fxpc.sales.job.SerialJob;
 import com.hoqii.fxpc.sales.job.ShipmentJob;
+import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
@@ -66,6 +68,7 @@ import de.greenrobot.event.EventBus;
 public class SellerOrderMenuListActivity extends AppCompatActivity implements TaskService {
     private int requestScannerCode = 123;
 
+    private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
     private List<OrderMenu> orderMenuList = new ArrayList<OrderMenu>();
     private SharedPreferences preferences;
     private RecyclerView recyclerView;
@@ -83,7 +86,6 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
     private String orderMenuId = null;
     private JobManager jobManager;
-//    private Order orderShip = new Order();
 
     private List<String> orderMenuListSerial = new ArrayList<String>();
     private List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
@@ -92,13 +94,15 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     private int position;
     private int count = 0;
     private int maxSerialist = 0;
-    private Shipment shipment = new Shipment();
+    private boolean serialError = false, updateMenuError = false;
+    private Shipment shipment = null;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_order_menu_list);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setEnterTransition(new Fade());
@@ -192,23 +196,28 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
             case R.id.menu_submit_shipment:
 
                 if (orderMenuListSerial.size() != 0) {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                    alert.setTitle("Shipment");
-                    alert.setMessage("Send shipment ?");
-                    alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            jobManager.addJobInBackground(new ShipmentJob(preferences.getString("server_url", ""), orderId));
-                            progressDialog.show();
-                        }
-                    });
-                    alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                    if (authenticationCeck.isNetworkAvailable()){
+                        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                        alert.setTitle("Shipment");
+                        alert.setMessage("Send shipment ?");
+                        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                jobManager.addJobInBackground(new ShipmentJob(preferences.getString("server_url", ""), orderId));
+                                progressDialog.show();
+                            }
+                        });
+                        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                        }
-                    });
-                    alert.show();
+                            }
+                        });
+                        alert.show();
+                    }else {
+                        AlertMessage("No internet connection");
+                    }
+
                 } else {
                     AlertMessage("Scan serial number");
                 }
@@ -276,50 +285,19 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == requestScannerCode) {
+            checkOrderMenuSerialList();
+
             if (resultCode == RESULT_OK) {
-                if (data != null) {
-                    int position = data.getIntExtra("position", 0);
-                    orderMenuId = data.getStringExtra("orderMenuId");
-                    boolean status = data.getBooleanExtra("status", false);
-                    Log.d(getClass().getSimpleName(), "order menu id : " + orderMenuId);
-                    Log.d(getClass().getSimpleName(), "status : " + String.valueOf(status));
-
-
-                    if (status) {
-                        if (!orderMenuListSerial.contains(orderMenuId)) {
-                            Log.d(getClass().getSimpleName(), "order menu id contains : " + orderMenuId);
-                            Log.d(getClass().getSimpleName(), "order menu serial size : " + orderMenuListSerial.size());
-                            orderMenuListSerial.add(orderMenuId);
-                            Log.d(getClass().getSimpleName(), "order menu serial size : " + orderMenuListSerial.size());
-                            sellerOrderMenuAdapter.addOrderMenuSerial(orderMenuId);
-                            sellerOrderMenuAdapter.notifyItemChanged(position);
-                        }
-                    } else {
-                        if (orderMenuListSerial.contains(orderMenuId)) {
-                            Log.d(getClass().getSimpleName(), "order menu id status delete: yes");
-                            Log.d(getClass().getSimpleName(), "order menu serial size : " + orderMenuListSerial.size());
-//                            orderMenuListSerial.remove(position);
-
-                            Log.d(getClass().getSimpleName(), "order menu serial size : " + orderMenuListSerial.size());
-                            Log.d(getClass().getSimpleName(), "position to remove : " + position);
-                            sellerOrderMenuAdapter.removeOrderMenuSerial(orderMenuId);
-                            sellerOrderMenuAdapter.notifyItemChanged(position);
-
-                            for (int x = 0; x < orderMenuListSerial.size(); x++) {
-                                Log.d(getClass().getSimpleName(), "Serching contains order menu id");
-                                if (orderMenuListSerial.get(x).equalsIgnoreCase(orderMenuId)) {
-                                    orderMenuListSerial.remove(x);
-                                    Log.d(getClass().getSimpleName(), "item serial removed");
-                                    break;
-                                } else {
-                                    Log.d(getClass().getSimpleName(), "item serial not found, so not removed");
-                                }
-                            }
-
-
-                        }
-                    }
+                if (orderMenuListSerial.size() > 0) {
+                    Log.d(getClass().getSimpleName(), "updated");
+                    sellerOrderMenuAdapter.updateOrderMenuSerial(orderMenuListSerial);
+                }else {
+                    Log.d(getClass().getSimpleName(), "remove all");
+                    sellerOrderMenuAdapter = new SellerOrderMenuAdapter(this, orderId);
+                    recyclerView.setAdapter(sellerOrderMenuAdapter);
+                    sellerOrderMenuAdapter.addItems(orderMenuList);
                 }
+
             }
         }
         Log.d(getClass().getSimpleName(), "order menu serial size ====== : " + orderMenuListSerial.size());
@@ -327,6 +305,167 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
+        Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
+        switch (requestInProgress.getProcessId()) {
+            case ShipmentJob.PROCESS_ID:
+                progressDialog.setTitle("shipping");
+                Log.d(getClass().getSimpleName(), "shipping");
+                break;
+
+            case MenuUpdateJob.PROCESS_ID:
+                progressDialog.setTitle("Updating in progress");
+                Log.d(getClass().getSimpleName(), "Updating in progress");
+                break;
+
+            case SerialJob.PROCESS_ID:
+                progressDialog.setTitle("Serial in progress");
+                Log.d(getClass().getSimpleName(), "Serial in progress");
+                break;
+
+            case OrderStatusUpdateJob.PROCESS_ID:
+                Log.d(getClass().getSimpleName(), "update order in progress");
+                break;
+        }
+    }
+
+    public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
+        Log.d(getClass().getSimpleName(), "success event : " + requestSuccess);
+
+        try {
+            switch (requestSuccess.getProcessId()) {
+                case ShipmentJob.PROCESS_ID: {
+
+                    Log.d(getClass().getSimpleName(), "shipment sucess");
+                    shipment = (Shipment) requestSuccess.getResponse().getContent();
+
+                    List<SerialNumber> serialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+                    maxSerialist = 0;
+                    count = 0;
+                    maxSerialist = serialList.size();
+                    Log.d(getClass().getSimpleName(), " getted serial count" + serialList.size() + " ================================================ ");
+//
+                    Log.d(getClass().getSimpleName(), " getted order menu serial count" + orderMenuListSerial.size() + " ================================================ ");
+
+                    for (SerialNumber snn : serialList) {
+                        Log.d(getClass().getSimpleName(), " getted serial " + snn.getId() + " ================================================ ");
+                        Log.d(getClass().getSimpleName(), " getted serial shipment id " + requestSuccess.getEntityId() + " ================================================ ");
+                        jobManager.addJobInBackground(new SerialJob(preferences.getString("server_url", ""), snn.getId(), requestSuccess.getEntityId()));
+
+                    }
+                    break;
+                }
+
+                case SerialJob.PROCESS_ID: {
+                    Log.d(getClass().getSimpleName(), "Serial succcess");
+                    count++;
+                    Log.d(getClass().getSimpleName(), "max serialist : " + Integer.valueOf(maxSerialist));
+                    Log.d(getClass().getSimpleName(), "count serialist number: " + Integer.valueOf(count));
+
+                    if (count == maxSerialist) {
+                        if (serialError){
+                            progressDialog.dismiss();
+                            resendSerial();
+                        }else {
+                            checkOrderMenuSerialListHasSync();
+                            serialError = false;
+                            maxSerialist = 0;
+                            count = 0;
+                            maxSerialist = orderMenuListSerial.size();
+
+                            for (String om : orderMenuListSerial) {
+                                Log.d(getClass().getSimpleName(), " access job order menu serial id " + om + " ================================================");
+                                jobManager.addJobInBackground(new MenuUpdateJob(preferences.getString("server_url", ""), orderId, om));
+                            }
+                        }
+                    }
+
+                    break;
+                }
+
+                case MenuUpdateJob.PROCESS_ID: {
+                    Log.d(getClass().getSimpleName(), "update order menu succcess");
+                    count++;
+                    progressDialog.dismiss();
+                    if (count == maxSerialist){
+                        if (updateMenuError){
+                            resendOrderMenuUpdate();
+                        }else {
+                            updateMenuError = false;
+                            AlertDialog.Builder builder = new AlertDialog.Builder(SellerOrderMenuListActivity.this);
+                            builder.setTitle("Shipment");
+                            builder.setMessage("Process finish\nShipment number : " + shipment.getReceiptNumber());
+                            builder.setCancelable(false);
+                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    page = 1;
+                                    totalPage = 0;
+                                    sellerOrderMenuAdapter = new SellerOrderMenuAdapter(SellerOrderMenuListActivity.this, orderId);
+                                    recyclerView.setAdapter(sellerOrderMenuAdapter);
+                                    OrderMenuSync orderMenuSync = new OrderMenuSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, false);
+                                    orderMenuSync.execute(orderId, "0");
+
+                                    checkOrderMenuSerialList();
+                                }
+                            });
+                            builder.show();
+                        }
+                    }
+                    break;
+                }
+
+                case OrderStatusUpdateJob.PROCESS_ID: {
+                    Log.d(getClass().getSimpleName(), "Order status updated");
+                    Intent data = new Intent();
+                    data.putExtra("position", position);
+                    setResult(RESULT_OK, data);
+                    finish();
+                    break;
+                }
+            }
+
+        } catch (Exception e) {
+            Log.e(getClass().getSimpleName(), e.getMessage(), e);
+        }
+    }
+
+    public void onEventMainThread(GenericEvent.RequestFailed failed) {
+        progressDialog.dismiss();
+
+        switch (failed.getProcessId()) {
+            case ShipmentJob.PROCESS_ID:
+                Log.d(getClass().getSimpleName(), "[ shipment prosess failed ]");
+                shipment = null;
+                resendShipment();
+                break;
+
+            case MenuUpdateJob.PROCESS_ID:
+                Log.d(getClass().getSimpleName(), "[ menu update failed ]");
+                count++;
+                updateMenuError = true;
+                if (count == maxSerialist){
+                    resendOrderMenuUpdate();
+                }
+                break;
+
+            case SerialJob.PROCESS_ID:
+//                AlertMessage("Gagal mengirim serial");
+                Log.d(getClass().getSimpleName(), "[ serial job failed ]");
+                count++;
+                serialError = true;
+                if (count == maxSerialist) {
+                    Log.d(getClass().getSimpleName(), "[ serial job failed ]");
+                    resendSerial();
+                }
+                break;
+
+            case OrderUpdateJob.PROCESS_ID:
+                AlertMessage("Gagal mengupdate status order");
+                break;
+        }
+
+    }
 
     class OrderMenuSync extends AsyncTask<String, Void, JSONObject> {
 
@@ -425,7 +564,6 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         }
     }
 
-
     private void refreshContent() {
         //clean data
         sellerOrderMenuAdapter = new SellerOrderMenuAdapter(this, orderId);
@@ -458,147 +596,27 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         }
     }
 
-    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
-        Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
-        switch (requestInProgress.getProcessId()) {
-            case ShipmentJob.PROCESS_ID:
-                progressDialog.setTitle("shipping");
-                Log.d(getClass().getSimpleName(), "shipping");
-                break;
-
-            case MenuUpdateJob.PROCESS_ID:
-                progressDialog.setTitle("Updating in progress");
-                Log.d(getClass().getSimpleName(), "Updating in progress");
-                break;
-
-            case SerialJob.PROCESS_ID:
-                progressDialog.setTitle("Serial in progress");
-                Log.d(getClass().getSimpleName(), "Serial in progress");
-                break;
-
-            case OrderStatusUpdateJob.PROCESS_ID:
-                Log.d(getClass().getSimpleName(), "update order in progress");
-                break;
-        }
-    }
-
-    public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
-        Log.d(getClass().getSimpleName(), "success event : " + requestSuccess);
-
-        try {
-            switch (requestSuccess.getProcessId()) {
-                case ShipmentJob.PROCESS_ID: {
-
-                    Log.d(getClass().getSimpleName(), "shipment sucess");
-                    shipment = (Shipment) requestSuccess.getResponse().getContent();
-
-                    List<SerialNumber> serialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-                    maxSerialist = 0;
-                    count = 0;
-                    maxSerialist = serialList.size();
-                    Log.d(getClass().getSimpleName(), " getted serial count" + serialList.size() + " ================================================ ");
-
-                    Log.d(getClass().getSimpleName(), " getted order menu serial count" + orderMenuListSerial.size() + " ================================================ ");
-                    for (String om : orderMenuListSerial) {
-                        Log.d(getClass().getSimpleName(), " access job order menu serial id " + om + " ================================================");
-
-                        jobManager.addJobInBackground(new MenuUpdateJob(preferences.getString("server_url", ""), orderId, om));
-                    }
-                    for (SerialNumber snn : serialList) {
-                        Log.d(getClass().getSimpleName(), " getted serial " + snn.getId() + " ================================================ ");
-                        Log.d(getClass().getSimpleName(), " getted serial shipment id " + requestSuccess.getEntityId() + " ================================================ ");
-                        jobManager.addJobInBackground(new SerialJob(preferences.getString("server_url", ""), snn.getId(), requestSuccess.getEntityId()));
-
-                    }
-                    break;
-                }
-
-                case MenuUpdateJob.PROCESS_ID: {
-                    Log.d(getClass().getSimpleName(), "update order menu succcess");
-                    break;
-                }
-
-                case SerialJob.PROCESS_ID: {
-                    Log.d(getClass().getSimpleName(), "Serial succcess");
-                    count++;
-                    Log.d(getClass().getSimpleName(), "max serialist : " + Integer.valueOf(maxSerialist));
-                    Log.d(getClass().getSimpleName(), "count serialist number: " + Integer.valueOf(count));
-
-                    if (count == maxSerialist) {
-
-                        Log.d(getClass().getSimpleName(), "number " + count);
-                        Log.d(getClass().getSimpleName(), "max " + maxSerialist);
-                        progressDialog.dismiss();
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(SellerOrderMenuListActivity.this);
-                        builder.setTitle("Shipment");
-                        builder.setMessage("Proses selesai\nNomor Pengiriman : " + shipment.getReceiptNumber());
-                        builder.setCancelable(false);
-                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                page = 1;
-                                totalPage = 0;
-
-                                sellerOrderMenuAdapter = new SellerOrderMenuAdapter(SellerOrderMenuListActivity.this, orderId);
-                                recyclerView.setAdapter(sellerOrderMenuAdapter);
-
-                                OrderMenuSync orderMenuSync = new OrderMenuSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, false);
-                                orderMenuSync.execute(orderId, "0");
-
-                                checkOrderMenuSerialList();
-                            }
-                        });
-                        builder.show();
-                    }
-                    break;
-                }
-
-                case OrderStatusUpdateJob.PROCESS_ID: {
-                    Log.d(getClass().getSimpleName(), "Order status updated");
-                    Intent data = new Intent();
-                    data.putExtra("position", position);
-                    setResult(RESULT_OK, data);
-                    finish();
-                    break;
-                }
-            }
-
-        } catch (Exception e) {
-            Log.e(getClass().getSimpleName(), e.getMessage(), e);
-        }
-    }
-
-    public void onEventMainThread(GenericEvent.RequestFailed failed) {
-        progressDialog.dismiss();
-
-        switch (failed.getProcessId()) {
-            case ShipmentJob.PROCESS_ID:
-                AlertMessage("Gagal mengirim shipment");
-                break;
-
-            case MenuUpdateJob.PROCESS_ID:
-                AlertMessage("Gagal mengupdate order menu");
-                break;
-
-            case SerialJob.PROCESS_ID:
-                AlertMessage("Gagal mengirim serial");
-                break;
-
-            case OrderUpdateJob.PROCESS_ID:
-                AlertMessage("Gagal mengupdate status order");
-                break;
-        }
-
-        Log.e(getClass().getSimpleName(),
-                failed.getResponse().getHttpResponse().getStatusLine().getStatusCode() + " :"
-                        + failed.getResponse().getHttpResponse().getStatusLine().getReasonPhrase());
-    }
-
     private void checkOrderMenuSerialList() {
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(this);
         serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+
+        if (serialNumbers.size() > 0) {
+            for (int x = 0; x < serialNumbers.size(); x++) {
+                String id = serialNumbers.get(x).getOrderMenu().getId();
+                if (!orderMenuListSerial.contains(id)) {
+                    orderMenuListSerial.add(id);
+                    Log.d(getClass().getSimpleName(), "check order menu list size " + orderMenuListSerial.size());
+                }
+            }
+        } else {
+            orderMenuListSerial = new ArrayList<String>();
+        }
+        Log.d(getClass().getSimpleName(), "check order menu list size " + orderMenuListSerial.size());
+    }
+
+    private void checkOrderMenuSerialListHasSync() {
+        serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(this);
+        serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndhasSync(orderId);
 
         if (serialNumbers.size() > 0) {
             for (int x = 0; x < serialNumbers.size(); x++) {
@@ -643,5 +661,73 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         startActivityForResult(scanner, requestScannerCode);
     }
 
+    private void resendShipment(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Shipment");
+        builder.setCancelable(false);
+        builder.setMessage("Proses failed\nrepeat proses ?");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                jobManager.addJobInBackground(new ShipmentJob(preferences.getString("server_url", ""), orderId));
+                progressDialog.show();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    private void resendSerial(){
+        serialError = false;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Shipment");
+        builder.setCancelable(false);
+        builder.setMessage("Proses failed\nrepeat proses !");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                progressDialog.show();
+                List<SerialNumber> serialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+                maxSerialist = 0;
+                count = 0;
+                maxSerialist = serialList.size();
+                for (SerialNumber snn : serialList) {
+                    Log.d(getClass().getSimpleName(), " getted serial " + snn.getId() + " ================================================ ");
+                    jobManager.addJobInBackground(new SerialJob(preferences.getString("server_url", ""), snn.getId(), shipment.getId()));
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void resendOrderMenuUpdate(){
+        updateMenuError = false;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Shipment");
+        builder.setCancelable(false);
+        builder.setMessage("Proses failed\nrepeat proses !!");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                progressDialog.show();
+                maxSerialist = 0;
+                count = 0;
+                maxSerialist = orderMenuListSerial.size();
+
+                checkOrderMenuSerialListHasSync();
+                for (String om : orderMenuListSerial) {
+                    Log.d(getClass().getSimpleName(), " access job order menu serial id " + om + " ================================================");
+
+                    jobManager.addJobInBackground(new MenuUpdateJob(preferences.getString("server_url", ""), orderId, om));
+                }
+            }
+        });
+        builder.show();
+    }
 
 }

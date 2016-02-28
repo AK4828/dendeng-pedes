@@ -4,6 +4,7 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joanzapata.iconify.Iconify;
@@ -26,6 +27,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 
+import io.fabric.sdk.android.Fabric;
 import java.io.File;
 
 /**
@@ -44,6 +46,7 @@ public class SignageAppication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.no_image)
