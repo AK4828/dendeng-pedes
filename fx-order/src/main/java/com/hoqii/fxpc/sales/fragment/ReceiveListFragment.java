@@ -61,7 +61,7 @@ public class ReceiveListFragment extends Fragment implements TaskService {
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout dataNull, dataFailed, dataCheck;
     private boolean isMinLoli = false;
-    private String receiveUrl = "/api/order/receives";
+    private String receiveUrl = "/api/order/receives/status";
     private JobManager jobManager;
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
     private Button checkButton, reloadButton, showMoreButton;
