@@ -1,11 +1,15 @@
 package com.hoqii.fxpc.sales.activity;
 
 import android.content.DialogInterface;
-import android.os.Build;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -15,14 +19,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.hoqii.fxpc.sales.R;
+import com.hoqii.fxpc.sales.adapter.ProductAdapter;
+import com.hoqii.fxpc.sales.content.database.adapter.CategoryDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderMenuDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.ProductDatabaseAdapter;
+import com.hoqii.fxpc.sales.entity.Category;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.entity.Product;
@@ -31,6 +38,7 @@ import com.hoqii.fxpc.sales.util.ImageUtil;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
 import com.joanzapata.iconify.widget.IconTextView;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -40,24 +48,31 @@ import java.util.List;
 /**
  * Created by miftakhul on 12/2/15.
  */
-public class OrderActivity extends AppCompatActivity {
+public class OrderActivityCustom extends AppCompatActivity {
 
     private Toolbar toolbar;
-    private ImageView prodcutThumb;
-    private TextView productName, productPrice, productDesc, orderPrice, orderDesc, totalReward;
-    private IconTextView reward;
+    private ImageView prodcutThumb, smallProductImage;
+    private TextView productName, productCategory, productNameSub, productDesc, orderType, orderPrice, orderDesc, smallProductCategory;
+    private IconTextView productPrice, reward;
     private Product product;
+    private Category category;
+    private ImageLoader imagePreview;
     private Spinner orderSpin;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
+    private LinearLayout linearLayoutDesc;
+    private CardView categoryLayout;
     private Button orderButton;
-    private View appShadow;
 
 
     private ProductDatabaseAdapter productDatabaseAdapter;
+    private CategoryDatabaseAdapter categoryDatabaseAdapter;
     private OrderDatabaseAdapter orderDatabaseAdapter;
     private OrderMenuDatabaseAdapter orderMenuDatabaseAdapter;
 
-    private boolean isMinLoli = false;
-    private String productId;
+    private ProductAdapter productAdapter;
+
+    private int mutedColor, lightMutedColor, vibrantColor;
+    private String productId, categoryId;
     private long orderMenuPrice;
     private List<Integer> orderCountList = new ArrayList<Integer>();
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");
@@ -67,13 +82,7 @@ public class OrderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_order);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            isMinLoli = true;
-        } else {
-            isMinLoli = false;
-        }
+        setContentView(R.layout.activity_order_custom);
 
         init();
         if (getIntent().getExtras() != null) {
@@ -81,6 +90,8 @@ public class OrderActivity extends AppCompatActivity {
             qty = getIntent().getIntExtra("qtyUpdate", 0);
 
             product = productDatabaseAdapter.findAllProductById(productId);
+            categoryId = product.getParentCategory().getId();
+            category = categoryDatabaseAdapter.findCategoryById(categoryId);
         }
 
         initSet();
@@ -100,6 +111,8 @@ public class OrderActivity extends AppCompatActivity {
                 super.onBackPressed();
                 break;
             case R.id.menu_cart :
+//                setResult(RESULT_OK);
+//                finish();
                 dialogOrder();
                 break;
 
@@ -110,21 +123,30 @@ public class OrderActivity extends AppCompatActivity {
 
     private void init() {
         toolbar = (Toolbar) findViewById(R.id.toolbar_order);
-        prodcutThumb = (ImageView) findViewById(R.id.product_image);
+        prodcutThumb = (ImageView) findViewById(R.id.order_product_preview);
+        smallProductImage = (ImageView) findViewById(R.id.small_product_pic);
         productName = (TextView) findViewById(R.id.order_product_name);
-        productPrice = (TextView) findViewById(R.id.order_product_price);
+//        productNameSub = (TextView) findViewById(R.id.order_product_name_sub);
+        productNameSub = (TextView) findViewById(R.id.small_product_name);
+        productPrice = (IconTextView) findViewById(R.id.order_product_price);
         reward = (IconTextView) findViewById(R.id.product_reward);
         productDesc = (TextView) findViewById(R.id.order_product_desc);
+        productCategory = (TextView) findViewById(R.id.order_product_category);
+        smallProductCategory = (TextView) findViewById(R.id.small_product_category);
+        orderType = (TextView) findViewById(R.id.order_type);
         orderPrice = (TextView) findViewById(R.id.order_price);
         orderDesc = (TextView) findViewById(R.id.order_desc);
-        totalReward = (TextView) findViewById(R.id.order_reward);
         orderSpin = (Spinner) findViewById(R.id.order_spin);
-        orderButton = (Button) findViewById(R.id.addCart);
-//        appShadow = (View) findViewById(R.id.app_shadow);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
+        linearLayoutDesc = (LinearLayout) findViewById(R.id.linearLayout_desc);
+        categoryLayout = (CardView) findViewById(R.id.layout_category);
+        orderButton = (Button) findViewById(R.id.order_button);
 
         productDatabaseAdapter = new ProductDatabaseAdapter(this);
+        categoryDatabaseAdapter = new CategoryDatabaseAdapter(this);
         orderDatabaseAdapter = new OrderDatabaseAdapter(this);
         orderMenuDatabaseAdapter = new OrderMenuDatabaseAdapter(this);
+        imagePreview = ImageLoader.getInstance();
     }
 
     private void initSet() {
@@ -133,26 +155,25 @@ public class OrderActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
 
-//        if (isMinLoli){
-//            appShadow.setVisibility(View.GONE);
-//        }else {
-//            appShadow.setVisibility(View.VISIBLE);
-//        }
-
-        Glide.with(this).load("file://" + ImageUtil.getImagePath(this, productId)).error(R.drawable.no_image).into(prodcutThumb);
+        collapsingToolbarLayout.setTitle("Order " + product.getName());
+        imagePreview.displayImage("file://" + ImageUtil.getImagePath(this, productId), prodcutThumb);
+        imagePreview.displayImage("file://" + ImageUtil.getImagePath(this, productId), smallProductImage);
         productName.setText(product.getName());
-
-        productPrice.setText("Rp." + decimalFormat.format(product.getSellPrice()));
-        reward.setText("Reward : " + Double.toString(product.getReward()) + " Points");
-        orderPrice.setText("Total : Rp." + decimalFormat.format(product.getSellPrice()));
-        totalReward.setText("Total Reward : "+ product.getReward());
-        orderMenuType = OrderMenu.OrderType.PURCHASE_ORDER;
-
-        if (product.getDescription() != null || product.getDescription() != "null" || product.getDescription() != ""){
+        productNameSub.setText(product.getName());
+        Log.d(getClass().getSimpleName(), "====================== description : " + product.getDescription());
+        if (product.getDescription() != null || product.getDescription().equalsIgnoreCase(null) || product.getDescription().equalsIgnoreCase("") || product.getDescription().equalsIgnoreCase("null")){
             productDesc.setText(product.getDescription());
         }else {
-            productDesc.setText("No description");
+            productDesc.setText("Tidak ada deskripsi");
         }
+        productPrice.setText("{typcn-tags}  Rp." + decimalFormat.format(product.getSellPrice()));
+        reward.setText("{typcn-star-full-outline}  Reward : " + Double.toString(product.getReward()) + " point");
+        Log.d(getClass().getSimpleName(), "====================== reward : " + product.getReward());
+        productCategory.setText(category.getName());
+        smallProductCategory.setText(category.getName());
+
+        orderMenuType = OrderMenu.OrderType.PURCHASE_ORDER;
+//        orderType.setText(orderMenuType.name());
 
         for (int x = 1; x <= 100; x++) {
             orderCountList.add(x);
@@ -164,39 +185,17 @@ public class OrderActivity extends AppCompatActivity {
         // for update order
         if (qty != 0) {
             orderSpin.setSelection(qty - 1);
-            orderPrice.setText("Total : Rp." + decimalFormat.format(product.getSellPrice() * qty));
-            totalReward.setText("Total Reward : " + product.getReward() * qty);
-        }else {
-            orderSpin.setSelection(0);
         }
-
-//        orderSpin.setShowNumberPickerDialog(false);
-//        orderSpin.setOnValueChangeListener(new OnValueChangeListener() {
-//            @Override
-//            public boolean onValueChange(SwipeNumberPicker view, int oldValue, int newValue) {
-//                boolean isValueOk = (newValue & 1) == 0;
-//
-//                long productPrice = product.getSellPrice();
-//                long price = productPrice * newValue;
-//                orderMenuPrice = price;
-//                orderPrice.setText("Total : Rp." + decimalFormat.format(price));
-//
-//                totalReward.setText("Total Reward : " + product.getReward() + newValue);
-//
-//                return isValueOk;
-//            }
-//        });
 
         orderSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 long productPrice = product.getSellPrice();
-                long price = productPrice * (int)orderSpin.getSelectedItem();
+                long price = productPrice * (position + 1);
 
                 orderMenuPrice = price;
 
-                orderPrice.setText("Total price : Rp." + decimalFormat.format(price));
-                totalReward.setText("Total Reward : " + (int)product.getReward() * (int)orderSpin.getSelectedItem());
+                orderPrice.setText("Total : Rp." + decimalFormat.format(price));
 
             }
 
@@ -206,13 +205,32 @@ public class OrderActivity extends AppCompatActivity {
             }
         });
 
-
+//
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialogOrder();
             }
         });
+
+        Bitmap linearBitmap = BitmapFactory.decodeFile(ImageUtil.getImagePath(this, productId));
+
+        try {
+            Palette.from(linearBitmap).generate(new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(Palette palette) {
+                    mutedColor = palette.getMutedColor(R.color.colorPrimaryDark);
+                    lightMutedColor = palette.getLightMutedColor(R.color.colorPrimaryDark);
+                    vibrantColor = palette.getVibrantColor(R.color.colorPrimaryDark);
+
+                    linearLayoutDesc.setBackgroundColor(mutedColor);
+                    categoryLayout.setCardBackgroundColor(vibrantColor);
+                }
+            });
+        }catch (IllegalArgumentException e){
+            Log.e("Bitmap status",e.getMessage());
+        }
+
 
     }
 
@@ -242,7 +260,7 @@ public class OrderActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String orderId = orderDatabaseAdapter.getOrderId();
-                int q = (int)orderSpin.getSelectedItem();
+                int q = Integer.parseInt(orderSpin.getSelectedItem().toString());
 
                 if (orderId == null) {
                     orderId = saveOrder();
@@ -348,7 +366,7 @@ public class OrderActivity extends AppCompatActivity {
         alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+
             }
         });
 

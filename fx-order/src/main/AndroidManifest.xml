@@ -34,9 +34,9 @@
         <activity
             android:name="com.hoqii.fxpc.sales.activity.MainActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar.Transculent" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.OrderActivity"
+            android:name=".activity.OrderActivity"
             android:theme="@style/AppTheme.NoActionBar.Collapse" />
         <activity
             android:name="com.hoqii.fxpc.sales.activity.BusinessPartnerActivity"

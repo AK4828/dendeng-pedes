@@ -2,31 +2,22 @@ package com.hoqii.fxpc.sales.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.activity.MainActivity;
 import com.hoqii.fxpc.sales.activity.MainActivityMaterial;
 import com.hoqii.fxpc.sales.activity.OrderActivity;
 import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.util.ImageUtil;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.joanzapata.iconify.widget.IconTextView;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -87,39 +78,41 @@ public class ProductAdapter extends BaseAdapter {
         holder.price = (TextView) itemView.findViewById(R.id.text_price);
         holder.imageView = (ImageView) itemView.findViewById(R.id.image);
         holder.detailLayout = (RelativeLayout) itemView.findViewById(R.id.detail_layout);
+        holder.point = (IconTextView) itemView.findViewById(R.id.text_point);
 
         holder.title.setText(products.get(position).getName());
 
         holder.price.setText("Rp. " + decimalFormat.format(products.get(position).getSellPrice()));
+        holder.point.setText(products.get(position).getReward()+" point {typcn-star-outline}");
 
         Glide.with(mcontext).load("file://" + ImageUtil.getImagePath(mcontext, products.get(position).getId())).into(holder.imageView);
 
 
         Log.d("path image", ImageUtil.getImagePath(mcontext, products.get(position).getId()));
         Log.d("image file", String.valueOf(ImageUtil.getImage(mcontext, products.get(position).getId())));
-        if (ImageUtil.getImage(mcontext, products.get(position).getId()) != null) {
-//            Bitmap bitmap = BitmapFactory.decodeFile(ImageUtil.getImagePath(mcontext, products.get(position).getId()));
-
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 8;
-            Bitmap bitmap = BitmapFactory.decodeFile(ImageUtil.getImagePath(mcontext, products.get(position).getId()), options);
-
-            try {
-                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                    @Override
-                    public void onGenerated(Palette palette) {
-                        mutedColor = palette.getMutedColor(R.attr.colorPrimary);
-                        holder.detailLayout.setBackgroundColor(mutedColor);
-                    }
-                });
-            } catch (IllegalArgumentException e) {
-                Log.e("Bitmat status", e.getMessage());
-            }
-
-
-        } else {
-            holder.detailLayout.setBackgroundColor(mcontext.getResources().getColor(R.color.grey));
-        }
+//        if (ImageUtil.getImage(mcontext, products.get(position).getId()) != null) {
+////            Bitmap bitmap = BitmapFactory.decodeFile(ImageUtil.getImagePath(mcontext, products.get(position).getId()));
+//
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inSampleSize = 8;
+//            Bitmap bitmap = BitmapFactory.decodeFile(ImageUtil.getImagePath(mcontext, products.get(position).getId()), options);
+//
+//            try {
+//                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+//                    @Override
+//                    public void onGenerated(Palette palette) {
+//                        mutedColor = palette.getMutedColor(R.attr.colorPrimary);
+//                        holder.detailLayout.setBackgroundColor(mutedColor);
+//                    }
+//                });
+//            } catch (IllegalArgumentException e) {
+//                Log.e("Bitmat status", e.getMessage());
+//            }
+//
+//
+//        } else {
+//            holder.detailLayout.setBackgroundColor(mcontext.getResources().getColor(R.color.grey));
+//        }
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +139,7 @@ public class ProductAdapter extends BaseAdapter {
         TextView title, price;
         ImageView imageView;
         RelativeLayout detailLayout;
+        IconTextView point;
     }
 
 

@@ -18,8 +18,8 @@ android {
         applicationId "com.hoqii.fxpc.sales"
         minSdkVersion 17
         targetSdkVersion 21
-        versionCode 9
-        versionName "2.7"
+        versionCode 10
+        versionName "2.8"
     }
 
     packagingOptions {
@@ -98,7 +98,7 @@ dependencies {
     compile 'com.joanzapata.iconify:android-iconify-ionicons:2.1.1' // (v2.0.1)
 
     compile 'com.sothree.slidinguppanel:library:3.2.1'
-
+    compile 'com.github.supervital:swipenumberpicker:1.0.3'
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
     compile ('com.github.ozodrukh:CircularReveal:1.1.1@aar') {

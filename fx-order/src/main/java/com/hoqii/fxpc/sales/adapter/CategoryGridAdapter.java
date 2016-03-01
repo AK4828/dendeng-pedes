@@ -3,6 +3,7 @@ package com.hoqii.fxpc.sales.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -32,16 +34,27 @@ import java.util.List;
 public class CategoryGridAdapter extends BaseAdapter {
     private Context mcontext;
     private List<Category> categories;
-    private int mutedColor;
+    private List<String> color = new ArrayList<String>();
+
+    String[] baseColor = {"#DD7627","#F59D27","#2C8EC9","#6CAA44","#6A51A1","#93287D"};
+
 
     private static LayoutInflater infalter = null;
 
     public CategoryGridAdapter(Context c, List<Category> categories) {
         mcontext = c;
         infalter = (LayoutInflater) mcontext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         this.categories = categories;
 
+        if (categories.size() > 0){
+            for (int x = 0; x < categories.size(); x++){
+                if (color.size() < categories.size()){
+                    for (String a : baseColor){
+                        color.add(a);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -67,7 +80,8 @@ public class CategoryGridAdapter extends BaseAdapter {
 
         holder.imageView = (ImageView) itemView.findViewById(R.id.category_image);
         holder.title = (TextView) itemView.findViewById(R.id.category_title);
-        holder.cardView = (View) itemView.findViewById(R.id.category_view);
+        holder.layout = (RelativeLayout) itemView.findViewById(R.id.detail_layout);
+
 
         List<Product> products = new ArrayList<Product>();
 
@@ -81,6 +95,7 @@ public class CategoryGridAdapter extends BaseAdapter {
         }
 
         holder.title.setText(categories.get(position).getName());
+        holder.layout.setBackgroundColor(Color.parseColor(color.get(position)));
         return itemView;
 
     }
@@ -88,6 +103,6 @@ public class CategoryGridAdapter extends BaseAdapter {
     public class Holder {
         public ImageView imageView;
         public TextView title;
-        public View cardView;
+        public RelativeLayout layout;
     }
 }

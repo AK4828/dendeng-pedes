@@ -183,6 +183,7 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
         swipeRefreshLayout.setRefreshing(false);
         dataFailed.setVisibility(View.VISIBLE);
         dataCheck.setVisibility(View.GONE);
+        dataNull.setVisibility(View.GONE);
     }
 
 

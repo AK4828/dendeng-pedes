@@ -18,7 +18,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="120dp">
+                android:layout_height="120dp"
+                android:background="@color/white">
 
                 <ImageView
                     android:id="@+id/image"
@@ -27,7 +28,6 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:adjustViewBounds="true"
-                    android:background="@android:color/transparent"
                     android:scaleType="fitCenter"
                     android:transitionName="@string/transition_image"/>
 
@@ -36,18 +36,18 @@
             <RelativeLayout
                 android:id="@+id/detail_layout"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="@color/grey"
-                android:padding="8dp">
+                android:layout_height="70dp"
+                android:background="#F5F7F9">
 
-                <ImageView
-                    android:id="@+id/img_label"
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:id="@+id/text_point"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
-                    android:src="@drawable/ic_bookmark_black_18dp"
-                    android:tint="@android:color/white"
+                    android:text="{typcn-star-outline}"
+                    android:textColor="@color/grey"
+                    android:textSize="11sp"
                     android:layout_margin="8dp"/>
 
                 <TextView
@@ -55,11 +55,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:layout_toLeftOf="@id/img_label"
+                    android:layout_toLeftOf="@id/text_point"
                     android:text="---"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/grey"
                     android:textStyle="bold"
                     android:layout_margin="8dp"
+                    android:textSize="11sp"
                     android:transitionName="@string/transition_title"/>
 
                 <TextView
@@ -69,8 +70,9 @@
                     android:layout_alignParentLeft="true"
                     android:layout_below="@id/text_name"
                     android:text="---"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/grey"
                     android:textStyle="bold"
+                    android:textSize="11sp"
                     android:layout_marginLeft="8dp"
                     android:transitionName="@string/transition_price"/>
 
