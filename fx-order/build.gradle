@@ -18,8 +18,8 @@ android {
         applicationId "com.hoqii.fxpc.sales"
         minSdkVersion 17
         targetSdkVersion 21
-        versionCode 10
-        versionName "2.8"
+        versionCode 11
+        versionName "2.9"
     }
 
     packagingOptions {

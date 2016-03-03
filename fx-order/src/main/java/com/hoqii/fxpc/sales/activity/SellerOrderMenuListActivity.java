@@ -351,7 +351,6 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                         Log.d(getClass().getSimpleName(), " getted serial " + snn.getId() + " ================================================ ");
                         Log.d(getClass().getSimpleName(), " getted serial shipment id " + requestSuccess.getEntityId() + " ================================================ ");
                         jobManager.addJobInBackground(new SerialJob(preferences.getString("server_url", ""), snn.getId(), requestSuccess.getEntityId()));
-
                     }
                     break;
                 }

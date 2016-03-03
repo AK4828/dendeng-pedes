@@ -222,10 +222,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         EventBus.getDefault().unregister(this);
     }
 
-    private void forceUnRegisterWhenExist() {
-        EventBus.getDefault().unregister(this);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.order_list, menu);
@@ -327,6 +323,10 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void forceUnRegisterWhenExist() {
+        EventBus.getDefault().unregister(this);
     }
 
     private void setNav() {
@@ -462,15 +462,16 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         } else {
             Log.d(getClass().getSimpleName(), "[ receipt number from order id " + orderId + " [is not null / receiptNumber" + receiptNumber + " ] ]");
             Order order = orderDbAdapter.findOrderById(orderId);
-            Log.d(getClass().getSimpleName(), "Order ID : " + orderId
-                    + " Update Parameter : >> RefId " + order.getRefId()
-                    + " \n>> EntittyOrderId : " + order.getId() + " | "
-                    + preferences.getString("server_url", ""));
+            orderMenuIdes = orderMenuDbAdapter.findOrderMenuIdesByOrderIdActive(orderId);
+            totalOrderMenus = orderMenuIdes.size();
 
-            jobManager.addJobInBackground(new OrderUpdateJob(order.getRefId(), order.getId(),
-                    preferences.getString("server_url", "")));
+            Log.d(getClass().getSimpleName(), "Order Menu Ides Size : " + orderMenuIdes.size());
+
+            for (String id : orderMenuIdes) {
+                jobManager.addJobInBackground(new OrderMenuJob(order.getRefId(), id,
+                        preferences.getString("server_url", "")));
+            }
         }
-
         dialog.show();
     }
 
@@ -564,16 +565,17 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
         if (result != null) {
             if (code == SignageVariables.REQUEST_ORDER) {
-                Log.d(getClass().getSimpleName(), result + ">> RequestOrderSyncTask * Success");
+                Log.d(getClass().getSimpleName(), result + ">> RequestOrderMenuSyncTask * Success");
                 Order order = orderDbAdapter.findOrderById(orderId);
+                orderMenuIdes = orderMenuDbAdapter.findOrderMenuIdesByOrderIdActive(orderId);
+                totalOrderMenus = orderMenuIdes.size();
 
-                Log.d(getClass().getSimpleName(), "Order ID : " + orderId
-                        + " Update Parameter : >> RefId " + order.getRefId()
-                        + " \n>> EntittyOrderId : " + order.getId() + " | "
-                        + preferences.getString("server_url", ""));
+                Log.d(getClass().getSimpleName(), "Order Menu Ides Size : " + orderMenuIdes.size());
+                for (String id : orderMenuIdes) {
+                    jobManager.addJobInBackground(new OrderMenuJob(order.getRefId(), id,
+                            preferences.getString("server_url", "")));
+                }
 
-                jobManager.addJobInBackground(new OrderUpdateJob(order.getRefId(), order.getId(),
-                        preferences.getString("server_url", "")));
             }
         }
     }
@@ -604,22 +606,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         try {
             switch (requestSuccess.getProcessId()) {
                 case OrderUpdateJob.PROCESS_ID:
-                    Log.d(getClass().getSimpleName(), "RequestSuccess OrderUpdateJob: >> RefId : "
-                            + requestSuccess.getRefId() + "\n >> Entity id: " + requestSuccess.getEntityId());
-
-                    orderMenuIdes = orderMenuDbAdapter.findOrderMenuIdesByOrderIdActive(requestSuccess.getEntityId());
-                    totalOrderMenus = orderMenuIdes.size();
-
-                    Log.d(getClass().getSimpleName(), "Order Menu Ides Size : " + orderMenuIdes.size());
-
-                    for (String id : orderMenuIdes) {
-                        Log.d(getClass().getSimpleName(), "ORDER MENU ID : " + id);
-                        Log.d(getClass().getSimpleName(), "ORDER REF ID : " + requestSuccess.getRefId());
-                        Log.d("ORDER UPDATE", "================================================================ ");
-                        jobManager.addJobInBackground(new OrderMenuJob(requestSuccess.getRefId(), id,
-                                preferences.getString("server_url", "")));
-                    }
-
+                    dialogSuccessOrder();
                     break;
                 case OrderMenuJob.PROCESS_ID:
                     orderMenuCount++;
@@ -631,7 +618,11 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         if (orderMenuError){
                             retryRequestOrderMenu();
                         }else {
-                            dialogSuccessOrder();
+//                            dialogSuccessOrder();
+                            Order order = orderDbAdapter.findOrderById(orderId);
+
+                            jobManager.addJobInBackground(new OrderUpdateJob(order.getRefId(), order.getId(),
+                                    preferences.getString("server_url", "")));
                         }
                         Log.d(getClass().getSimpleName(), "Success ");
                     }
@@ -642,7 +633,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 case RefreshTokenJob.PROCESS_ID:
                     Log.d(getClass().getSimpleName(), "[ refresh job success, status set :" + refreshStatus.name() + " ]");
                     break;
-
             }
 
         } catch (Exception e) {

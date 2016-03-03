@@ -91,6 +91,12 @@ public class ReceiveListFragment extends Fragment implements TaskService {
         reloadButton = (Button) view.findViewById(R.id.btn_reload);
         showMoreButton = (Button) view.findViewById(R.id.btn_showmore);
 
+        if (isMinLoli == false){
+            checkButton.setTextColor(getResources().getColor(R.color.colorAccent));
+            reloadButton.setTextColor(getResources().getColor(R.color.colorAccent));
+            showMoreButton.setTextColor(getResources().getColor(R.color.colorAccent));
+        }
+
         recyclerView = (RecyclerView) view.findViewById(R.id.order_list);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
