@@ -1,6 +1,7 @@
 package com.hoqii.fxpc.sales.activity;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -14,7 +15,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -32,6 +36,8 @@ import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
 import com.joanzapata.iconify.widget.IconTextView;
 
+import org.w3c.dom.Text;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,10 +51,13 @@ public class OrderActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ImageView prodcutThumb;
     private TextView productName, productPrice, productDesc, orderPrice, orderDesc, totalReward;
+    private EditText orderCount;
     private IconTextView reward;
     private Product product;
+    private OrderMenu orderMenu;
     private Spinner orderSpin;
     private Button orderButton;
+    private ImageButton btnMin, btnPlus;
     private View appShadow;
 
 
@@ -81,6 +90,7 @@ public class OrderActivity extends AppCompatActivity {
             qty = getIntent().getIntExtra("qtyUpdate", 0);
 
             product = productDatabaseAdapter.findAllProductById(productId);
+            orderMenu = orderMenuDatabaseAdapter.findOrderMenuByProductId(productId);
         }
 
         initSet();
@@ -115,11 +125,14 @@ public class OrderActivity extends AppCompatActivity {
         productPrice = (TextView) findViewById(R.id.order_product_price);
         reward = (IconTextView) findViewById(R.id.product_reward);
         productDesc = (TextView) findViewById(R.id.order_product_desc);
-        orderPrice = (TextView) findViewById(R.id.order_price);
-        orderDesc = (TextView) findViewById(R.id.order_desc);
-        totalReward = (TextView) findViewById(R.id.order_reward);
-        orderSpin = (Spinner) findViewById(R.id.order_spin);
+//        orderPrice = (TextView) findViewById(R.id.order_price);
+//        orderDesc = (TextView) findViewById(R.id.order_desc);
+//        totalReward = (TextView) findViewById(R.id.order_reward);
+//        orderSpin = (Spinner) findViewById(R.id.order_spin);
         orderButton = (Button) findViewById(R.id.addCart);
+        orderCount = (EditText) findViewById(R.id.order_count);
+        btnMin = (ImageButton) findViewById(R.id.btn_min);
+        btnPlus = (ImageButton) findViewById(R.id.btn_plus);
 //        appShadow = (View) findViewById(R.id.app_shadow);
 
         productDatabaseAdapter = new ProductDatabaseAdapter(this);
@@ -132,25 +145,45 @@ public class OrderActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
-
-//        if (isMinLoli){
-//            appShadow.setVisibility(View.GONE);
-//        }else {
-//            appShadow.setVisibility(View.VISIBLE);
-//        }
+        Log.d(getClass().getSimpleName(), product.getDescription());
 
         Glide.with(this).load("file://" + ImageUtil.getImagePath(this, productId)).error(R.drawable.no_image).into(prodcutThumb);
         productName.setText(product.getName());
 
         productPrice.setText("Rp." + decimalFormat.format(product.getSellPrice()));
         reward.setText("Reward : " + Double.toString(product.getReward()) + " Points");
-        orderPrice.setText("Total : Rp." + decimalFormat.format(product.getSellPrice()));
-        totalReward.setText("Total Reward : "+ product.getReward());
+//        orderPrice.setText("Total : Rp." + decimalFormat.format(product.getSellPrice()));
+//        totalReward.setText("Total Reward : "+ product.getReward());
         orderMenuType = OrderMenu.OrderType.PURCHASE_ORDER;
 
         if (product.getDescription() != null || product.getDescription() != "null" || product.getDescription() != ""){
-            productDesc.setText(product.getDescription());
-        }else {
+            String temp = product.getDescription();
+            final String desc = temp.replace("\n"," ");
+
+            int length = desc.length();
+            if (length > 100){
+                final boolean[] clicked = {false};
+                int cut = length / 2;
+                final String newDesc = desc.substring(0, cut);
+                productDesc.setText(newDesc + "\n\nooo");
+
+                productDesc.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (clicked[0] == false) {
+                            clicked[0] = true;
+                            productDesc.setText(desc);
+                        }else {
+                            clicked[0] = false;
+                            productDesc.setText(newDesc + "\n\nooo");
+                        }
+                    }
+                });
+            }else {
+                productDesc.setText(desc);
+            }
+
+        } else {
             productDesc.setText("No description");
         }
 
@@ -158,55 +191,26 @@ public class OrderActivity extends AppCompatActivity {
             orderCountList.add(x);
         }
 
-        ArrayAdapter<Integer> orderSpinAdapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, orderCountList);
-        orderSpin.setAdapter(orderSpinAdapter);
-
         // for update order
         if (qty != 0) {
-            orderSpin.setSelection(qty - 1);
-            orderPrice.setText("Total : Rp." + decimalFormat.format(product.getSellPrice() * qty));
-            totalReward.setText("Total Reward : " + product.getReward() * qty);
+            orderCount.setText(Integer.toString(qty));
+            orderButton.setText("Update order");
         }else {
-            orderSpin.setSelection(0);
+            orderCount.setText(Integer.toString(1));
         }
 
-//        orderSpin.setShowNumberPickerDialog(false);
-//        orderSpin.setOnValueChangeListener(new OnValueChangeListener() {
-//            @Override
-//            public boolean onValueChange(SwipeNumberPicker view, int oldValue, int newValue) {
-//                boolean isValueOk = (newValue & 1) == 0;
-//
-//                long productPrice = product.getSellPrice();
-//                long price = productPrice * newValue;
-//                orderMenuPrice = price;
-//                orderPrice.setText("Total : Rp." + decimalFormat.format(price));
-//
-//                totalReward.setText("Total Reward : " + product.getReward() + newValue);
-//
-//                return isValueOk;
-//            }
-//        });
-
-        orderSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        btnMin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                long productPrice = product.getSellPrice();
-                long price = productPrice * (int)orderSpin.getSelectedItem();
-
-                orderMenuPrice = price;
-
-                orderPrice.setText("Total price : Rp." + decimalFormat.format(price));
-                totalReward.setText("Total Reward : " + (int)product.getReward() * (int)orderSpin.getSelectedItem());
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onClick(View v) {
+                addOrderCount(-1);
             }
         });
-
-
+        btnPlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addOrderCount(1);
+            }
+        });
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -214,6 +218,19 @@ public class OrderActivity extends AppCompatActivity {
             }
         });
 
+    }
+    private void addOrderCount(int count){
+        int c = Integer.parseInt(orderCount.getText().toString());
+        if (count > 0){
+            c += count;
+            orderCount.setText(Integer.toString(c));
+        }
+        if (count < 0){
+            if (c != 1) {
+                c += count;
+                orderCount.setText(Integer.toString(c));
+            }
+        }
     }
 
     public String saveOrder() {
@@ -233,16 +250,43 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     private void dialogOrder(){
-        Log.d(getClass().getSimpleName(), " current site id adalah  " + AuthenticationUtils.getCurrentAuthentication().getSite().getId());
-
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Order");
-        alert.setMessage("Order " + product.getName() + " ?");
+        View view = getLayoutInflater().from(OrderActivity.this).inflate(R.layout.view_order_desc, null);
+        orderDesc = (TextView) view.findViewById(R.id.order_desc);
+        final LinearLayout layoutDesc = (LinearLayout) view.findViewById(R.id.layout_desc);
+        final Button addOrderDesc = (Button) view.findViewById(R.id.btn_addOrderDesc);
+
+        if (!isMinLoli){
+            addOrderDesc.setTextColor(getResources().getColor(R.color.colorAccent));
+        }
+        if (qty != 0){
+            layoutDesc.setVisibility(View.VISIBLE);
+            addOrderDesc.setText("Cancel");
+            orderDesc.setText(orderMenu.getDescription());
+        }
+
+        addOrderDesc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (layoutDesc.getVisibility() == View.VISIBLE) {
+                    layoutDesc.setVisibility(View.GONE);
+                    addOrderDesc.setText("Add description");
+                    orderDesc.setText("");
+                } else if (layoutDesc.getVisibility() == View.GONE) {
+                    layoutDesc.setVisibility(View.VISIBLE);
+                    addOrderDesc.setText("Cancel");
+                }
+            }
+        });
+
+
+        alert.setView(view);
+        alert.setTitle("Order " + product.getName());
         alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String orderId = orderDatabaseAdapter.getOrderId();
-                int q = (int)orderSpin.getSelectedItem();
+                int q = Integer.parseInt(orderCount.getText().toString());
 
                 if (orderId == null) {
                     orderId = saveOrder();

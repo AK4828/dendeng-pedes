@@ -47,7 +47,6 @@ public class ContactsActivity extends AppCompatActivity{
 
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         recyclerView = (RecyclerView) findViewById(R.id.contacts_recycler);
-
     }
 
     private void initSet(){
