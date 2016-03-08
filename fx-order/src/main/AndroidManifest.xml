@@ -104,6 +104,10 @@
             android:name="com.hoqii.fxpc.sales.activity.SelfHistoryOrderMenuListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.StockListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name="com.hoqii.fxpc.sales.activity.PreferenceActivity"/>

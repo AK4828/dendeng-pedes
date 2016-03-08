@@ -76,22 +76,22 @@ public class AuthenticationCeck {
         /**
          * set access
          * **/
-//        if (expiresIn > realDurationInSecon) {
-//            access = true;
-//            Log.d(getClass().getSimpleName(), "access status : granted");
-//        } else {
-//            access = false;
-//            Log.d(getClass().getSimpleName(), "access status : not granted");
-//        }
-
-
-//testing
-        if (expiresIn > (realDurationInSecon + 43139)) {
+        if (expiresIn > realDurationInSecon) {
             access = true;
             Log.d(getClass().getSimpleName(), "access status : granted");
         } else {
             access = false;
+            Log.d(getClass().getSimpleName(), "access status : not granted");
         }
+
+
+//testing
+//        if (expiresIn > (realDurationInSecon + 43139)) {
+//            access = true;
+//            Log.d(getClass().getSimpleName(), "access status : granted");
+//        } else {
+//            access = false;
+//        }
         Log.d(getClass().getSimpleName(), "access status : " + String.valueOf(access));
         return access;
     }

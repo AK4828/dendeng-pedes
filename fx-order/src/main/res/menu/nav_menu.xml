@@ -4,25 +4,13 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:title="@string/nav_home"
-            android:icon="@drawable/ic_dashboard_black_24dp"/>
+            android:icon="@drawable/ic_dashboard_black_24dp"
+            android:title="@string/nav_home" />
     </group>
 
     <item android:title="@string/nav_order">
         <menu>
             <group android:checkableBehavior="single">
-                <!--<item-->
-                    <!--android:id="@+id/nav_order_requesition"-->
-                    <!--android:icon="@drawable/ic_shopping_cart_black_24dp"-->
-                    <!--android:title="@string/nav_order_requesition" />-->
-                <!--<item-->
-                    <!--android:id="@+id/nav_order_quantity"-->
-                    <!--android:icon="@drawable/ic_shopping_cart_black_24dp"-->
-                    <!--android:title="@string/nav_order_quantity" />-->
-                <!--<item-->
-                    <!--android:id="@+id/nav_order_purches"-->
-                    <!--android:icon="@drawable/ic_shopping_cart_black_24dp"-->
-                    <!--android:title="@string/nav_order_purches" />-->
                 <item
                     android:id="@+id/nav_order_purches_history"
                     android:icon="@drawable/ic_list_black_24dp"
@@ -36,16 +24,16 @@
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/seller_purchase_order_list"
-                    android:title="@string/nav_order_list"
-                    android:icon="@drawable/ic_list_black_24dp"/>
+                    android:icon="@drawable/ic_list_black_24dp"
+                    android:title="@string/nav_order_list" />
                 <!--<item-->
-                    <!--android:id="@+id/seller_shipment_list"-->
-                    <!--android:title="@string/nav_shipment_list"-->
-                    <!--android:icon="@drawable/ic_list_black_24dp"/>-->
+                <!--android:id="@+id/seller_shipment_list"-->
+                <!--android:title="@string/nav_shipment_list"-->
+                <!--android:icon="@drawable/ic_list_black_24dp"/>-->
                 <item
                     android:id="@+id/seller_shipment_history_list"
-                    android:title="@string/nav_shipment_history_list"
-                    android:icon="@drawable/ic_list_black_24dp"/>
+                    android:icon="@drawable/ic_list_black_24dp"
+                    android:title="@string/nav_shipment_history_list" />
             </group>
         </menu>
     </item>
@@ -55,8 +43,19 @@
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_receiving"
-                    android:title="@string/nav_order_receiving"
-                    android:icon="@drawable/ic_list_black_24dp"/>
+                    android:icon="@drawable/ic_list_black_24dp"
+                    android:title="@string/nav_order_receiving" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/nav_stock_list">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_stocks"
+                    android:icon="@drawable/ic_list_black_24dp"
+                    android:title="@string/nav_stock_list" />
             </group>
         </menu>
     </item>
@@ -64,9 +63,10 @@
     <item android:title="@string/nav_rewards">
         <menu>
             <group android:checkableBehavior="single">
-                <item android:id="@+id/nav_points"
-                    android:title="@string/nav_point"
-                    android:icon="@drawable/ic_star_border_black_24dp"/>
+                <item
+                    android:id="@+id/nav_points"
+                    android:icon="@drawable/ic_star_border_black_24dp"
+                    android:title="@string/nav_point" />
             </group>
         </menu>
     </item>
@@ -74,12 +74,10 @@
     <item android:title="Preference">
         <menu>
             <group android:checkableBehavior="single">
-                <item android:id="@+id/preference"
-                    android:title="@string/preference"
-                    android:icon="@drawable/ic_settings_black_24dp"/>
-                <!--<item-->
-                    <!--android:id="@+id/nav_logout"-->
-                    <!--android:title="@string/logout" />-->
+                <item
+                    android:id="@+id/preference"
+                    android:icon="@drawable/ic_settings_black_24dp"
+                    android:title="@string/preference" />
             </group>
         </menu>
     </item>

@@ -74,17 +74,6 @@ public class CategoryFragmentGrid extends Fragment {
         return view;
     }
 
-//    private List<Category> dataCategory() {
-//        List<Category> categories = new ArrayList<Category>();
-//        if (getArguments() != null && getArguments().containsKey("parent_category")) {
-//            categories.addAll(categoryDatabaseAdapter.getCategoryMenuByIdParent(getArguments().getString("parent_category", null)));
-//        } else {
-//            categories.addAll(categoryDatabaseAdapter.getParentCategoryMenu());
-//        }
-//        Log.d("jumlah total", Integer.toString(categories.size()));
-//        return categories;
-//    }
-
     private List<Stock>stockCategories(){
         List<Stock> cies = new ArrayList<Stock>();
         List<Category> tempCies = new ArrayList<Category>();

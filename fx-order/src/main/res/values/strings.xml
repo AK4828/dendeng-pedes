@@ -22,6 +22,7 @@
     <string name="nav_order_receiving">Receiving</string>
     <string name="nav_shipment_list">Shipment List</string>
     <string name="nav_shipment_history_list">Shipment History</string>
+    <string name="nav_stock_list">Stock</string>
     <string name="nav_seller_purchase_order">Purchase Order</string>
     <string name="nav_point">Point</string>
 

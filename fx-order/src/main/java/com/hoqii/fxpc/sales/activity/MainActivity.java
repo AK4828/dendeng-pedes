@@ -400,6 +400,16 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         }
                         break;
 
+                    case R.id.nav_stocks:
+                        forceUnRegisterWhenExist();
+                        Intent stockIntent = new Intent(MainActivity.this, StockListActivity.class);
+                        if (isMinLoli) {
+                            startActivity(stockIntent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                        } else {
+                            startActivity(stockIntent);
+                        }
+                        break;
+
                     case R.id.nav_points:
                         forceUnRegisterWhenExist();
                         Intent point = new Intent(MainActivity.this, PointActivity.class);
