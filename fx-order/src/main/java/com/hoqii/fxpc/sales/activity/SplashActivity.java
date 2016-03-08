@@ -9,12 +9,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.event.LoginEvent;
-import com.hoqii.fxpc.sales.job.RefreshTokenJob;
-import com.hoqii.fxpc.sales.job.ShipmentUpdateJob;
-import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.path.android.jobqueue.JobManager;
 
 import org.meruvian.midas.core.defaults.DefaultActivity;
@@ -39,7 +36,7 @@ public class SplashActivity extends DefaultActivity {
     public void onViewCreated(Bundle bundle) {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 Log.d(getClass().getSimpleName(), "HAS Sync : " + preferences.getBoolean("has_sync", false));

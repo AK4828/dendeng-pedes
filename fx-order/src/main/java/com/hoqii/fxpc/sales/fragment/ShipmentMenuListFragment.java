@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.ShipmentHistoryMenuAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
@@ -74,7 +74,7 @@ public class ShipmentMenuListFragment extends Fragment implements TaskService{
         Bundle b = getArguments();
         String shipmentJson = b.getString("shipmentJson");
 
-        ObjectMapper mapper = SignageAppication.getObjectMapper();
+        ObjectMapper mapper = SignageApplication.getObjectMapper();
         try {
             shipment = mapper.readValue(shipmentJson, Shipment.class);
         } catch (IOException e) {

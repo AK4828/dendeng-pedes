@@ -1,29 +1,21 @@
 package com.hoqii.fxpc.sales.job;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
-import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.hoqii.fxpc.sales.util.JsonRequestUtils;
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.meruvian.midas.core.job.Priority;
-import org.meruvian.midas.core.util.ConnectionUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -78,7 +70,7 @@ public class MenuUpdateJob extends Job {
             Log.d(getClass().getSimpleName(), "Updating order menu running");
             JsonRequestUtils requestUpdate = new JsonRequestUtils(url + "/api/orders/" + orderId + "/menu/" + orderMenuId );
 
-            SerialNumberDatabaseAdapter snAdapter = new SerialNumberDatabaseAdapter(SignageAppication.getInstance());
+            SerialNumberDatabaseAdapter snAdapter = new SerialNumberDatabaseAdapter(SignageApplication.getInstance());
             List<SerialNumber> sn = snAdapter.getSerialNumberListByOrderIdAndOrderMenuIdAndHasSync(orderId, orderMenuId);
 
             Log.d(getClass().getSimpleName(), "menu quantity =========================: "+orderMenu.getQty());

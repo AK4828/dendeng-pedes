@@ -1,7 +1,6 @@
 package com.hoqii.fxpc.sales.activity;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -21,7 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.ResultPoint;
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.adapter.SerialAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.DefaultDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
@@ -123,7 +122,7 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
             orderId = getIntent().getStringExtra("orderId");
             shipmentId = getIntent().getStringExtra("shipmentId");
             String jsonSerial = getIntent().getStringExtra("jsonSerial");
-            ObjectMapper mapper = SignageAppication.getObjectMapper();
+            ObjectMapper mapper = SignageApplication.getObjectMapper();
             try {
                 tempSerialNumberList = mapper.readValue(jsonSerial, new TypeReference<List<SerialNumber>>(){});
             } catch (Exception e) {

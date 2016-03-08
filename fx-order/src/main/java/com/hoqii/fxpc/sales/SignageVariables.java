@@ -53,5 +53,6 @@ public class SignageVariables {
     public static final int HISTORY_ORDER_MENU_GET_TASK = 24;
     public static final int SERIAL_ORDER_MENU_GET_TASK = 25;
     public static final int SERIAL_ORDER_MENU_CHECK_TASK = 26;
+    public static final int STOCK_GET_TASK = 27;
 
 }

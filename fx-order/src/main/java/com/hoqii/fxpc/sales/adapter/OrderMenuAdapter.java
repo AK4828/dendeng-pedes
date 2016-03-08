@@ -2,7 +2,7 @@ package com.hoqii.fxpc.sales.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,15 +13,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
+import com.hoqii.fxpc.sales.SignageApplication;
+import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.MainActivity;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderMenuDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.util.ImageUtil;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -36,11 +36,12 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
     private List<OrderMenu> orderMenuList = new ArrayList<OrderMenu>();
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");
     private OrderMenuDatabaseAdapter orderMenuDbAdapter;
+    private SharedPreferences preferences;
 
     public OrderMenuAdapter(Context context){
         this.context = context;
         orderMenuDbAdapter = new OrderMenuDatabaseAdapter(context);
-
+        preferences = context.getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
     }
 
     @Override
@@ -60,7 +61,8 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
         holder.totalPrice.setText("Rp " + decimalFormat.format(totalPrice));
 
         Glide.with(context).load("file://" + ImageUtil.getImagePath(context, orderMenuList.get(position).getProduct().getId())).error(R.drawable.no_image).into(holder.preview);
-
+//        String imageUrl = preferences.getString("server_url", "")+"/api/products/"+orderMenuList.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
+//        Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -105,7 +107,6 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 orderMenuList.remove(location);
                 notifyItemRemoved(location);
                 orderMenuDbAdapter.deleteOrderMenu(orderMenuId);
@@ -133,10 +134,16 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
                     OrderMenu orderMenu = orderMenuDbAdapter.getOrderMenuById(orderMenuId);
+                    String jsonProduct = null;
+                    ObjectMapper mapper = SignageApplication.getObjectMapper();
+                    try {
+                        jsonProduct = mapper.writeValueAsString(orderMenu.getProduct());
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
 
-                    String productId = orderMenu.getProduct().getId();
                     int qty = orderMenu.getQtyOrder();
-                    ((MainActivity) context).orderUpdate(productId, qty);
+                    ((MainActivity) context).orderUpdate(jsonProduct, qty);
                 } else if (which == 1) {
                     confirmDialog(location, orderMenuId);
                 }

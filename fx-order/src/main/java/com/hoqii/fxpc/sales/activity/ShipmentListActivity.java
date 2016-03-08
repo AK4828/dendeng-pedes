@@ -24,7 +24,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.ShipmentAdapter;
 import com.hoqii.fxpc.sales.core.LogInformation;
@@ -88,7 +88,7 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
         }
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
 
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);

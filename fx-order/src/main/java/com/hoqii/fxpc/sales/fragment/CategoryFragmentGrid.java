@@ -1,22 +1,24 @@
 package com.hoqii.fxpc.sales.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.activity.MainActivityMaterial;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.adapter.CategoryGridAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.CategoryDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.ProductDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.Category;
+import com.hoqii.fxpc.sales.entity.Stock;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,11 +30,21 @@ public class CategoryFragmentGrid extends Fragment {
     private CategoryDatabaseAdapter categoryDatabaseAdapter;
     private ProductDatabaseAdapter productDatabaseAdapter;
     private CategoryGridAdapter categoryGridAdapter;
+    private List<Stock> stocks = new ArrayList<Stock>();
+    private String jsonStock = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getArguments() != null){
+            jsonStock = getArguments().getString("jsonStock");
+            ObjectMapper mapper = SignageApplication.getObjectMapper();
+            try {
+                stocks = mapper.readValue(jsonStock, new TypeReference<List<Stock>>(){});
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -44,37 +56,45 @@ public class CategoryFragmentGrid extends Fragment {
 
         GridView gridView = (GridView) view.findViewById(R.id.gridCategory);
 
-        categoryGridAdapter = new CategoryGridAdapter(getActivity(), dataCategory());
+        categoryGridAdapter = new CategoryGridAdapter(getActivity(), stockCategories());
         gridView.setAdapter(categoryGridAdapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Bundle bundle = new Bundle();
-                bundle.putString("parent_category", dataCategory().get(position).getId());
-
+                bundle.putString("parent_category", stockCategories().get(position).getProduct().getParentCategory().getId());
+                bundle.putString("jsonStock", jsonStock);
                 ProductFragmentGrid productFragment = new ProductFragmentGrid();
                 productFragment.setArguments(bundle);
-
                 getFragmentManager().beginTransaction().replace(R.id.category_frame, productFragment).addToBackStack(null).commit();
-
             }
         });
 
         return view;
     }
 
+//    private List<Category> dataCategory() {
+//        List<Category> categories = new ArrayList<Category>();
+//        if (getArguments() != null && getArguments().containsKey("parent_category")) {
+//            categories.addAll(categoryDatabaseAdapter.getCategoryMenuByIdParent(getArguments().getString("parent_category", null)));
+//        } else {
+//            categories.addAll(categoryDatabaseAdapter.getParentCategoryMenu());
+//        }
+//        Log.d("jumlah total", Integer.toString(categories.size()));
+//        return categories;
+//    }
 
-    private List<Category> dataCategory() {
-        List<Category> categories = new ArrayList<Category>();
-
-        if (getArguments() != null && getArguments().containsKey("parent_category")) {
-            categories.addAll(categoryDatabaseAdapter.getCategoryMenuByIdParent(getArguments().getString("parent_category", null)));
-        } else {
-            categories.addAll(categoryDatabaseAdapter.getParentCategoryMenu());
+    private List<Stock>stockCategories(){
+        List<Stock> cies = new ArrayList<Stock>();
+        List<Category> tempCies = new ArrayList<Category>();
+        for (Stock s : stocks){
+            if (!tempCies.contains(s.getProduct().getParentCategory())){
+                cies.add(s);
+                tempCies.add(s.getProduct().getParentCategory());
+            }
         }
-        Log.d("jumlah total", Integer.toString(categories.size()));
-        return categories;
+        return cies;
     }
 
 }

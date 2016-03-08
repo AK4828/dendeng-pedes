@@ -1,8 +1,8 @@
 package com.hoqii.fxpc.sales.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,42 +11,46 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
 import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.Transition;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 
 import com.hoqii.fxpc.sales.R;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.adapter.MainFragmentStateAdapter;
+import com.hoqii.fxpc.sales.entity.Stock;
+import com.hoqii.fxpc.sales.event.GenericEvent;
+import com.hoqii.fxpc.sales.event.LoginEvent;
+import com.hoqii.fxpc.sales.job.RefreshTokenJob;
+import com.hoqii.fxpc.sales.task.StockSync;
+import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.EntypoIcons;
-import com.joanzapata.iconify.fonts.EntypoModule;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.IoniconsModule;
-import com.joanzapata.iconify.fonts.MaterialCommunityModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
-import com.joanzapata.iconify.fonts.MeteoconsModule;
-import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
-import com.joanzapata.iconify.fonts.TypiconsModule;
-import com.joanzapata.iconify.fonts.WeathericonsModule;
+import com.path.android.jobqueue.JobManager;
+
+import org.meruvian.midas.core.service.TaskService;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by miftakhul on 11/13/15.
  */
-public class MainActivityMaterial extends AppCompatActivity {
-
+public class MainActivityMaterial extends AppCompatActivity implements TaskService{
+    public static final int REFRESH_TOKEN_MAINMATERIAL = 400;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private boolean isMinLoli = false;
     private static final int ORDER_REQUEST = 300;
+    private List<Stock> stocks = new ArrayList<Stock>();
+    private ProgressDialog progress;
+    private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
 
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -54,9 +58,8 @@ public class MainActivityMaterial extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_material);
-
+        EventBus.getDefault().register(this);
         tabLayout = (TabLayout) findViewById(R.id.main_tab);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isMinLoli = true;
             getWindow().setEnterTransition(new Fade());
@@ -70,14 +73,37 @@ public class MainActivityMaterial extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, EntypoIcons.entypo_chevron_left).colorRes(R.color.white).actionBarSize());
-
         viewPager = (ViewPager) findViewById(R.id.main_viewPager);
 
-        MainFragmentStateAdapter viewPagerAdapter = new MainFragmentStateAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(viewPagerAdapter);
+        progress = new ProgressDialog(this);
+        progress.setMessage("Pleace wait");
+        progress.setCancelable(false);
 
-        tabLayout.setupWithViewPager(viewPager);
+        if (authenticationCeck.isNetworkAvailable()){
+            if (authenticationCeck.isAccess()){
+                StockSync stockSync = new StockSync(this, this, StockSync.StockUri.defaultUri.name());
+                stockSync.execute();
+            }else {
+                authenticationCeck.refreshToken(this, REFRESH_TOKEN_MAINMATERIAL);
+            }
+        }else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivityMaterial.this);
+            builder.setTitle("Internet access");
+            builder.setMessage("No internet connection");
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
+                }
+            });
+            builder.show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -85,30 +111,21 @@ public class MainActivityMaterial extends AppCompatActivity {
         super.onBackPressed();
     }
 
-
     public void order(Intent intent, View image, View title, View price){
         if (isMinLoli) {
-//            String transitionName = getString(R.string.transition_string);
             Pair<View, String> pariImage = Pair.create(image, getString(R.string.transition_image));
             Pair<View, String> pairTitle = Pair.create(title, getString(R.string.transition_title));
             Pair<View, String> pariPrice = Pair.create(price, getString(R.string.transition_price));
-
             ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, pariImage, pairTitle);
-
             startActivityForResult(intent, ORDER_REQUEST, optionsCompat.toBundle());
-            Log.d("order", " loli========================================");
         } else {
             startActivityForResult(intent, ORDER_REQUEST);
-            Log.d("order", " not loli========================================");
         }
-        Log.d("order", "========================================");
     }
 
     public void order(Intent intent){
         startActivityForResult(intent, ORDER_REQUEST);
-        Log.d("order", "========================================");
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
@@ -133,6 +150,44 @@ public class MainActivityMaterial extends AppCompatActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onExecute(int code) {
+        progress.show();
+    }
+
+    @Override
+    public void onSuccess(int code, Object result) {
+        progress.dismiss();
+        stocks = (List<Stock>)result;
+        if (stocks.size() > 0){
+            MainFragmentStateAdapter viewPagerAdapter = new MainFragmentStateAdapter(getSupportFragmentManager(), stocks);
+            viewPager.setAdapter(viewPagerAdapter);
+            tabLayout.setupWithViewPager(viewPager);
+
+        }
+    }
+
+    @Override
+    public void onCancel(int code, String message) {
+        progress.dismiss();
+    }
+
+    @Override
+    public void onError(int code, String message) {
+        progress.dismiss();
+    }
+
+    public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess){
+        Log.d(getClass().getSimpleName(), "request success ");
+        switch (requestSuccess.getProcessId()){
+            case REFRESH_TOKEN_MAINMATERIAL:
+                StockSync stockSync = new StockSync(this, this, StockSync.StockUri.defaultUri.name());
+                stockSync.execute();
+                Log.d(getClass().getSimpleName(), "syc running");
+                break;
+        }
     }
 
 }

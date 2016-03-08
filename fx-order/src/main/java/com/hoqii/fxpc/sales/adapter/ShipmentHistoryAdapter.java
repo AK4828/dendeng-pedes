@@ -15,23 +15,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
-import com.hoqii.fxpc.sales.activity.SellerOrderMenuListActivity;
 import com.hoqii.fxpc.sales.activity.ShipmentHistoryDetailActivity;
 import com.hoqii.fxpc.sales.activity.ShipmentHistoryListActivity;
-import com.hoqii.fxpc.sales.activity.ShipmentListActivity;
 import com.hoqii.fxpc.sales.entity.Shipment;
-import com.hoqii.fxpc.sales.job.ShipmentUpdateJob;
 import com.joanzapata.iconify.widget.IconTextView;
 import com.path.android.jobqueue.JobManager;
 
@@ -55,7 +49,7 @@ public class ShipmentHistoryAdapter extends RecyclerView.Adapter<ShipmentHistory
     public ShipmentHistoryAdapter(Context context) {
         this.context = context;
 
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
         preferences = context.getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         Log.d(getClass().getSimpleName(), "shipment list adapter size " + shipmentList.size());
 
@@ -70,7 +64,7 @@ public class ShipmentHistoryAdapter extends RecyclerView.Adapter<ShipmentHistory
     public ShipmentHistoryAdapter(Context context, List<Shipment> shipments) {
         this.context = context;
         this.shipmentList = shipments;
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
         preferences = context.getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         Log.d(getClass().getSimpleName(), "shipment list adapter size " + shipmentList.size());
 
@@ -124,7 +118,7 @@ public class ShipmentHistoryAdapter extends RecyclerView.Adapter<ShipmentHistory
                 intent.putExtra("shipmentReceipt", shipmentList.get(position).getReceiptNumber());
 
 
-                ObjectMapper mapper = SignageAppication.getObjectMapper();
+                ObjectMapper mapper = SignageApplication.getObjectMapper();
                 try {
                     String shipmentJson = mapper.writeValueAsString(shipmentList.get(position));
                     intent.putExtra("shipmentJson", shipmentJson);

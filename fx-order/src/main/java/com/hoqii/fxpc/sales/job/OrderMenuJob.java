@@ -3,7 +3,7 @@ package com.hoqii.fxpc.sales.job;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderMenuDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.event.GenericEvent;
@@ -48,7 +48,7 @@ public class OrderMenuJob extends Job {
         Log.d(getClass().getSimpleName(), "onRun");
         JsonRequestUtils request = new JsonRequestUtils(new Formatter().format(url + ESalesUri.ORDER_MENU, orderRefId).toString());
 
-        OrderMenuDatabaseAdapter orderMenuDatabaseAdapter = new OrderMenuDatabaseAdapter(SignageAppication.getInstance());
+        OrderMenuDatabaseAdapter orderMenuDatabaseAdapter = new OrderMenuDatabaseAdapter(SignageApplication.getInstance());
         OrderMenu orderMenu = orderMenuDatabaseAdapter.findOrderMenuById(orderMenuId);
         orderMenu.setId(null);
         orderMenu.getOrder().setId(orderRefId);

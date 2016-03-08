@@ -4,13 +4,14 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.core.commons.Role;
 import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.core.commons.User;
 import com.hoqii.fxpc.sales.entity.Authentication;
 import com.hoqii.fxpc.sales.entity.PageEntity;
+import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.event.LoginEvent;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.hoqii.fxpc.sales.util.JsonRequestUtils;
@@ -70,26 +71,27 @@ public abstract class LoginJob extends Job {
         }
     }
 
+
     protected User requestUser() {
-        preferences = SignageAppication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
+        preferences = SignageApplication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         JsonRequestUtils requestUtils = new JsonRequestUtils(preferences.getString("server_url", "") + SignageVariables.PGA_CURRENT_ME);
         return requestUtils.get(new TypeReference<User>() {}).getContent();
     }
 
     protected Site requestSite() {
-        preferences = SignageAppication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
+        preferences = SignageApplication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         JsonRequestUtils requestUtils = new JsonRequestUtils(preferences.getString("server_url", "") + SignageVariables.PGA_CURRENT_SITE);
         return requestUtils.get(new TypeReference<Site>() {}).getContent();
     }
 
     protected Site requestParentSite(String siteId) {
-        preferences = SignageAppication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
+        preferences = SignageApplication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         JsonRequestUtils requestUtils = new JsonRequestUtils(preferences.getString("server_url", "") + SignageVariables.PGA_PARENT_SITE + siteId + "/parents");
         return requestUtils.get(new TypeReference<Site>() {}).getContent();
     }
 
     protected PageEntity<Role> requestRoles() {
-        preferences = SignageAppication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
+        preferences = SignageApplication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         JsonRequestUtils requestUtils = new JsonRequestUtils(preferences.getString("server_url", "") + SignageVariables.PGA_CURRENT_ROLE);
         return requestUtils.get(new TypeReference<PageEntity<Role>>() {}).getContent();
     }

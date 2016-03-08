@@ -24,7 +24,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.MainActivity;
 import com.hoqii.fxpc.sales.activity.ReceiveListActivity;
@@ -71,7 +71,7 @@ public class ReceiveListFragment extends Fragment implements TaskService {
         super.onCreate(savedInstanceState);
 
         preferences = getActivity().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
         receiveAdapter = new ReceiveFragmentAdapter(getActivity(), this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -124,7 +124,8 @@ public class ReceiveListFragment extends Fragment implements TaskService {
                     ReceiveSync receiveSync = new ReceiveSync(getActivity(), ReceiveListFragment.this);
                     receiveSync.execute();
                 } else {
-                    ((MainActivity) getActivity()).refreshToken(MainActivity.refreshTokenStatus.receiveFragment.name());
+//                    ((MainActivity) getActivity()).refreshToken(MainActivity.refreshTokenStatus.receiveFragment.name());
+                    ((MainActivity) getActivity()).refreshToken(MainActivity.REFRESH_TOKEN_RECEIVE_LIST_FRAGMENT_ORDER);
                 }
             }
         });
@@ -352,26 +353,25 @@ public class ReceiveListFragment extends Fragment implements TaskService {
         });
     }
 
-
-    public void reloadRefreshToken() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Refresh Token");
-        builder.setMessage("Process failed\nRepeat process ?");
-        builder.setCancelable(false);
-        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ((MainActivity) getActivity()).refreshToken(MainActivity.refreshTokenStatus.receiveFragment.name());
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.show();
-    }
+//    public void reloadRefreshToken() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setTitle("Refresh Token");
+//        builder.setMessage("Process failed\nRepeat process ?");
+//        builder.setCancelable(false);
+//        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                ((MainActivity) getActivity()).refreshToken(MainActivity.refreshTokenStatus.receiveFragment.name());
+//            }
+//        });
+//        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//        builder.show();
+//    }
 
     public void reloadReceive() {
         ReceiveSync receiveSync = new ReceiveSync(getActivity(), ReceiveListFragment.this);

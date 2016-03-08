@@ -22,9 +22,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 
 public class ImageUtil {
@@ -140,6 +142,28 @@ public class ImageUtil {
         IOUtils.closeQuietly(target);
 
         Log.d("Image saved to ", targetFile.getPath());
+
+        return targetFile;
+    }
+
+    public static File save(Context  context, String id, Bitmap bitmap) throws IOException {
+        File targetFile = new File(getImagePath(context, id));
+        FileOutputStream target = new FileOutputStream(targetFile);
+        if (bitmap == null){
+            Log.d(context.getClass().getSimpleName(), "butmap null");
+        }
+
+        if (targetFile == null){
+            Log.d(context.getClass().getSimpleName(), "targetfile null");
+        }
+
+        if (target == null){
+            Log.d(context.getClass().getSimpleName(), "targe null");
+        }
+
+//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, target);
+//        target.flush();
+//        target.close();
 
         return targetFile;
     }

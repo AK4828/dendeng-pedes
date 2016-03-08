@@ -3,7 +3,7 @@ package com.hoqii.fxpc.sales.job;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.event.GenericEvent;
@@ -48,7 +48,7 @@ public class OrderUpdateJob extends Job {
         Log.d(getClass().getSimpleName(), "onRun");
         JsonRequestUtils request = new JsonRequestUtils(new Formatter().format(url + ESalesUri.UPDATE_ORDER, orderRefId).toString());
 
-        OrderDatabaseAdapter orderDatabaseAdapter = new OrderDatabaseAdapter(SignageAppication.getInstance());
+        OrderDatabaseAdapter orderDatabaseAdapter = new OrderDatabaseAdapter(SignageApplication.getInstance());
         Order order = orderDatabaseAdapter.findOrderById(orderId);
 
         order.setId(orderRefId);

@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.entity.Shipment;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class ShipmentDetailFragment extends Fragment {
         Bundle b = getArguments();
         String shipmentJson = b.getString("shipmentJson");
 
-        ObjectMapper mapper = SignageAppication.getObjectMapper();
+        ObjectMapper mapper = SignageApplication.getObjectMapper();
         try {
             shipment = mapper.readValue(shipmentJson, Shipment.class);
         } catch (IOException e) {

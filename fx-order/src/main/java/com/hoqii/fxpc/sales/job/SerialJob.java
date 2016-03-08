@@ -3,7 +3,7 @@ package com.hoqii.fxpc.sales.job;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.event.GenericEvent;
@@ -46,7 +46,7 @@ public class SerialJob extends Job {
         Log.d(getClass().getSimpleName(), "Serial running");
         JsonRequestUtils request = new JsonRequestUtils(url + ESalesUri.SERIAL);
 
-        SerialNumberDatabaseAdapter serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(SignageAppication.getInstance());
+        SerialNumberDatabaseAdapter serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(SignageApplication.getInstance());
 
         SerialNumber serialNumber = new SerialNumber();
         serialNumber = serialNumberDatabaseAdapter.findSerialNumber(id);

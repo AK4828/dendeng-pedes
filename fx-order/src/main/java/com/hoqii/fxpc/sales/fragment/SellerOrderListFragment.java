@@ -118,7 +118,8 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
                     OrderSync orderSync = new OrderSync(getActivity(), SellerOrderListFragment.this);
                     orderSync.execute();
                 } else {
-                    ((MainActivity)getActivity()).refreshToken(MainActivity.refreshTokenStatus.orderFragment.name());
+//                    ((MainActivity)getActivity()).refreshToken(MainActivity.refreshTokenStatus.orderFragment.name());
+                    ((MainActivity)getActivity()).refreshToken(MainActivity.REFRESH_TOKEN_ORDER_LIST_FRAGMENT_ORDER);
                 }
             }
         });
@@ -298,27 +299,26 @@ public class SellerOrderListFragment extends Fragment implements TaskService {
         }
     }
 
-
-    public void reloadRefreshToken(){
-        Log.d(getClass().getSimpleName(), "[ refresh token orderfragment failed call ]");
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Refresh Token");
-        builder.setMessage("Process failed\nRepeat process ?");
-        builder.setCancelable(false);
-        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ((MainActivity) getActivity()).refreshToken(MainActivity.refreshTokenStatus.orderFragment.name());
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.show();
-    }
+//    public void reloadRefreshToken(){
+//        Log.d(getClass().getSimpleName(), "[ refresh token orderfragment failed call ]");
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setTitle("Refresh Token");
+//        builder.setMessage("Process failed\nRepeat process ?");
+//        builder.setCancelable(false);
+//        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                ((MainActivity) getActivity()).refreshToken(MainActivity.refreshTokenStatus.orderFragment.name());
+//            }
+//        });
+//        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//        builder.show();
+//    }
 
     public void reloadOrder(){
         OrderSync orderSync = new OrderSync(getActivity(), SellerOrderListFragment.this);

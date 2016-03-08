@@ -18,17 +18,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
-import android.transition.Fade;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.ReceiveAdapter;
-import com.hoqii.fxpc.sales.adapter.SellerOrderAdapter;
 import com.hoqii.fxpc.sales.core.LogInformation;
 import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.Order;
@@ -40,17 +38,7 @@ import com.hoqii.fxpc.sales.job.RefreshTokenJob;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.fonts.EntypoModule;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.IoniconsModule;
-import com.joanzapata.iconify.fonts.MaterialCommunityModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
-import com.joanzapata.iconify.fonts.MeteoconsModule;
-import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
-import com.joanzapata.iconify.fonts.TypiconsModule;
-import com.joanzapata.iconify.fonts.WeathericonsModule;
 import com.path.android.jobqueue.JobManager;
 
 import org.json.JSONArray;
@@ -70,6 +58,7 @@ import de.greenrobot.event.EventBus;
  */
 public class ReceiveListActivity extends AppCompatActivity implements TaskService {
     private int requestDetailCode = 100;
+    private static final int REFRESH_TOKEN_RECEIVE_LIST = 300;
 
     private List<Receive> receiveList = new ArrayList<Receive>();
     private SharedPreferences preferences;
@@ -80,9 +69,7 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
     private LinearLayout dataNull, dataFailed;
     private ProgressDialog loadProgress;
     private int page = 1, totalPage;
-    private JobManager jobManager;
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
-    private ProgressDialog dialogRefresh;
 
     private String receiveUrl = "/api/order/receives";
 
@@ -98,7 +85,6 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
         }
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
-        jobManager = SignageAppication.getInstance().getJobManager();
 
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -131,10 +117,6 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
         loadProgress.setMessage("Fetching data...");
         loadProgress.setCancelable(false);
 
-        dialogRefresh = new ProgressDialog(this);
-        dialogRefresh.setMessage("Pleace wait ...");
-        dialogRefresh.setCancelable(false);
-
         new Handler().post(new Runnable() {
             @Override
             public void run() {
@@ -144,7 +126,7 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
                     Log.d(getClass().getSimpleName(), "[ acces true / refreshing token not needed]");
                 } else {
                     Log.d(getClass().getSimpleName(), "[ acces false / refreshing token]");
-                    jobManager.addJobInBackground(new RefreshTokenJob());
+                    authenticationCeck.refreshToken(ReceiveListActivity.this, REFRESH_TOKEN_RECEIVE_LIST);
                 }
             }
         });
@@ -174,11 +156,7 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
     @Override
     public void onSuccess(int code, Object result) {
         swipeRefreshLayout.setRefreshing(false);
-//        receiveAdapter = new ReceiveAdapter(this, receiveList);
-//        recyclerView.setAdapter(receiveAdapter);
-
         receiveAdapter.addItems(receiveList);
-
         dataFailed.setVisibility(View.GONE);
 
         if (receiveList.size() > 0) {
@@ -395,73 +373,15 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
         startActivityForResult(intent, requestDetailCode);
     }
 
-    private void AlertMessage(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ReceiveListActivity.this);
-        builder.setTitle("Refresh Token");
-        builder.setMessage(message);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.show();
-    }
-
-    private void reloadRefreshToken(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(ReceiveListActivity.this);
-        builder.setTitle("Refresh Token");
-        builder.setMessage("Process failed\nRepeat process ?");
-        builder.setCancelable(false);
-        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                jobManager.addJobInBackground(new RefreshTokenJob());
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.show();
-    }
-
-    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
-        Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
-        switch (requestInProgress.getProcessId()) {
-            case RefreshTokenJob.PROCESS_ID:
-                dialogRefresh.show();
-                break;
-        }
-    }
-
     public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
         Log.d(getClass().getSimpleName(), "RequestSuccess: " + requestSuccess.getProcessId());
-
-    }
-
-    public void onEventMainThread(GenericEvent.RequestFailed failed) {
-        Log.d(getClass().getSimpleName(), "RequestFailed: " + failed.getProcessId());
-        switch (failed.getProcessId()) {
-            case RefreshTokenJob.PROCESS_ID:
-                dialogRefresh.dismiss();
-                AlertMessage("Refresh token failed");
-                dataFailed.setVisibility(View.VISIBLE);
+        switch (requestSuccess.getProcessId()){
+            case REFRESH_TOKEN_RECEIVE_LIST:
+                ReceiveSync receiveSync = new ReceiveSync(ReceiveListActivity.this, ReceiveListActivity.this, false);
+                receiveSync.execute("0");
                 break;
         }
+
     }
 
-    public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
-        dialogRefresh.dismiss();
-        ReceiveSync receiveSync = new ReceiveSync(ReceiveListActivity.this, ReceiveListActivity.this, false);
-        receiveSync.execute("0");
-    }
-
-    public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
-        dialogRefresh.dismiss();
-        dataFailed.setVisibility(View.VISIBLE);
-        reloadRefreshToken();
-    }
 }

@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name="com.hoqii.fxpc.sales.SignageAppication"
+        android:name=".SignageApplication"
         android:allowBackup="true"
         android:icon="@drawable/cyrcle_fx"
         android:label="@string/app_name"

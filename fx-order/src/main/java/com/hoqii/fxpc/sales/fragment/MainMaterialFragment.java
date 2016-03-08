@@ -23,8 +23,8 @@ public class MainMaterialFragment extends Fragment {
 
         viewPager = (ViewPager) view.findViewById(R.id.main_viewPager);
 
-        MainFragmentStateAdapter viewPagerAdapter = new MainFragmentStateAdapter(getFragmentManager());
-        viewPager.setAdapter(viewPagerAdapter);
+//        MainFragmentStateAdapter viewPagerAdapter = new MainFragmentStateAdapter(getFragmentManager());
+//        viewPager.setAdapter(viewPagerAdapter);
 
 //        ((MainActivityMaterial) getActivity()).tabLayout.setupWithViewPager(viewPager);
 

@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,9 +20,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
-import com.hoqii.fxpc.sales.activity.MainActivity;
 import com.hoqii.fxpc.sales.adapter.OrderListActAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.ContactDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderDatabaseAdapter;
@@ -107,7 +105,7 @@ public class OrderListFragment extends Fragment implements TaskService {
         textOrderto = (TextView) view.findViewById(R.id.text_orderto);
 
 
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
         preferences = getActivity().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         EventBus.getDefault().register(this);
 

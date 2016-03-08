@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -15,23 +14,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.event.LoginEvent;
 import com.hoqii.fxpc.sales.job.LoginManualJob;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.EntypoIcons;
-import com.joanzapata.iconify.fonts.EntypoModule;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.IoniconsModule;
-import com.joanzapata.iconify.fonts.MaterialCommunityModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
-import com.joanzapata.iconify.fonts.MeteoconsModule;
-import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
-import com.joanzapata.iconify.fonts.TypiconsModule;
-import com.joanzapata.iconify.fonts.WeathericonsModule;
 import com.path.android.jobqueue.JobManager;
 
 import org.meruvian.midas.core.defaults.DefaultActivity;
@@ -99,7 +88,7 @@ public class LoginActivity extends DefaultActivity {
         editor.putBoolean("has_url", true);
         editor.commit();
 
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
 
         prevLogin.setImageDrawable(new IconDrawable(this, EntypoIcons.entypo_dots_three_vertical).colorRes(R.color.grey).actionBarSize());
         prevLogin.setOnClickListener(new View.OnClickListener() {
@@ -124,6 +113,11 @@ public class LoginActivity extends DefaultActivity {
 
         LoginManualJob loginJob = new LoginManualJob(username.getText().toString(), password.getText().toString());
         jobManager.addJobInBackground(loginJob);
+
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("username", username.getText().toString());
+        editor.putString("password", password.getText().toString());
+        editor.commit();
     }
 
     public void onEventMainThread(LoginEvent.DoLogin doLogin) {

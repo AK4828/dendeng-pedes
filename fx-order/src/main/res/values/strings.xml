@@ -78,7 +78,7 @@
     <string name="sync_image">Sinkronisasi Gambar ...</string>
     <string name="sync_contact">Sinkronisasi Kontak ...</string>
     <string name="sync_business_partner">Sinkronisasi Business Partner ...</string>
-    <string name="sync_site">Sinkronisasi Site ...</string>
+    <string name="sync_site">Sinkronisasi Perusahaan ...</string>
 
     <string name="sync_campaign">Sinkronisasi Campaign ...</string>
     <string name="sync_campaign_detail">Sinkronisasi Campaign Detail ...</string>

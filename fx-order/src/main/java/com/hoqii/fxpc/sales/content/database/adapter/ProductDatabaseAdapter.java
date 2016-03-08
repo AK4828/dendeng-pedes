@@ -173,7 +173,6 @@ public class ProductDatabaseAdapter {
                 values.put(ProductDatabaseModel.IMAGE, product.getImage());
                 values.put(ProductDatabaseModel.DESCRIPTION, product.getDescription());
                 values.put(ProductDatabaseModel.REWARD, product.getReward());
-
                 values.put(ProductDatabaseModel.STATUS_FLAG , 1);
 
                 context.getContentResolver().insert(dbUriProduct, values);
@@ -194,7 +193,6 @@ public class ProductDatabaseAdapter {
                 values.put(ProductDatabaseModel.IMAGE, product.getImage());
                 values.put(ProductDatabaseModel.DESCRIPTION, product.getDescription());
                 values.put(ProductDatabaseModel.REWARD, product.getReward());
-
                 values.put(ProductDatabaseModel.STATUS_FLAG , 1);
 
                 context.getContentResolver().update(dbUriProduct, values, ProductDatabaseModel.ID + " = ?", new String[] { product.getId() });

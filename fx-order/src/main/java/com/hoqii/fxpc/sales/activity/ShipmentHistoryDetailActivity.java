@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.adapter.ShipmentDetailPagerAdapter;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.joanzapata.iconify.IconDrawable;
@@ -69,7 +69,7 @@ public class ShipmentHistoryDetailActivity extends AppCompatActivity{
 
             Log.d(getClass().getSimpleName(), "data detail :" +shipmentJson);
 
-            ObjectMapper mapper = SignageAppication.getObjectMapper();
+            ObjectMapper mapper = SignageApplication.getObjectMapper();
             try {
                 shipment = mapper.readValue(shipmentJson, Shipment.class);
             } catch (IOException e) {

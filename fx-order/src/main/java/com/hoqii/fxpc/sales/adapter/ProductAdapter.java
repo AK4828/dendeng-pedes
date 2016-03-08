@@ -2,6 +2,9 @@ package com.hoqii.fxpc.sales.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +15,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
+import com.hoqii.fxpc.sales.SignageApplication;
+import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.MainActivityMaterial;
 import com.hoqii.fxpc.sales.activity.OrderActivity;
-import com.hoqii.fxpc.sales.entity.Product;
-import com.hoqii.fxpc.sales.util.ImageUtil;
+import com.hoqii.fxpc.sales.entity.Stock;
+import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.widget.IconTextView;
 
 import java.text.DecimalFormat;
@@ -27,39 +34,31 @@ import java.util.List;
  */
 public class ProductAdapter extends BaseAdapter {
     private Context mcontext;
-    private List<Product> products;
+    private List<Stock> stocks;
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");
     private int mutedColor;
     private boolean isMainActivity = false;
+    private SharedPreferences preferences;
 
 
     private static LayoutInflater infalter = null;
 
-    public ProductAdapter(Context c, List<Product> products) {
+    public ProductAdapter(Context c, List<Stock> stocks) {
         mcontext = c;
         infalter = (LayoutInflater) mcontext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        this.products = products;
-
-    }
-
-    public ProductAdapter(Context c, List<Product> products, boolean isMainActivity) {
-        mcontext = c;
-        infalter = (LayoutInflater) mcontext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        this.products = products;
-        this.isMainActivity = isMainActivity;
+        this.stocks = stocks;
+        preferences = c.getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
 
     }
 
     @Override
     public int getCount() {
-        return products.size();
+        return stocks.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return products.get(position);
+        return stocks.get(position);
     }
 
     @Override
@@ -73,23 +72,24 @@ public class ProductAdapter extends BaseAdapter {
         final Holder holder = new Holder();
         View itemView = infalter.inflate(R.layout.adapter_product_grid, null);
 
-
         holder.title = (TextView) itemView.findViewById(R.id.text_name);
         holder.price = (TextView) itemView.findViewById(R.id.text_price);
         holder.imageView = (ImageView) itemView.findViewById(R.id.image);
         holder.detailLayout = (RelativeLayout) itemView.findViewById(R.id.detail_layout);
         holder.point = (IconTextView) itemView.findViewById(R.id.text_point);
 
-        holder.title.setText(products.get(position).getName());
-
-        holder.price.setText("Rp. " + decimalFormat.format(products.get(position).getSellPrice()));
-        holder.point.setText(products.get(position).getReward()+" point {typcn-star-outline}");
-
-        Glide.with(mcontext).load("file://" + ImageUtil.getImagePath(mcontext, products.get(position).getId())).into(holder.imageView);
+        holder.title.setText(stocks.get(position).getProduct().getName());
 
 
-        Log.d("path image", ImageUtil.getImagePath(mcontext, products.get(position).getId()));
-        Log.d("image file", String.valueOf(ImageUtil.getImage(mcontext, products.get(position).getId())));
+        holder.price.setText("Rp. " + decimalFormat.format(stocks.get(position).getProduct().getSellPrice()));
+        holder.point.setText(stocks.get(position).getProduct().getReward()+" point {typcn-star-outline}");
+
+        String imageUrl = preferences.getString("server_url", "")+"/api/products/"+stocks.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
+//        Glide.with(mcontext).load("file://" + ImageUtil.getImagePath(mcontext, stocks.get(position).getProduct().getId())).error(R.drawable.no_image).into(holder.imageView);
+        Glide.with(mcontext).load(imageUrl).error(R.drawable.no_image).into(holder.imageView);
+
+//        Log.d("path image", ImageUtil.getImagePath(mcontext, stocks.get(position).getProduct().getId()));
+//        Log.d("image file", String.valueOf(ImageUtil.getImage(mcontext, stocks.get(position).getProduct().getId())));
 //        if (ImageUtil.getImage(mcontext, products.get(position).getId()) != null) {
 ////            Bitmap bitmap = BitmapFactory.decodeFile(ImageUtil.getImagePath(mcontext, products.get(position).getId()));
 //
@@ -118,9 +118,25 @@ public class ProductAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
 
-                Intent intentOrder = new Intent(mcontext, OrderActivity.class);
+                ObjectMapper mapper = SignageApplication.getObjectMapper();
+                String jsonProduct = null;
+                try {
+                    jsonProduct = mapper.writeValueAsString(stocks.get(position).getProduct());
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
 
-                intentOrder.putExtra("productId", products.get(position).getId());
+                Bitmap cache = ((BitmapDrawable)holder.imageView.getDrawable()).getBitmap();
+                if (cache == null){
+                    Log.d(getClass().getSimpleName(), "cache null");
+                }else {
+                    Log.d(getClass().getSimpleName(), "cache not null");
+                }
+
+                Intent intentOrder = new Intent(mcontext, OrderActivity.class);
+//                intentOrder.putExtra("productImg", cache);
+                intentOrder.putExtra("jsonProduct", jsonProduct);
+                intentOrder.putExtra("stockProduct", stocks.get(position).getQty());
 
                 View image = v.findViewById(R.id.image);
                 View title = v.findViewById(R.id.text_name);

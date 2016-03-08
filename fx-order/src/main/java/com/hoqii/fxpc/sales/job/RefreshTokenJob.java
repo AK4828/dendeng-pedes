@@ -5,7 +5,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.entity.Authentication;
 import com.hoqii.fxpc.sales.event.GenericEvent;
@@ -39,7 +39,7 @@ public class RefreshTokenJob extends LoginJob {
     public void onRun() throws Throwable {
         Log.d(getClass().getSimpleName(), "refresh token running");
 
-        preferences = SignageAppication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
+        preferences = SignageApplication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         Log.d(getClass().getSimpleName(), preferences.getString("server_url", ""));
 
         JsonRequestUtils requestUtils = new JsonRequestUtils(preferences.getString("server_url", "") + SignageVariables.PGA_REQUEST_TOKEN);

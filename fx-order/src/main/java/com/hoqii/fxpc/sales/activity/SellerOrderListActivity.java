@@ -3,7 +3,6 @@ package com.hoqii.fxpc.sales.activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -15,7 +14,6 @@ import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,30 +28,16 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.SellerOrderAdapter;
 import com.hoqii.fxpc.sales.core.LogInformation;
 import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.event.LoginEvent;
-import com.hoqii.fxpc.sales.job.RefreshTokenJob;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.fonts.EntypoModule;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.IoniconsModule;
-import com.joanzapata.iconify.fonts.MaterialCommunityModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
-import com.joanzapata.iconify.fonts.MeteoconsModule;
-import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
-import com.joanzapata.iconify.fonts.TypiconsModule;
-import com.joanzapata.iconify.fonts.WeathericonsModule;
-import com.path.android.jobqueue.JobManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,7 +55,7 @@ import de.greenrobot.event.EventBus;
  * Created by miftakhul on 12/8/15.
  */
 public class SellerOrderListActivity extends AppCompatActivity implements TaskService {
-
+    private static final int REFRESH_TOKEN_ORDER = 300;
     private int requestOrderMenuActivityCode = 122;
     private List<Order> orderList = new ArrayList<Order>();
     private SharedPreferences preferences;
@@ -84,9 +68,7 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
     private String orderUrl = "/api/purchaseOrders";
     private ProgressDialog loadProgress;
     private int page = 1, totalPage;
-    private JobManager jobManager;
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
-    private ProgressDialog dialogRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,8 +86,6 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
 
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
-        jobManager = SignageAppication.getInstance().getJobManager();
-
 
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -138,10 +118,6 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
         loadProgress.setMessage("Fetching data...");
         loadProgress.setCancelable(false);
 
-        dialogRefresh = new ProgressDialog(this);
-        dialogRefresh.setMessage("Pleace wait ...");
-        dialogRefresh.setCancelable(false);
-
         new Handler().post(new Runnable() {
             @Override
             public void run() {
@@ -149,9 +125,9 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
                     OrderSync orderSync = new OrderSync(SellerOrderListActivity.this, SellerOrderListActivity.this, false);
                     orderSync.execute("0");
                     Log.d(getClass().getSimpleName(), "[ acces true / refreshing token not needed]");
-                }else {
+                } else {
                     Log.d(getClass().getSimpleName(), "[ acces false / refreshing token]");
-                    jobManager.addJobInBackground(new RefreshTokenJob());
+                    authenticationCeck.refreshToken(SellerOrderListActivity.this, REFRESH_TOKEN_ORDER);
                 }
             }
         });
@@ -463,39 +439,6 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
         }
     }
 
-    private void AlertMessage(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(SellerOrderListActivity.this);
-        builder.setTitle("Refresh Token");
-        builder.setMessage(message);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.show();
-    }
-
-    private void reloadRefreshToken(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(SellerOrderListActivity.this);
-        builder.setTitle("Refresh Token");
-        builder.setMessage("Process failed\nRepeat process ?");
-        builder.setCancelable(false);
-        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                jobManager.addJobInBackground(new RefreshTokenJob());
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.show();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -516,41 +459,15 @@ public class SellerOrderListActivity extends AppCompatActivity implements TaskSe
         }
     }
 
-    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
-        Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
-        switch (requestInProgress.getProcessId()) {
-            case RefreshTokenJob.PROCESS_ID:
-                dialogRefresh.show();
-                break;
-        }
-    }
-
     public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
         Log.d(getClass().getSimpleName(), "RequestSuccess: " + requestSuccess.getProcessId());
-
-    }
-
-    public void onEventMainThread(GenericEvent.RequestFailed failed) {
-        Log.d(getClass().getSimpleName(), "RequestFailed: " + failed.getProcessId());
-        switch (failed.getProcessId()) {
-            case RefreshTokenJob.PROCESS_ID:
-                dialogRefresh.dismiss();
-                AlertMessage("Refresh token failed");
-                dataFailed.setVisibility(View.VISIBLE);
+        switch (requestSuccess.getProcessId()) {
+            case REFRESH_TOKEN_ORDER:
+                OrderSync orderSync = new OrderSync(SellerOrderListActivity.this, SellerOrderListActivity.this, false);
+                orderSync.execute("0");
                 break;
         }
-    }
 
-    public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
-        dialogRefresh.dismiss();
-        OrderSync orderSync = new OrderSync(SellerOrderListActivity.this, SellerOrderListActivity.this, false);
-        orderSync.execute("0");
-    }
-
-    public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
-        dialogRefresh.dismiss();
-        dataFailed.setVisibility(View.VISIBLE);
-        reloadRefreshToken();
     }
 
 }

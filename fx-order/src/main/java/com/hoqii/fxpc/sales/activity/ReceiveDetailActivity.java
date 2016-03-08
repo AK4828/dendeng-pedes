@@ -34,7 +34,7 @@ import android.widget.TextView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.ReceiveOrderMenuAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
@@ -109,7 +109,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         }
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
 
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -140,7 +140,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
             receiveDate.setText(simpleDateFormat.format(date));
             orderDate.setText(simpleDateFormat.format(oDate));
 
-            ObjectMapper mapper = SignageAppication.getObjectMapper();
+            ObjectMapper mapper = SignageApplication.getObjectMapper();
 
             String jsonReceive = getIntent().getStringExtra("jsonReceive");
             try {
@@ -624,7 +624,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                 } else if (which == 1) {
                     Intent i = new Intent(ReceiveDetailActivity.this, ScannerReceiveActivityCustom.class);
 
-                    ObjectMapper mapper = SignageAppication.getObjectMapper();
+                    ObjectMapper mapper = SignageApplication.getObjectMapper();
                     try {
                         String jsonSerial = mapper.writeValueAsString(serialNumberList);
                         i.putExtra("orderId", orderId);

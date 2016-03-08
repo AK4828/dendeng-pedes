@@ -22,7 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.SellerOrderMenuListActivity;
 import com.hoqii.fxpc.sales.activity.ShipmentListActivity;
@@ -51,7 +51,7 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.ViewHo
     public ShipmentAdapter(Context context) {
         this.context = context;
 
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
         preferences = context.getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         Log.d(getClass().getSimpleName(), "shipment list adapter size " + shipmentList.size());
 
@@ -66,7 +66,7 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.ViewHo
     public ShipmentAdapter(Context context, List<Shipment> shipments) {
         this.context = context;
         this.shipmentList = shipments;
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
         preferences = context.getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         Log.d(getClass().getSimpleName(), "shipment list adapter size " + shipmentList.size());
 

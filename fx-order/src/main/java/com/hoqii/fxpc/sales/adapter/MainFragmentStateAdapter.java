@@ -5,8 +5,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hoqii.fxpc.sales.SignageApplication;
+import com.hoqii.fxpc.sales.entity.Stock;
 import com.hoqii.fxpc.sales.fragment.CategoryFragment;
-import com.hoqii.fxpc.sales.fragment.CategoryFragmentGrid;
 import com.hoqii.fxpc.sales.fragment.ProductFragmentGrid;
 
 import java.util.ArrayList;
@@ -18,10 +21,18 @@ import java.util.List;
 public class MainFragmentStateAdapter extends FragmentStatePagerAdapter{
     private List<Fragment> fragmentList = new ArrayList<Fragment>();
 
-    public MainFragmentStateAdapter(FragmentManager fm) {
+    public MainFragmentStateAdapter(FragmentManager fm, List<Stock> stocks) {
         super(fm);
+        String jsonStock = null;
+        ObjectMapper mapper = SignageApplication.getObjectMapper();
+        try {
+            jsonStock = mapper.writeValueAsString(stocks);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
         Bundle bundle = new Bundle();
-//        CategoryFragmentGrid categoryFragmentGrid = new CategoryFragmentGrid();
+        bundle.putString("jsonStock", jsonStock);
         CategoryFragment categoryFragment = new CategoryFragment();
         ProductFragmentGrid productFragmentGrid = new ProductFragmentGrid();
 

@@ -70,11 +70,13 @@ public class SyncActivity extends DefaultActivity implements TaskService {
                 public void run() {
 //                    categorySyncTask = new CategorySyncTask(SyncActivity.this, SyncActivity.this);
 //                    categorySyncTask.execute("0");
-                    categoryTotalElementsTask = new CategoryTotalElementsTask(SyncActivity.this, SyncActivity.this);
-                    categoryTotalElementsTask.execute();
+//                    categoryTotalElementsTask = new CategoryTotalElementsTask(SyncActivity.this, SyncActivity.this);
+//                    categoryTotalElementsTask.execute();
+                    siteSyncTask = new RequestSiteSyncTask(SyncActivity.this, SyncActivity.this);
+                    siteSyncTask.execute();
 
                 }
-            }, 2000);
+            }, 1000);
         } else {
             Toast.makeText(this, getString(R.string.check_internet), Toast.LENGTH_LONG).show();
 
@@ -87,9 +89,10 @@ public class SyncActivity extends DefaultActivity implements TaskService {
     @OnClick(R.id.button_sync)
     public void onClick(Button button) {
         if (button.getId() == R.id.button_sync) {
-            categoryTotalElementsTask = new CategoryTotalElementsTask(SyncActivity.this, SyncActivity.this);
-            categoryTotalElementsTask.execute();
-
+//            categoryTotalElementsTask = new CategoryTotalElementsTask(SyncActivity.this, SyncActivity.this);
+//            categoryTotalElementsTask.execute();
+            siteSyncTask = new RequestSiteSyncTask(this, this);
+            siteSyncTask.execute();
         }
     }
 
@@ -99,31 +102,20 @@ public class SyncActivity extends DefaultActivity implements TaskService {
             buttonSync.setVisibility(View.GONE);
         }
 
-        if (code == SignageVariables.PRODUCT_GET_TASK) {
-            progressBar.setVisibility(View.VISIBLE);
-            textSync.setVisibility(View.VISIBLE);
-            textSync.setText(R.string.sync_product);
-        } else if (code == SignageVariables.CATEGORY_GET_TASK) {
-            progressBar.setVisibility(View.VISIBLE);
-            textSync.setVisibility(View.VISIBLE);
-            textSync.setText(R.string.sync_category);
-        } else if (code == SignageVariables.IMAGE_PRODUCT_TASK) {
-            progressBar.setVisibility(View.VISIBLE);
-            textSync.setVisibility(View.VISIBLE);
-            textSync.setText(R.string.sync_image);
-        } else if (code == SignageVariables.PRODUCT_UOM_GET_TASK) {
-            progressBar.setVisibility(View.VISIBLE);
-            textSync.setVisibility(View.VISIBLE);
-            textSync.setText(R.string.sync_product_uom);
-        } else if (code == SignageVariables.CONTACT_GET_TASK) {
-            progressBar.setVisibility(View.VISIBLE);
-            textSync.setVisibility(View.VISIBLE);
-            textSync.setText(R.string.sync_contact);
-        } else if (code == SignageVariables.BUSINESS_PARTNER_GET_TASK) {
-            progressBar.setVisibility(View.VISIBLE);
-            textSync.setVisibility(View.VISIBLE);
-            textSync.setText(R.string.sync_business_partner);
-        } else if (code == SignageVariables.SITE_GET_TASK) {
+//        if (code == SignageVariables.PRODUCT_GET_TASK) {
+//            progressBar.setVisibility(View.VISIBLE);
+//            textSync.setVisibility(View.VISIBLE);
+//            textSync.setText(R.string.sync_product);
+//        } else if (code == SignageVariables.CATEGORY_GET_TASK) {
+//            progressBar.setVisibility(View.VISIBLE);
+//            textSync.setVisibility(View.VISIBLE);
+//            textSync.setText(R.string.sync_category);
+//        } else if (code == SignageVariables.IMAGE_PRODUCT_TASK) {
+//            progressBar.setVisibility(View.VISIBLE);
+//            textSync.setVisibility(View.VISIBLE);
+//            textSync.setText(R.string.sync_image);
+//        } else
+        if (code == SignageVariables.SITE_GET_TASK) {
             progressBar.setVisibility(View.VISIBLE);
             textSync.setVisibility(View.VISIBLE);
             textSync.setText(R.string.sync_site);
@@ -136,43 +128,117 @@ public class SyncActivity extends DefaultActivity implements TaskService {
 
             Log.d("==============", result.toString());
 
-            if (code == SignageVariables.CATEGORY_ELEMENTS_TASK) {
-                categorySyncTask = new CategorySyncTask(this, this);
-                categorySyncTask.execute(result.toString());
+//            if (code == SignageVariables.CATEGORY_ELEMENTS_TASK) {
+//                categorySyncTask = new CategorySyncTask(this, this);
+//                categorySyncTask.execute(result.toString());
+//
+//            } else if (code == SignageVariables.CATEGORY_GET_TASK) {
+//                productUomsSyncTask = new ProductUomsSyncTask(this, this);
+//                productUomsSyncTask.execute();
+//            } else if (code == SignageVariables.PRODUCT_UOM_GET_TASK) {
+//                contactSyncTask = new ContactSyncTask(this, this);
+//                contactSyncTask.execute();
+//
+//            }
+//            else if (code == SignageVariables.CONTACT_GET_TASK) {
+//                productTotalElementsTask = new ProductTotalElementsTask(this, this);
+//                productTotalElementsTask.execute();
+//            }else if (code == SignageVariables.PRODUCT_ELEMENTS_TASK) {
+//                Log.e(getClass().getSimpleName(), "PRODUCT_ELEMENTS_TASK: Finish");
+//                productSyncTask = new ProductSyncTask(this, this);
+//                productSyncTask.execute(result.toString());
+//
+//            } else if (code == SignageVariables.PRODUCT_GET_TASK) {
+//                Log.e(getClass().getSimpleName(), "PRODUCT_GET_TASK: Finish");
+//                imageProductTask = new ImageProductTask(this, this);
+//                imageProductTask.execute();
+//            } else if (code == SignageVariables.IMAGE_PRODUCT_TASK) {
+//
+//                businessPartnerTask = new BusinessPartnerTask(this, this);
+//                businessPartnerTask.execute();
+//
+//
+//            } else if (code == SignageVariables.BUSINESS_PARTNER_GET_TASK) {
+//                siteSyncTask = new RequestSiteSyncTask(this, this);
+//                siteSyncTask.execute();
+//            }else if (code == SignageVariables.SITE_GET_TASK){
+//                progressBar.setVisibility(View.GONE);
+//                textSync.setText(R.string.finish_sync);
+//
+//                Log.d(getClass().getSimpleName(), "SITE_TASK: Finish");
+//
+//                new Handler().postDelayed(new Runnable() {
+//                    public void run() {
+//                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(SyncActivity.this).edit();
+//
+//                        editor.putBoolean("has_sync", true);
+//                        editor.commit();
+//
+//                        if (getIntent().getBooleanExtra("just_sync", false)) {
+//                            finish();
+//                        } else {
+//                            startActivity(new Intent(SyncActivity.this, MainActivity.class));
+//                            finish();
+//                        }
+//                    }
+//                }, 2000);
+//            }
 
-            } else if (code == SignageVariables.CATEGORY_GET_TASK) {
-                productUomsSyncTask = new ProductUomsSyncTask(this, this);
-                productUomsSyncTask.execute();
-            } else if (code == SignageVariables.PRODUCT_UOM_GET_TASK) {
-                contactSyncTask = new ContactSyncTask(this, this);
-                contactSyncTask.execute();
+//            if (code == SignageVariables.SITE_GET_TASK) {
+//                productTotalElementsTask = new ProductTotalElementsTask(this, this);
+//                productTotalElementsTask.execute();
+//            } else if (code == SignageVariables.PRODUCT_ELEMENTS_TASK) {
+//                Log.e(getClass().getSimpleName(), "PRODUCT_ELEMENTS_TASK: Finish");
+//                productSyncTask = new ProductSyncTask(this, this);
+//                productSyncTask.execute(result.toString());
+//            } else if (code == SignageVariables.PRODUCT_GET_TASK) {
+//                Log.e(getClass().getSimpleName(), "PRODUCT_GET_TASK: Finish");
+//                imageProductTask = new ImageProductTask(this, this);
+//                imageProductTask.execute();
+//            } else if (code == SignageVariables.IMAGE_PRODUCT_TASK) {
+//                progressBar.setVisibility(View.GONE);
+//                textSync.setText(R.string.finish_sync);
+//
+//                new Handler().post(new Runnable() {
+//                    public void run() {
+//                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(SyncActivity.this).edit();
+//
+//                        editor.putBoolean("has_sync", true);
+//                        editor.commit();
+//
+//                        if (getIntent().getBooleanExtra("just_sync", false)) {
+//                            finish();
+//                        } else {
+//                            startActivity(new Intent(SyncActivity.this, MainActivity.class));
+//                            finish();
+//                        }
+//                    }
+//                });
+//            }
 
-            }
-            else if (code == SignageVariables.CONTACT_GET_TASK) {
-                productTotalElementsTask = new ProductTotalElementsTask(this, this);
-                productTotalElementsTask.execute();
-            }else if (code == SignageVariables.PRODUCT_ELEMENTS_TASK) {
-                Log.e(getClass().getSimpleName(), "PRODUCT_ELEMENTS_TASK: Finish");
-                productSyncTask = new ProductSyncTask(this, this);
-                productSyncTask.execute(result.toString());
+//            if (code == SignageVariables.CATEGORY_ELEMENTS_TASK) {
+//                categorySyncTask = new CategorySyncTask(this, this);
+//                categorySyncTask.execute(result.toString());
+//            } else if (code == SignageVariables.CATEGORY_GET_TASK) {
+//                productUomsSyncTask = new ProductUomsSyncTask(this, this);
+//                productUomsSyncTask.execute();
+//            } else if (code == SignageVariables.PRODUCT_UOM_GET_TASK) {
+//                productTotalElementsTask = new ProductTotalElementsTask(this, this);
+//                productTotalElementsTask.execute();
+//            } else if (code == SignageVariables.PRODUCT_ELEMENTS_TASK) {
+//                productSyncTask = new ProductSyncTask(this, this);
+//                productSyncTask.execute(result.toString());
+//            } else if (code == SignageVariables.PRODUCT_GET_TASK) {
+//                imageProductTask = new ImageProductTask(this, this);
+//                imageProductTask.execute();
+//            } else if (code == SignageVariables.IMAGE_PRODUCT_TASK) {
+//                siteSyncTask = new RequestSiteSyncTask(this, this);
+//                siteSyncTask.execute();
+//            } else
 
-            } else if (code == SignageVariables.PRODUCT_GET_TASK) {
-                Log.e(getClass().getSimpleName(), "PRODUCT_GET_TASK: Finish");
-                imageProductTask = new ImageProductTask(this, this);
-                imageProductTask.execute();
-            } else if (code == SignageVariables.IMAGE_PRODUCT_TASK) {
-
-                businessPartnerTask = new BusinessPartnerTask(this, this);
-                businessPartnerTask.execute();
-
-
-            } else if (code == SignageVariables.BUSINESS_PARTNER_GET_TASK) {
-                siteSyncTask = new RequestSiteSyncTask(this, this);
-                siteSyncTask.execute();
-            }else if (code == SignageVariables.SITE_GET_TASK){
+            if (code == SignageVariables.SITE_GET_TASK) {
                 progressBar.setVisibility(View.GONE);
                 textSync.setText(R.string.finish_sync);
-
                 Log.d(getClass().getSimpleName(), "SITE_TASK: Finish");
 
                 new Handler().postDelayed(new Runnable() {
@@ -191,6 +257,7 @@ public class SyncActivity extends DefaultActivity implements TaskService {
                     }
                 }, 2000);
             }
+
         }
     }
 

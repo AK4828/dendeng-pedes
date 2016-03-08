@@ -29,7 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.MainSlidePagerAdapter;
 import com.hoqii.fxpc.sales.adapter.OrderMenuAdapter;
@@ -70,9 +70,12 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     private boolean isMinLoli = false;
     private static final int ORDER_REQUEST = 300;
     private static final int ORDER_REQUEST_OPTIONS = 301;
-    private static final int BUSINESS_REQUEST = 302;
-    private static final int PREFERENCE_REQUEST = 303;
-    private static final int SITE_REQUEST = 304;
+    private static final int PREFERENCE_REQUEST = 302;
+    private static final int SITE_REQUEST = 303;
+    private static final int REFRESH_TOKEN_SUBMIT_ORDER = 310;
+    public static final int REFRESH_TOKEN_ORDER_LIST_FRAGMENT_ORDER = 311;
+    public static final int REFRESH_TOKEN_RECEIVE_LIST_FRAGMENT_ORDER = 312;
+    public static final int REFRESH_TOKEN_UPDATE_ORDERMENU = 313;
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
     private JobManager jobManager;
     private SharedPreferences preferences;
@@ -84,26 +87,27 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     private RequestOrderSyncTask requestOrderSyncTask;
     private List<OrderMenu> orderMenus = new ArrayList<OrderMenu>();
     private List<String> orderMenuIdes;
-    private int orderMenuCount = 0;
-    private int totalOrderMenus = 0;
-    private String orderId = null;
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");
     private RecyclerView orderListRecycle;
     private OrderMenuAdapter orderMenuAdapter;
     private ViewPager slideViewPager;
     private TabLayout slideTablayout;
-    private boolean menuItemVisibility = true;
     private SlidingUpPanelLayout slidingUpPanel;
     private SellerOrderListFragment sellerOrderListFragment;
     private ReceiveListFragment receiveListFragment;
     private LinearLayout dataNull;
     private View appShadow;
+    private int orderMenuCount = 0;
+    private int totalOrderMenus = 0;
+    private String orderId = null;
+    private Intent tempIntentUpdateOrder = null;
 
+    private boolean menuItemVisibility = true;
     private boolean orderMenuError = false;
     private refreshTokenStatus refreshStatus = null;
 
     public enum refreshTokenStatus {
-        submitOrder, orderFragment, receiveFragment
+        submitOrder, orderFragment, receiveFragment, updateTempOrderMenu
     }
 
     @Override
@@ -112,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -242,9 +246,9 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
             case R.id.menu_pay_order:
                 if (orderId != null) {
                     Order order = orderDbAdapter.findOrderById(orderId);
@@ -270,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         });
                         builder.show();
                     } else {
-                        if (authenticationCeck.isNetworkAvailable()){
+                        if (authenticationCeck.isNetworkAvailable()) {
                             if (authenticationCeck.isAccess()) {
                                 Log.d(getClass().getSimpleName(), "[ application access granted ]");
                                 Log.d(getClass().getSimpleName(), "[ submiting order run ]");
@@ -278,9 +282,14 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                             } else {
                                 Log.d(getClass().getSimpleName(), "[ application access need to refresh ]");
                                 Log.d(getClass().getSimpleName(), "[ refreshing refersh param submit ]");
-                                refreshToken(refreshTokenStatus.submitOrder.name());
+//                                refreshToken(refreshTokenStatus.submitOrder.name());
+
+
+                                /**
+                                 * try new refresh token :) **/
+                                refreshToken(REFRESH_TOKEN_SUBMIT_ORDER);
                             }
-                        }else {
+                        } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                             builder.setTitle("Internet access");
                             builder.setMessage("No internet connection");
@@ -292,7 +301,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                             });
                             builder.show();
                         }
-
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -317,6 +325,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 return true;
 
             case R.id.menu_add_order:
+                forceUnRegisterWhenExist();
                 orderOption();
                 return true;
 
@@ -325,10 +334,18 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         }
     }
 
+
+    /**
+     * unregister eventbus
+     * **/
     private void forceUnRegisterWhenExist() {
         EventBus.getDefault().unregister(this);
     }
 
+
+    /**
+     * set navigation
+     * **/
     private void setNav() {
         TextView parentName = (TextView) findViewById(R.id.siteName);
         parentName.setText(AuthenticationUtils.getCurrentAuthentication().getSite().getDescription());
@@ -394,6 +411,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         break;
 
                     case R.id.preference:
+                        forceUnRegisterWhenExist();
                         Intent pref = new Intent(MainActivity.this, PreferenceActivity.class);
                         if (isMinLoli) {
                             startActivityForResult(pref, PREFERENCE_REQUEST, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
@@ -401,13 +419,16 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                             startActivityForResult(pref, PREFERENCE_REQUEST);
                         }
                         break;
-
                 }
                 return false;
             }
         });
     }
 
+
+    /**
+     * update info
+     * **/
     public void updateInfo() {
         orderId = orderDbAdapter.getOrderId();
         Log.d(getClass().getSimpleName(), "[ order id app update info " + orderId + " ]");
@@ -433,9 +454,9 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             }
 
             orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
-            if (orderMenus.size() > 0){
+            if (orderMenus.size() > 0) {
                 dataNull.setVisibility(View.GONE);
-            }else {
+            } else {
                 dataNull.setVisibility(View.VISIBLE);
             }
             orderMenuAdapter.addItems(orderMenus);
@@ -475,32 +496,66 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         dialog.show();
     }
 
+
+    /**
+     * show ar hide actionbar menu
+     * **/
     private void setMenuItemVisibility(boolean visibility) {
         this.menuItemVisibility = visibility;
         invalidateOptionsMenu();
     }
 
-    public void order(Intent intent, View image, View title, View price) {
-        if (isMinLoli) {
-//            String transitionName = getString(R.string.transition_string);
+//    public void order(Intent intent, View image, View title, View price) {
+//        if (isMinLoli) {
+//            Pair<View, String> pariImage = Pair.create(image, getString(R.string.transition_image));
+//            Pair<View, String> pairTitle = Pair.create(title, getString(R.string.transition_title));
+//            Pair<View, String> pariPrice = Pair.create(price, getString(R.string.transition_price));
+//
+//            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, pariImage, pairTitle);
+//
+//            startActivityForResult(intent, ORDER_REQUEST, optionsCompat.toBundle());
+//        } else {
+//            startActivityForResult(intent, ORDER_REQUEST);
+//        }
+//    }
 
-            Pair<View, String> pariImage = Pair.create(image, getString(R.string.transition_image));
-            Pair<View, String> pairTitle = Pair.create(title, getString(R.string.transition_title));
-            Pair<View, String> pariPrice = Pair.create(price, getString(R.string.transition_price));
 
-            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, pariImage, pairTitle);
-
-            startActivityForResult(intent, ORDER_REQUEST, optionsCompat.toBundle());
+    /**
+     * update order menu.
+     * if refresh token failed
+     * * save intent to variable then run refresh token
+     * * when refresh token finish run intent
+     * **/
+    public void orderUpdate(String jsonProduct, int qty) {
+        if (authenticationCeck.isNetworkAvailable()) {
+            if (authenticationCeck.isAccess()) {
+                Log.d(getClass().getSimpleName(), "[ application access granted ]");
+                Log.d(getClass().getSimpleName(), "[ update order run ]");
+                Intent i = new Intent(this, OrderActivity.class);
+                i.putExtra("jsonProduct", jsonProduct);
+                i.putExtra("qtyUpdate", qty);
+                startActivityForResult(i, ORDER_REQUEST);
+            } else {
+                Log.d(getClass().getSimpleName(), "[ application access need to refresh ]");
+                Log.d(getClass().getSimpleName(), "[ refreshing refresh param submit ]");
+                refreshToken(REFRESH_TOKEN_UPDATE_ORDERMENU);
+                tempIntentUpdateOrder = new Intent(this, OrderActivity.class);
+                tempIntentUpdateOrder.putExtra("jsonProduct", jsonProduct);
+                tempIntentUpdateOrder.putExtra("qtyUpdate", qty);
+                Log.d(getClass().getSimpleName(), "[ saving intent update order to temoprary ]");
+            }
         } else {
-            startActivityForResult(intent, ORDER_REQUEST);
-        }
-    }
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Internet access");
+            builder.setMessage("No internet connection");
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-    public void orderUpdate(String productId, int qty) {
-        Intent i = new Intent(this, OrderActivity.class);
-        i.putExtra("productId", productId);
-        i.putExtra("qtyUpdate", qty);
-        startActivityForResult(i, ORDER_REQUEST);
+                }
+            });
+            builder.show();
+        }
     }
 
     public void orderOption() {
@@ -508,220 +563,20 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         startActivityForResult(i, ORDER_REQUEST_OPTIONS, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
     }
 
-    public void refreshToken(String refresh) {
-        refreshStatus = refreshTokenStatus.valueOf(refresh);
-        jobManager.addJobInBackground(new RefreshTokenJob());
+//    public void refreshToken(String refresh) {
+//        refreshStatus = refreshTokenStatus.valueOf(refresh);
+//        jobManager.addJobInBackground(new RefreshTokenJob());
+//    }
+
+
+    /**
+     * refresh token,
+     * give processid to run
+     * **/
+    public void refreshToken(int processId) {
+        authenticationCeck.refreshToken(this, processId);
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("result", "on=========================");
-
-        if (requestCode == ORDER_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                updateInfo();
-//                orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
-//                orderMenuAdapter.addItems(orderMenus);
-
-                Log.d("result", "ok =========================");
-            }
-        } else if (requestCode == ORDER_REQUEST_OPTIONS) {
-            if (resultCode == RESULT_OK) {
-                Log.d("result", "ok orderOptions =========================");
-
-                if (data != null) {
-                    String type = data.getExtras().getString("type", null);
-                    Log.d("result type", type);
-                    if (type.equalsIgnoreCase("orderList")) {
-                        updateInfo();
-//                        orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
-//                        orderMenuAdapter.addItems(orderMenus);
-
-                    }
-                }
-            }
-        } else if (requestCode == SITE_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                Log.d(getClass().getSimpleName(), "site result");
-                updateInfo();
-            }
-        } else if (requestCode == PREFERENCE_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                finish();
-            }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onExecute(int code) {
-    }
-
-    @Override
-    public void onSuccess(int code, Object result) {
-        Log.d(getClass().getSimpleName(), result + " succecc code " + code);
-
-        if (result != null) {
-            if (code == SignageVariables.REQUEST_ORDER) {
-                Log.d(getClass().getSimpleName(), result + ">> RequestOrderMenuSyncTask * Success");
-                Order order = orderDbAdapter.findOrderById(orderId);
-                orderMenuIdes = orderMenuDbAdapter.findOrderMenuIdesByOrderIdActive(orderId);
-                totalOrderMenus = orderMenuIdes.size();
-
-                Log.d(getClass().getSimpleName(), "Order Menu Ides Size : " + orderMenuIdes.size());
-                for (String id : orderMenuIdes) {
-                    jobManager.addJobInBackground(new OrderMenuJob(order.getRefId(), id,
-                            preferences.getString("server_url", "")));
-                }
-
-            }
-        }
-    }
-
-    @Override
-    public void onCancel(int code, String message) {
-        Log.d(getClass().getSimpleName(), message);
-    }
-
-    @Override
-    public void onError(int code, String message) {
-        dialog.dismiss();
-        retryRequestSync();
-        Log.e(getClass().getSimpleName(), message);
-
-    }
-
-    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
-        Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
-        switch (requestInProgress.getProcessId()) {
-            case RefreshTokenJob.PROCESS_ID:
-                dialogRefresh.show();
-                break;
-        }
-    }
-
-    public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
-        try {
-            switch (requestSuccess.getProcessId()) {
-                case OrderUpdateJob.PROCESS_ID:
-                    dialogSuccessOrder();
-                    break;
-                case OrderMenuJob.PROCESS_ID:
-                    orderMenuCount++;
-                    Log.d(getClass().getSimpleName(), "Count OM: " + orderMenuCount + " <<>> "
-                            + "Total OM: " + totalOrderMenus);
-
-                    if (orderMenuCount == totalOrderMenus) {
-                        dialog.dismiss();
-                        if (orderMenuError){
-                            retryRequestOrderMenu();
-                        }else {
-//                            dialogSuccessOrder();
-                            Order order = orderDbAdapter.findOrderById(orderId);
-
-                            jobManager.addJobInBackground(new OrderUpdateJob(order.getRefId(), order.getId(),
-                                    preferences.getString("server_url", "")));
-                        }
-                        Log.d(getClass().getSimpleName(), "Success ");
-                    }
-
-                    Log.d(getClass().getSimpleName(), "RequestSuccess OrderMenuId: "
-                            + requestSuccess.getRefId());
-                    break;
-                case RefreshTokenJob.PROCESS_ID:
-                    Log.d(getClass().getSimpleName(), "[ refresh job success, status set :" + refreshStatus.name() + " ]");
-                    break;
-            }
-
-        } catch (Exception e) {
-            Log.e(getClass().getSimpleName(), e.getMessage(), e);
-        }
-    }
-
-    public void onEventMainThread(GenericEvent.RequestFailed failed) {
-        Log.d(getClass().getSimpleName(), "request failed event, process id " + failed.getProcessId());
-        switch (failed.getProcessId()) {
-            case OrderUpdateJob.PROCESS_ID:
-                Log.d(getClass().getSimpleName(), "request updateorder failed");
-                retryRequestOrder();
-                break;
-            case OrderMenuJob.PROCESS_ID:
-                orderMenuCount++;
-                orderMenuError = true;
-                Log.d(getClass().getSimpleName(), "request update order menu failed");
-                if (orderMenuCount == totalOrderMenus) {
-                    dialog.dismiss();
-                    retryRequestOrderMenu();
-                    Log.d(getClass().getSimpleName(), "request update order menu failed complate");
-                }
-                break;
-            case RefreshTokenJob.PROCESS_ID:
-                dialogRefresh.dismiss();
-                refreshStatus = null;
-                AlertMessage("Refresh token failed");
-                break;
-        }
-
-    }
-
-    public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
-        dialogRefresh.dismiss();
-        Log.d(getClass().getSimpleName(), "[ refresh status " + refreshStatus.name() + " ]");
-        if (refreshStatus != null) {
-            switch (refreshStatus) {
-                case submitOrder:
-                    Log.d(getClass().getSimpleName(), "[ re running submit order ]");
-                    saveOrder();
-                    break;
-                case orderFragment:
-                    Log.d(getClass().getSimpleName(), "[ reload order ]");
-                    sellerOrderListFragment.reloadOrder();
-                    break;
-                case receiveFragment:
-                    Log.d(getClass().getSimpleName(), "[ reload receive ]");
-                    receiveListFragment.reloadReceive();
-                    break;
-            }
-        }
-        refreshStatus = null;
-    }
-
-    public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
-        dialogRefresh.dismiss();
-        Log.d(getClass().getSimpleName(), "[ refresh status failed ]");
-        if (refreshStatus != null) {
-            switch (refreshStatus) {
-                case submitOrder:
-                    Log.d(getClass().getSimpleName(), "[ refresh token submit order failed ]");
-                    reloadRefreshToken();
-                    break;
-                case orderFragment:
-                    Log.d(getClass().getSimpleName(), "[ refresh token orderfragment failed ]");
-                    sellerOrderListFragment.reloadRefreshToken();
-                    break;
-                case receiveFragment:
-                    Log.d(getClass().getSimpleName(), "[ refresh token receive failed ]");
-                    receiveListFragment.reloadRefreshToken();
-            }
-        }
-
-        refreshStatus = null;
-    }
-
-    private void AlertMessage(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Refresh Token");
-        builder.setMessage(message);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.show();
-    }
 
     private void dialogSuccessOrder() {
         View view = View.inflate(this, R.layout.view_add_to_cart, null);
@@ -756,32 +611,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         dialog.setCancelable(false);
         dialog.show();
 
-    }
-
-    private void reloadRefreshToken() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Refresh Token");
-        builder.setMessage("Process failed\nRepeat process ?");
-        builder.setCancelable(false);
-        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (refreshStatus != null) {
-//                    jobManager.addJobInBackground(new RefreshTokenJob(refreshStatus.name()));
-                    refreshToken(refreshTokenStatus.submitOrder.name());
-                } else {
-                    jobManager.addJobInBackground(new RefreshTokenJob());
-                }
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                refreshStatus = null;
-                dialog.dismiss();
-            }
-        });
-        builder.show();
     }
 
     public void retryRequestSync() {
@@ -867,5 +696,244 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         builder.show();
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("result", "on=========================");
+
+        if (requestCode == ORDER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                updateInfo();
+                Log.d("result", "ok =========================");
+            }
+        } else if (requestCode == ORDER_REQUEST_OPTIONS) {
+            if (resultCode == RESULT_OK) {
+                Log.d("result", "ok orderOptions =========================");
+
+                if (data != null) {
+                    String type = data.getExtras().getString("type", null);
+                    Log.d("result type", type);
+                    if (type.equalsIgnoreCase("orderList")) {
+                        updateInfo();
+                    }
+                }
+            }
+        } else if (requestCode == SITE_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Log.d(getClass().getSimpleName(), "site result");
+                updateInfo();
+            }
+        } else if (requestCode == PREFERENCE_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                finish();
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onExecute(int code) {
+    }
+
+    @Override
+    public void onSuccess(int code, Object result) {
+        Log.d(getClass().getSimpleName(), result + " success code " + code);
+
+        if (result != null) {
+            if (code == SignageVariables.REQUEST_ORDER) {
+                Log.d(getClass().getSimpleName(), result + ">> RequestOrderMenuSyncTask * Success");
+                Order order = orderDbAdapter.findOrderById(orderId);
+                orderMenuIdes = orderMenuDbAdapter.findOrderMenuIdesByOrderIdActive(orderId);
+                totalOrderMenus = orderMenuIdes.size();
+
+                Log.d(getClass().getSimpleName(), "Order Menu Ides Size : " + orderMenuIdes.size());
+                for (String id : orderMenuIdes) {
+                    jobManager.addJobInBackground(new OrderMenuJob(order.getRefId(), id,
+                            preferences.getString("server_url", "")));
+                }
+
+            }
+        }
+    }
+
+    @Override
+    public void onCancel(int code, String message) {
+        Log.d(getClass().getSimpleName(), message);
+    }
+
+    @Override
+    public void onError(int code, String message) {
+        dialog.dismiss();
+        retryRequestSync();
+        Log.e(getClass().getSimpleName(), message);
+
+    }
+
+    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
+        Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
+
+    }
+
+    public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
+        try {
+            switch (requestSuccess.getProcessId()) {
+                case OrderUpdateJob.PROCESS_ID:
+                    dialogSuccessOrder();
+                    break;
+                case OrderMenuJob.PROCESS_ID:
+                    orderMenuCount++;
+                    Log.d(getClass().getSimpleName(), "Count OM: " + orderMenuCount + " <<>> "
+                            + "Total OM: " + totalOrderMenus);
+                    if (orderMenuCount == totalOrderMenus) {
+                        dialog.dismiss();
+                        if (orderMenuError) {
+                            retryRequestOrderMenu();
+                        } else {
+                            Order order = orderDbAdapter.findOrderById(orderId);
+
+                            jobManager.addJobInBackground(new OrderUpdateJob(order.getRefId(), order.getId(),
+                                    preferences.getString("server_url", "")));
+                        }
+                        Log.d(getClass().getSimpleName(), "Success ");
+                    }
+
+                    Log.d(getClass().getSimpleName(), "RequestSuccess OrderMenuId: "
+                            + requestSuccess.getRefId());
+                    break;
+                case REFRESH_TOKEN_SUBMIT_ORDER:
+                    saveOrder();
+                    break;
+                case REFRESH_TOKEN_ORDER_LIST_FRAGMENT_ORDER:
+                    Log.d(getClass().getSimpleName(), "[ reload order ]");
+                    sellerOrderListFragment.reloadOrder();
+                    break;
+                case REFRESH_TOKEN_RECEIVE_LIST_FRAGMENT_ORDER:
+                    Log.d(getClass().getSimpleName(), "[ reload receive ]");
+                    receiveListFragment.reloadReceive();
+                    break;
+                case REFRESH_TOKEN_UPDATE_ORDERMENU:
+                    Log.d(getClass().getSimpleName(), "[ reload update ordermenu ]");
+                    startActivityForResult(tempIntentUpdateOrder, ORDER_REQUEST);
+                    tempIntentUpdateOrder = null;
+                    break;
+            }
+
+        } catch (Exception e) {
+            Log.e(getClass().getSimpleName(), e.getMessage(), e);
+        }
+    }
+
+    public void onEventMainThread(GenericEvent.RequestFailed failed) {
+        Log.d(getClass().getSimpleName(), "request failed event, process id " + failed.getProcessId());
+        switch (failed.getProcessId()) {
+            case OrderUpdateJob.PROCESS_ID:
+                Log.d(getClass().getSimpleName(), "request updateorder failed");
+                retryRequestOrder();
+                break;
+            case OrderMenuJob.PROCESS_ID:
+                orderMenuCount++;
+                orderMenuError = true;
+                Log.d(getClass().getSimpleName(), "request update order menu failed");
+                if (orderMenuCount == totalOrderMenus) {
+                    dialog.dismiss();
+                    retryRequestOrderMenu();
+                    Log.d(getClass().getSimpleName(), "request update order menu failed complate");
+                }
+                break;
+        }
+    }
+
+//    public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
+//        dialogRefresh.dismiss();
+//        Log.d(getClass().getSimpleName(), "[ refresh status " + refreshStatus.name() + " ]");
+//        if (refreshStatus != null) {
+//            switch (refreshStatus) {
+//                case submitOrder:
+//                    Log.d(getClass().getSimpleName(), "[ re running submit order ]");
+//                    saveOrder();
+//                    break;
+//                case orderFragment:
+//                    Log.d(getClass().getSimpleName(), "[ reload order ]");
+//                    sellerOrderListFragment.reloadOrder();
+//                    break;
+//                case receiveFragment:
+//                    Log.d(getClass().getSimpleName(), "[ reload receive ]");
+//                    receiveListFragment.reloadReceive();
+//                    break;
+//                case updateTempOrderMenu:
+//                    Log.d(getClass().getSimpleName(), "[ reload update tempOrderMenu ]");
+//                    startActivityForResult(tempIntentUpdateOrder, ORDER_REQUEST);
+//                    tempIntentUpdateOrder = null;
+//                    break;
+//            }
+//        }
+//        refreshStatus = null;
+//    }
+
+//    public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
+//        dialogRefresh.dismiss();
+//        Log.d(getClass().getSimpleName(), "[ refresh status failed ]");
+//        if (refreshStatus != null) {
+//            switch (refreshStatus) {
+//                case submitOrder:
+//                    Log.d(getClass().getSimpleName(), "[ refresh token submit order failed ]");
+//                    reloadRefreshToken();
+//                    break;
+//                case orderFragment:
+//                    Log.d(getClass().getSimpleName(), "[ refresh token orderfragment failed ]");
+//                    sellerOrderListFragment.reloadRefreshToken();
+//                    break;
+//                case receiveFragment:
+//                    Log.d(getClass().getSimpleName(), "[ refresh token receive failed ]");
+//                    receiveListFragment.reloadRefreshToken();
+//                    break;
+//                case updateTempOrderMenu:
+//                    Log.d(getClass().getSimpleName(), "[ refresh token update ordermenu failed ]");
+//                    reloadRefreshToken();
+//                    break;
+//            }
+//        }
+//
+//        refreshStatus = null;
+//    }
+
+    //    private void AlertMessage(String message) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//        builder.setTitle("Refresh Token");
+//        builder.setMessage(message);
+//        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//            }
+//        });
+//        builder.show();
+//    }
+//
+//    private void reloadRefreshToken() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//        builder.setTitle("Refresh Token");
+//        builder.setMessage("Process failed\nRepeat process ?");
+//        builder.setCancelable(false);
+//        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                if (refreshStatus != null) {
+//                    refreshToken(refreshTokenStatus.submitOrder.name());
+//                } else {
+//                    jobManager.addJobInBackground(new RefreshTokenJob());
+//                }
+//            }
+//        });
+//        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                refreshStatus = null;
+//                dialog.dismiss();
+//            }
+//        });
+//        builder.show();
+//    }
 
 }

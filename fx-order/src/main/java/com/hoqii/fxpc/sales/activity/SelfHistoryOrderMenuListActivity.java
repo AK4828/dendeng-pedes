@@ -2,8 +2,6 @@ package com.hoqii.fxpc.sales.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -12,7 +10,6 @@ import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,40 +17,18 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.SelfHistoryOrderMenuAdapter;
-import com.hoqii.fxpc.sales.adapter.SellerOrderMenuAdapter;
-import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.entity.Product;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
-import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.job.MenuUpdateJob;
-import com.hoqii.fxpc.sales.job.OrderStatusUpdateJob;
-import com.hoqii.fxpc.sales.job.OrderUpdateJob;
-import com.hoqii.fxpc.sales.job.SerialJob;
-import com.hoqii.fxpc.sales.job.ShipmentJob;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.fonts.EntypoModule;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.IoniconsModule;
-import com.joanzapata.iconify.fonts.MaterialCommunityModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
-import com.joanzapata.iconify.fonts.MeteoconsModule;
-import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
-import com.joanzapata.iconify.fonts.TypiconsModule;
-import com.joanzapata.iconify.fonts.WeathericonsModule;
 import com.joanzapata.iconify.widget.IconTextView;
-import com.path.android.jobqueue.JobManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,8 +40,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import de.greenrobot.event.EventBus;
 
 
 /**

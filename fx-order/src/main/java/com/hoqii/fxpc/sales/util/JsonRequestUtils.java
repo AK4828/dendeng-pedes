@@ -5,7 +5,7 @@ import android.util.Log;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpResponse;
@@ -89,7 +89,7 @@ public class JsonRequestUtils {
 
     private <T> HttpResponseWrapper<T> request(HttpUriRequest uriRequest, Object body, TypeReference type) {
         try {
-            ObjectMapper mapper = SignageAppication.getInstance().getJsonMapper();
+            ObjectMapper mapper = SignageApplication.getInstance().getJsonMapper();
 
             uriRequest.setHeader("Content-Type", "application/json");
             uriRequest.setHeader("Accept", "application/json");

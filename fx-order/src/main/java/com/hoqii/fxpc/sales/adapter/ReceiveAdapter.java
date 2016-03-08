@@ -1,10 +1,7 @@
 package com.hoqii.fxpc.sales.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,10 +13,9 @@ import android.widget.TextView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.activity.ReceiveDetailActivity;
 import com.hoqii.fxpc.sales.activity.ReceiveListActivity;
-import com.hoqii.fxpc.sales.activity.SellerOrderMenuListActivity;
 import com.hoqii.fxpc.sales.entity.Receive;
 import com.hoqii.fxpc.sales.entity.Shipment;
 
@@ -94,7 +90,7 @@ public class ReceiveAdapter extends RecyclerView.Adapter<ReceiveAdapter.ViewHold
                 intent.putExtra("site", receiveList.get(position).getOrder().getSite().getName());
                 intent.putExtra("siteDescription", receiveList.get(position).getOrder().getSite().getDescription());
 
-                ObjectMapper om = SignageAppication.getObjectMapper();
+                ObjectMapper om = SignageApplication.getObjectMapper();
                 try {
                     String jsonReceive = om.writeValueAsString(receiveList.get(position));
                     intent.putExtra("jsonReceive", jsonReceive);

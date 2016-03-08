@@ -26,7 +26,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.SellerOrderMenuAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
@@ -118,7 +118,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
             position = getIntent().getIntExtra("position", 0);
         }
 
-        jobManager = SignageAppication.getInstance().getJobManager();
+        jobManager = SignageApplication.getInstance().getJobManager();
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);

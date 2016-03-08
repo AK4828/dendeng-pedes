@@ -13,9 +13,8 @@ import android.widget.TextView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageAppication;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.activity.ReceiveDetailActivity;
-import com.hoqii.fxpc.sales.activity.ReceiveListActivity;
 import com.hoqii.fxpc.sales.entity.Receive;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.hoqii.fxpc.sales.fragment.ReceiveListFragment;
@@ -86,7 +85,7 @@ public class ReceiveFragmentAdapter extends RecyclerView.Adapter<ReceiveFragment
                 intent.putExtra("site", receiveList.get(position).getOrder().getSite().getName());
                 intent.putExtra("siteDescription", receiveList.get(position).getOrder().getSite().getDescription());
 
-                ObjectMapper om = SignageAppication.getObjectMapper();
+                ObjectMapper om = SignageApplication.getObjectMapper();
                 try {
                     String jsonReceive = om.writeValueAsString(receiveList.get(position));
                     intent.putExtra("jsonReceive", jsonReceive);
