@@ -113,6 +113,7 @@ public class ProductFragmentGrid extends Fragment {
     private List<Stock> dataStock(){
         List<Stock> data = new ArrayList<Stock>();
         String parentCID = getArguments().getString("parent_category");
+        Log.d(getClass().getSimpleName(), "parent category id : "+parentCID);
         if (parentCID != null){
             if (parentCID.equalsIgnoreCase("uncategorized")){
                 Log.d(getClass().getSimpleName(), "uncategorized");
@@ -125,7 +126,8 @@ public class ProductFragmentGrid extends Fragment {
             }else {
                 Log.d(getClass().getSimpleName(), "not uncategorized");
                 for (Stock s : stocks) {
-                    if (s.getProduct().getParentCategory().getId() == parentCID) {
+                    Log.d(getClass().getSimpleName(), "id cat : "+s.getProduct().getParentCategory().getId());
+                    if (s.getProduct().getParentCategory().getId() != null && s.getProduct().getParentCategory().getId().equals(parentCID)) {
                         data.add(s);
                     }
                 }

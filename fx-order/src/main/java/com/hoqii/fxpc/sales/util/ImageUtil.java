@@ -161,9 +161,9 @@ public class ImageUtil {
             Log.d(context.getClass().getSimpleName(), "targe null");
         }
 
-//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, target);
-//        target.flush();
-//        target.close();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, target);
+        target.flush();
+        target.close();
 
         return targetFile;
     }

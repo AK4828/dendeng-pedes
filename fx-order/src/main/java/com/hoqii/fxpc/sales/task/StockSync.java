@@ -89,6 +89,7 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                                 Category parentCategory = new Category();
                                 if (!productObject.isNull("parentCategory")) {
                                     parentCategory.setId(productObject.getJSONObject("parentCategory").getString("id"));
+                                    parentCategory.setName(productObject.getJSONObject("parentCategory").getString("name"));
                                 }
 
                                 Category category = new Category();

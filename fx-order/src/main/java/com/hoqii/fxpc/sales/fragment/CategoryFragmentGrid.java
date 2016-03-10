@@ -2,6 +2,7 @@ package com.hoqii.fxpc.sales.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,11 +37,12 @@ public class CategoryFragmentGrid extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null){
+        if (getArguments() != null) {
             jsonStock = getArguments().getString("jsonStock");
             ObjectMapper mapper = SignageApplication.getObjectMapper();
             try {
-                stocks = mapper.readValue(jsonStock, new TypeReference<List<Stock>>(){});
+                stocks = mapper.readValue(jsonStock, new TypeReference<List<Stock>>() {
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -74,14 +76,40 @@ public class CategoryFragmentGrid extends Fragment {
         return view;
     }
 
-    private List<Stock>stockCategories(){
+    private List<Stock> stockCategories() {
         List<Stock> cies = new ArrayList<Stock>();
-        List<Category> tempCies = new ArrayList<Category>();
-        for (Stock s : stocks){
-            if (!tempCies.contains(s.getProduct().getParentCategory())){
-                cies.add(s);
-                tempCies.add(s.getProduct().getParentCategory());
+//        List<Category> tempCies = new ArrayList<Category>();
+//        for (Stock s : stocks){
+//            if (!tempCies.contains(s.getProduct().getParentCategory())){
+//                cies.add(s);
+//                tempCies.add(s.getProduct().getParentCategory());
+//            }
+//        }
+//        return cies;
+//
+
+        List<String> categoriesId = new ArrayList<String>();
+        for (Stock s : stocks) {
+            if (s.getProduct().getParentCategory().getId() != null) {
+                if (!categoriesId.contains(s.getProduct().getParentCategory().getId())) {
+                    categoriesId.add(s.getProduct().getParentCategory().getId());
+                    cies.add(s);
+                    Log.d(getClass().getSimpleName(), "category id " + s.getProduct().getParentCategory().getId());
+                    Log.d(getClass().getSimpleName(), "category name " + s.getProduct().getParentCategory().getName());
+                    Log.d(getClass().getSimpleName(), "==============================");
+
+                }
+            } else {
+                Category cUncateg = new Category();
+                cUncateg.setId("uncategorized");
+                cUncateg.setName("Uncategorized");
+                if (!categoriesId.contains(cUncateg.getId())) {
+                    categoriesId.add(cUncateg.getId());
+                    s.getProduct().setParentCategory(cUncateg);
+                    cies.add(s);
+                }
             }
+
         }
         return cies;
     }

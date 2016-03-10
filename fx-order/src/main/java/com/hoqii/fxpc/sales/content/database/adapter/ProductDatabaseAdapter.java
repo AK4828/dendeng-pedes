@@ -137,7 +137,7 @@ public class ProductDatabaseAdapter {
             values.put(ProductDatabaseModel.CATEGORY_ID, product.getCategory().getId());
             values.put(ProductDatabaseModel.COMPOSITION_STATUS, product.getcStats());
             values.put(ProductDatabaseModel.SELL_ABLE, product.getSellAble());
-            values.put(ProductDatabaseModel.UOM_ID, product.getUom().getId());
+//            values.put(ProductDatabaseModel.UOM_ID, product.getUom().getId());
             values.put(ProductDatabaseModel.CODE, product.getCode());
             values.put(ProductDatabaseModel.FG, product.getFg());
             values.put(ProductDatabaseModel.PRODUCT_VALUE, product.getProductValue());

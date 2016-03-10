@@ -126,15 +126,7 @@ public class ProductAdapter extends BaseAdapter {
                     e.printStackTrace();
                 }
 
-                Bitmap cache = ((BitmapDrawable)holder.imageView.getDrawable()).getBitmap();
-                if (cache == null){
-                    Log.d(getClass().getSimpleName(), "cache null");
-                }else {
-                    Log.d(getClass().getSimpleName(), "cache not null");
-                }
-
                 Intent intentOrder = new Intent(mcontext, OrderActivity.class);
-//                intentOrder.putExtra("productImg", cache);
                 intentOrder.putExtra("jsonProduct", jsonProduct);
                 intentOrder.putExtra("stockProduct", stocks.get(position).getQty());
 

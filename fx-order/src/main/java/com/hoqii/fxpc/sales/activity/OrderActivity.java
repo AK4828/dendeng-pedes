@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
@@ -312,7 +313,7 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 productDatabaseAdapter.saveProduct(product);
-                Bitmap cache = ((BitmapDrawable)prodcutThumb.getDrawable()).getBitmap();
+                Bitmap cache = ((GlideBitmapDrawable)prodcutThumb.getDrawable()).getBitmap();
                 if (cache == null){
                     Log.d(getClass().getSimpleName(), "cache null");
                 }else {
