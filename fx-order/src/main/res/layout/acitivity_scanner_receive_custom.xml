@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Serial Number"
+                    android:text="@string/text_serial_number"
                     android:textStyle="bold" />
 
                 <com.journeyapps.barcodescanner.CompoundBarcodeView
@@ -70,7 +70,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginLeft="8dp"
-                            android:text="Info"
+                            android:text="@string/text_info"
                             android:textStyle="bold"/>
 
                     </LinearLayout>

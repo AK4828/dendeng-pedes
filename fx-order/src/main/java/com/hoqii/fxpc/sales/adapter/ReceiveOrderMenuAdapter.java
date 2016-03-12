@@ -63,8 +63,8 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        holder.productName.setText("Product : " + serialNumberList.get(position).getOrderMenu().getProduct().getName());
-        holder.productSerial.setText("Serial Number : " + serialNumberList.get(position).getSerialNumber());
+        holder.productName.setText(context.getString(R.string.holder_product) + serialNumberList.get(position).getOrderMenu().getProduct().getName());
+        holder.productSerial.setText(context.getString(R.string.holder_serial) + serialNumberList.get(position).getSerialNumber());
 
 
         if (tempSerialNumberList.contains(serialNumberList.get(position).getSerialNumber())){

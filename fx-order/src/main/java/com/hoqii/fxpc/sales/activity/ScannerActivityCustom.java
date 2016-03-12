@@ -1,5 +1,6 @@
 package com.hoqii.fxpc.sales.activity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,20 +24,9 @@ import com.hoqii.fxpc.sales.adapter.SerialAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.DefaultDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
-import com.hoqii.fxpc.sales.entity.Stock;
 import com.hoqii.fxpc.sales.task.StockSync;
 import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.fonts.EntypoModule;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.IoniconsModule;
-import com.joanzapata.iconify.fonts.MaterialCommunityModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
-import com.joanzapata.iconify.fonts.MeteoconsModule;
-import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
-import com.joanzapata.iconify.fonts.TypiconsModule;
-import com.joanzapata.iconify.fonts.WeathericonsModule;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -50,9 +40,10 @@ import java.util.List;
  * Created by miftakhul on 12/16/15.
  */
 public class ScannerActivityCustom extends AppCompatActivity implements TaskService{
-    private String productName = "product name";
-    private String orderMenuId, orderId;
+    private String productName = "product name", productId = null;
+    private String orderMenuId, orderId, tempSerial = null;
     private int position, qty;
+    private boolean isScanning = false;
 
     private TextView productNameView, viewScannedCount;
     private SerialAdapter serialAdapter;
@@ -60,42 +51,43 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
     private RecyclerView serialRecycle;
     private CoordinatorLayout coordinatorLayout;
     private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
-
     private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
+    private ProgressDialog dialog;
 
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result != null) {
-
-                Log.d(getClass().getSimpleName(), "serial : " + result.getText());
-                Log.d(getClass().getSimpleName(), "product quantity : " + Integer.toString(qty));
-                Log.d(getClass().getSimpleName(), "adapter quantity : " + Integer.toString(serialAdapter.getItemCount()));
-                if (serialAdapter.getItemCount() < qty){
-                    List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-                    List<String> tempSerial = new ArrayList<String>();
-                    List<String> tempSerialScan = new ArrayList<String>();
-
-                    for (SerialNumber serial : sn){
-                        tempSerial.add(serial.getSerialNumber());
-                    }
-                    for (SerialNumber s: serialAdapter.getSerialNumber()){
-                        tempSerialScan.add(s.getSerialNumber());
-                    }
-
-                    if (!tempSerial.contains(result.getText()) && !tempSerialScan.contains(result.getText())){
-                        barcodeView.setStatusText(result.getText());
-                        SerialNumber s = new SerialNumber();
-                        s.setSerialNumber(result.getText());
-                        serialAdapter.addSerialNumber(s);
-
-                        scannedCount();
-                    }else {
-                        Snackbar.make(coordinatorLayout, "serial number sudah di scan", Snackbar.LENGTH_LONG).show();
-                    }
-                }else {
-                    Snackbar.make(coordinatorLayout, "Jumlah serial number sudah tercukupi", Snackbar.LENGTH_LONG).show();
+                if (isScanning == false){
+                    checkSerial(result.getText());
                 }
+//                Log.d(getClass().getSimpleName(), "serial : " + result.getText());
+//                Log.d(getClass().getSimpleName(), "product quantity : " + Integer.toString(qty));
+//                Log.d(getClass().getSimpleName(), "adapter quantity : " + Integer.toString(serialAdapter.getItemCount()));
+//                if (serialAdapter.getItemCount() < qty){
+//                    List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+//                    List<String> tempSerial = new ArrayList<String>();
+//                    List<String> tempSerialScan = new ArrayList<String>();
+//
+//                    for (SerialNumber serial : sn){
+//                        tempSerial.add(serial.getSerialNumber());
+//                    }
+//                    for (SerialNumber s: serialAdapter.getSerialNumber()){
+//                        tempSerialScan.add(s.getSerialNumber());
+//                    }
+//
+//                    if (!tempSerial.contains(result.getText()) && !tempSerialScan.contains(result.getText())){
+//                        barcodeView.setStatusText(result.getText());
+//                        SerialNumber s = new SerialNumber();
+//                        s.setSerialNumber(result.getText());
+//                        serialAdapter.addSerialNumber(s);
+//                        scannedCount();
+//                    }else {
+//                        Snackbar.make(coordinatorLayout, "serial number sudah di scan", Snackbar.LENGTH_LONG).show();
+//                    }
+//                }else {
+//                    Snackbar.make(coordinatorLayout, "Jumlah serial number sudah tercukupi", Snackbar.LENGTH_LONG).show();
+//                }
 
             }
         }
@@ -112,7 +104,7 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
         setContentView(R.layout.acitivity_scanner_custom);
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.barcode_scanner);
-        barcodeView.setStatusText("Serial Number");
+        barcodeView.setStatusText(getResources().getString(R.string.message_serial_title_serial_number));
         barcodeView.decodeContinuous(callback);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -126,6 +118,7 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
         if (getIntent().getExtras() != null) {
             orderId = getIntent().getStringExtra("orderId");
             orderMenuId = getIntent().getStringExtra("orderMenuId");
+            productId = getIntent().getStringExtra("productId");
             productName = getIntent().getStringExtra("productName");
             qty = getIntent().getIntExtra("productQty", 0);
             position = getIntent().getIntExtra("position", 0);
@@ -155,6 +148,10 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
         for (int x = 0; x < serialNumberList.size(); x++) {
             serialAdapter.addSerialNumber(serialNumberList.get(x));
         }
+
+        dialog = new ProgressDialog(this);
+        dialog.setCancelable(false);
+        dialog.setMessage(getString(R.string.progress_check_serial));
 
     }
 
@@ -195,8 +192,8 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
                     dialogSubmit();
                 }else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Serial Number");
-                    builder.setMessage("Serial Number masih kosong");
+                    builder.setTitle(getString(R.string.message_title_serial));
+                    builder.setMessage(getString(R.string.message_serial_empty));
                     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -220,34 +217,45 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
 
     @Override
     public void onExecute(int code) {
-
+        dialog.setTitle(getString(R.string.text_serial) + tempSerial);
+        dialog.show();
+        isScanning = true;
     }
 
     @Override
     public void onSuccess(int code, Object result) {
-        Stock stock = (Stock) result;
-        if (stock != null){
-
+        dialog.dismiss();
+        boolean status = (boolean) result;
+        if (status == true){
+            SerialNumber s = new SerialNumber();
+            s.setSerialNumber(tempSerial);
+            serialAdapter.addSerialNumber(s);
+            tempSerial = null;
+            scannedCount();
+        }else {
+            AlertMessage(getString(R.string.message_serial_not_found));
         }
     }
 
     @Override
     public void onCancel(int code, String message) {
-
+        dialog.dismiss();
+        tempSerial = null;
     }
 
     @Override
     public void onError(int code, String message) {
-
+        dialog.dismiss();
+        AlertMessageProblem();
     }
 
 
     private void dialogSubmit() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Serial Number");
-        builder.setMessage("Jumlah barang "+ qty +"\n" +
-                "Jumlah barang yang di scan "+ serialAdapter.getItemCount() +"\n\n" +
-                "Submit serial number ?");
+        builder.setTitle(getString(R.string.message_serial_title_serial_number));
+        builder.setMessage(getString(R.string.message_total_items)+ qty +"\n" +
+                getString(R.string.message_total_items_scanned)+ serialAdapter.getItemCount() +"\n\n" +
+                getString(R.string.message_submit_serial_number));
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -287,7 +295,7 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                dialog.dismiss();
             }
         });
 
@@ -295,12 +303,71 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
     }
 
     public void scannedCount(){
-        viewScannedCount.setText("Sudah di scan " + serialAdapter.getItemCount() + " dari total " + qty + " barang");
+        viewScannedCount.setText(getString(R.string.text_serial_alredy_scan) + serialAdapter.getItemCount() + getString(R.string.text_of_total) + qty + getResources().getString(R.string.text_item_end));
     }
 
-    private void chekSerial(String serial){
+    private void checkSerial(String serialnumber){
+        tempSerial = serialnumber;
+
+        Log.d(getClass().getSimpleName(), "serial : " + serialnumber);
+        Log.d(getClass().getSimpleName(), "product quantity : " + Integer.toString(qty));
+        Log.d(getClass().getSimpleName(), "adapter quantity : " + Integer.toString(serialAdapter.getItemCount()));
+        if (serialAdapter.getItemCount() < qty){
+            List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+            List<String> tempSerial = new ArrayList<String>();
+            List<String> tempSerialScan = new ArrayList<String>();
+
+            for (SerialNumber serial : sn){
+                tempSerial.add(serial.getSerialNumber());
+            }
+            for (SerialNumber s: serialAdapter.getSerialNumber()){
+                tempSerialScan.add(s.getSerialNumber());
+            }
+
+            if (!tempSerial.contains(serialnumber) && !tempSerialScan.contains(serialnumber)){
+                StockSync check = new StockSync(this, this, StockSync.StockUri.bySerialUri.name());
+                check.execute(productId,serialnumber);
+                barcodeView.setStatusText(serialnumber);
+            }else {
+                Snackbar.make(coordinatorLayout, getResources().getString(R.string.text_serial_alredy_scan), Snackbar.LENGTH_LONG).show();
+            }
+        }else {
+            Snackbar.make(coordinatorLayout, getResources().getString(R.string.message_serial_sufficed), Snackbar.LENGTH_LONG).show();
+        }
 
     }
 
+    private void AlertMessage(String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message);
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                isScanning = false;
+            }
+        });
+        builder.show();
+    }
+
+    private void AlertMessageProblem(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.message_serial_problem_repeat));
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                checkSerial(tempSerial);
+            }
+        });
+        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
 
 }

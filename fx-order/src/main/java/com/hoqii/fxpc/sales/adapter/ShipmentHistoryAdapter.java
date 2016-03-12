@@ -173,33 +173,6 @@ public class ShipmentHistoryAdapter extends RecyclerView.Adapter<ShipmentHistory
     }
 
 
-    private void AlertMessage(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Shipment");
-        builder.setMessage(message);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.show();
-    }
-
-    public void removeItem(String shipmentId){
-        Log.d(getClass().getSimpleName(), "Searching for " + shipmentId);
-        for (int x = 0; x < shipmentList.size(); x++){
-            if (shipmentList.get(x).getId().equalsIgnoreCase(shipmentId)){
-                Log.d(getClass().getSimpleName(), "data contains " + shipmentId);
-                shipmentList.remove(x);
-                notifyItemRemoved(x);
-                notifyDataSetChanged();
-            }else {
-                Log.d(getClass().getSimpleName(), "data not contains " + shipmentId);
-            }
-        }
-    }
-
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void startAnimateRevealColorFromCoordinate(View view, int x, int y){
         float finalRadius = (float) Math.hypot(view.getWidth(), view.getHeight());

@@ -116,13 +116,13 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("Confirm sipment");
+        progressDialog.setMessage(getResources().getString(R.string.message_confirm_shipment));
 
         dataNull = (LinearLayout) findViewById(R.id.dataNull);
         dataFailed = (LinearLayout) findViewById(R.id.dataFailed);
 
         loadProgress = new ProgressDialog(this);
-        loadProgress.setMessage("Fetching data...");
+        loadProgress.setMessage(getResources().getString(R.string.message_fetch_data));
 
         new Handler().post(new Runnable() {
             @Override
@@ -205,8 +205,7 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
                     Log.d(getClass().getSimpleName(), "running update order false");
                     Log.d(getClass().getSimpleName(), "finish because running update order false");
                     progressDialog.dismiss();
-                    AlertMessage("Proses selesai");
-//                    tempOrderMenus.clear();
+                    AlertMessage(getResources().getString(R.string.message_progress_complete));
                     shipmentAdapter = new ShipmentAdapter(this);
                     recyclerView.setAdapter(shipmentAdapter);
                     page = 1;
@@ -260,32 +259,12 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
                     Log.d(getClass().getSimpleName(), "order id from shipment " + s.getOrder().getId());
                     CheckOrderMenuPage check = new CheckOrderMenuPage(ShipmentListActivity.this, ShipmentListActivity.this, s.getOrder().getId());
                     check.execute(s.getOrder().getId());
-
-//                    String shipmentId = requestSuccess.getEntityId();
-//                    Log.d(getClass().getSimpleName(), "Shipment id " + shipmentId);
-//                    shipmentAdapter.removeItem(shipmentId);
-//                    Log.d(getClass().getSimpleName(), "Shipment update success");
-//
-//                    for (int x = 0; x < shipmentList.size(); x++) {
-//                        if (shipmentList.get(x).getId() == shipmentId) {
-//                            shipmentList.remove(x);
-//                        }
-//                    }
-//
-//                    if (shipmentList.size() > 0) {
-//                        dataNull.setVisibility(View.GONE);
-//                    } else {
-//                        dataNull.setVisibility(View.VISIBLE);
-//                    }
-
-
                     break;
                 }
                 case OrderStatusUpdateJob.PROCESS_ID: {
                     Log.d(getClass().getSimpleName(), "finis because updated");
                     progressDialog.dismiss();
-                    AlertMessage("Proses selesai");
-//                    tempOrderMenus.clear();
+                    AlertMessage(getResources().getString(R.string.message_progress_complete));
 
                     shipmentAdapter = new ShipmentAdapter(this);
                     recyclerView.setAdapter(shipmentAdapter);
@@ -316,7 +295,7 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
         switch (failed.getProcessId()) {
             case ShipmentUpdateJob.PROCESS_ID:
                 progressDialog.dismiss();
-                AlertMessage("Gagal mengkonfirmasi shipment");
+                AlertMessage(getResources().getString(R.string.message_failed_confirm_shipment));
                 break;
         }
     }
@@ -704,9 +683,9 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
 
     private void AlertMessage(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Shipment");
+        builder.setTitle(getResources().getString(R.string.text_shipment));
         builder.setMessage(message);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -715,17 +694,4 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
         builder.show();
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (requestCode == requestOrderMenuActivityCode){
-//            if (resultCode == RESULT_OK){
-//
-//                swipeRefreshLayout.setRefreshing(true);
-//                ShipmentSync sync = new ShipmentSync(ShipmentListActivity.this, ShipmentListActivity.this);
-//                sync.execute();
-//            }
-//        }
-//    }
 }

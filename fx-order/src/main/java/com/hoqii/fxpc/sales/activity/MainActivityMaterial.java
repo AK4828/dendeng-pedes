@@ -76,7 +76,7 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
         viewPager = (ViewPager) findViewById(R.id.main_viewPager);
 
         progress = new ProgressDialog(this);
-        progress.setMessage("Pleace wait");
+        progress.setMessage(getResources().getString(R.string.message_wait));
         progress.setCancelable(false);
 
         if (authenticationCeck.isNetworkAvailable()){
@@ -88,12 +88,12 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
             }
         }else {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivityMaterial.this);
-            builder.setTitle("Internet access");
-            builder.setMessage("No internet connection");
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            builder.setTitle(getResources().getString(R.string.message_title_internet_access));
+            builder.setMessage(getResources().getString(R.string.message_no_internet));
+            builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-
+                    dialog.dismiss();
                 }
             });
             builder.show();
@@ -162,7 +162,7 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
         progress.dismiss();
         stocks = (List<Stock>)result;
         if (stocks.size() > 0){
-            MainFragmentStateAdapter viewPagerAdapter = new MainFragmentStateAdapter(getSupportFragmentManager(), stocks);
+            MainFragmentStateAdapter viewPagerAdapter = new MainFragmentStateAdapter(getSupportFragmentManager(), this, stocks);
             viewPager.setAdapter(viewPagerAdapter);
             tabLayout.setupWithViewPager(viewPager);
 

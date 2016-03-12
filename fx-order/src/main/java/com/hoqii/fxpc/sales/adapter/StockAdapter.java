@@ -58,10 +58,10 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder>{
         if (stockList.get(position).getProduct().getParentCategory().getId() != null){
             holder.productCategory.setText(stockList.get(position).getProduct().getParentCategory().getName());
         }else {
-            holder.productCategory.setText("Uncategorized");
+            holder.productCategory.setText(R.string.hodeler_uncategory);
         }
         if (stockList.get(position).getProduct().getDescription().toString().equalsIgnoreCase("null")){
-            holder.productDescription.setText("No description");
+            holder.productDescription.setText(R.string.holder_no_description);
         } else {
             holder.productDescription.setText(stockList.get(position).getProduct().getDescription());
         }

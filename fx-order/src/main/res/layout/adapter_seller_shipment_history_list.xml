@@ -32,7 +32,7 @@
                     android:id="@+id/sl_site"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name"
+                    android:text="@string/text_company"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="@color/colorAccent"
@@ -42,7 +42,7 @@
                     android:id="@+id/sl_tgl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="{typcn-time} Tanggal : "
+                    android:text="{typcn-time} date : "
                     android:textSize="11sp"/>
 
                 <TableLayout
@@ -54,7 +54,7 @@
                         <com.joanzapata.iconify.widget.IconTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Nomor pengiriman :"
+                            android:text="@string/text_receipt_number"
                             android:textSize="16sp"/>
                         <com.joanzapata.iconify.widget.IconTextView
                             android:id="@+id/sl_number"
@@ -69,7 +69,7 @@
                         <com.joanzapata.iconify.widget.IconTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Nomor order :"
+                            android:text="@string/text_order_receipt"
                             android:textSize="16sp"/>
                         <com.joanzapata.iconify.widget.IconTextView
                             android:id="@+id/sl_orderNumber"

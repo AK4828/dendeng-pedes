@@ -92,7 +92,7 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.ViewHo
         date.setTime(shipmentList.get(position).getLogInformation().getCreateDate().getTime());
 
         holder.site.setText(shipmentList.get(position).getOrder().getSite().getName());
-        holder.shipmentNumber.setText("{typcn-tag} Shipment number :" + shipmentList.get(position).getReceiptNumber());
+        holder.shipmentNumber.setText("{typcn-tag} "+context.getResources().getString(R.string.text_receipt_number) + shipmentList.get(position).getReceiptNumber());
         holder.shipmentDate.setText("{typcn-time} " + simpleDateFormat.format(date));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

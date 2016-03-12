@@ -59,8 +59,8 @@ public class SelfHistoryOrderMenuAdapter extends RecyclerView.Adapter<SelfHistor
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.productName.setText("Product : " + orderMenuList.get(position).getProduct().getName());
-        holder.productCount.setText("Order quantity : " + Integer.toString(orderMenuList.get(position).getQtyOrder()));
+        holder.productName.setText(context.getResources().getString(R.string.holder_product)+ orderMenuList.get(position).getProduct().getName());
+        holder.productCount.setText(context.getString(R.string.holder_order_qty) + Integer.toString(orderMenuList.get(position).getQtyOrder()));
 
         String imageUrl = preferences.getString("server_url", "")+"/api/products/"+orderMenuList.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
 

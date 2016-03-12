@@ -64,8 +64,8 @@ public class SellerOrderAdapter extends RecyclerView.Adapter<SellerOrderAdapter.
         date.setTime(orderList.get(position).getLogInformation().getCreateDate().getTime());
 
         holder.siteFrom.setText(orderList.get(position).getSiteFrom().getName());
-        holder.orderNumber.setText("{typcn-tag} Order number : " + orderList.get(position).getReceiptNumber());
-        holder.orderDate.setText("{typcn-time} Date : " + simpleDateFormat.format(date));
+        holder.orderNumber.setText("{typcn-tag} "+context.getResources().getString(R.string.text_receipt_number) + orderList.get(position).getReceiptNumber());
+        holder.orderDate.setText("{typcn-time} "+context.getResources().getString(R.string.text_date) + simpleDateFormat.format(date));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

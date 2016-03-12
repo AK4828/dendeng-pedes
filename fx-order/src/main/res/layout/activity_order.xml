@@ -61,7 +61,7 @@
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="8dp"
                             android:layout_toRightOf="@id/label_img_detail"
-                            android:text="Details"
+                            android:text="@string/text_details"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
@@ -83,7 +83,7 @@
                                 android:id="@+id/order_product_stock"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="00 Items"
+                                android:text="@string/text_item_end"
                                 android:textColor="@color/white"
                                 android:background="@color/colorAccent"
                                 android:padding="4dp"
@@ -115,7 +115,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Rp.000.000"
+                        android:text="@string/text_currency"
                         android:textSize="14sp"
                         style="@style/TextAppearance.AppCompat.Title"
                         android:transitionName="@string/transition_price" />
@@ -218,7 +218,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="24dp"
                             android:background="@android:color/transparent"
-                            android:text="Add to cart"
+                            android:text="@string/button_add_to_cart"
                             android:textColor="@color/white" />
                     </android.support.v7.widget.CardView>
 

@@ -38,24 +38,24 @@
     <string name="submit">Submit</string>
     <string name="add_product">Add product</string>
     <string name="added_to_cart">Item Berhasil ditambahkan</string>
-    <string name="order_success">Order Berhasil</string>
+    <string name="order_success">Order Successfully</string>
     <string name="go_to_cart">Lihat Keranjang Belanja</string>
-    <string name="continue_shopping">Lanjutkan Belanja</string>
+    <string name="continue_shopping">Continue Shopping</string>
     <string name="add_contact">Tambah Pembeli</string>
     <string name="businesPartner">Business Partner</string>
     <string name="add_order">Add Order</string>
     <string name="add_destination">Add Destination</string>
     <string name="contact">Contact</string>
 
-    <string name="verify">Verifikasi</string>
-    <string name="verify_now">Verifikasi Sekarang</string>
-    <string name="verified">Terverifikasi</string>
+    <string name="verify">Verification</string>
+    <string name="verify_now">Verify now</string>
+    <string name="verified">Verified</string>
 
-    <string name="select">Pilih</string>
+    <string name="select">Select</string>
     <string name="ok">Ok</string>
     <string name="no">No</string>
-    <string name="save">Simpan</string>
-    <string name="cancel">Batal</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 
     <string name="transition_string">animating transition</string>
     <string name="transition_image">animating image transition</string>
@@ -71,51 +71,127 @@
     <string name="outlet_name">Nama Outlet</string>
     <string name="description">Deskripsi :</string>
 
-    <string name="start_sync">Mulai Sinkronisasi</string>
+    <string name="start_sync">Starting Synchronization</string>
     <string name="start_sync_campaign">Mulai Sinkronisasi Campaign</string>
-    <string name="sync_category">Sinkronisasi Kategori ...</string>
-    <string name="sync_product">Sinkronisasi Produk ...</string>
-    <string name="sync_product_uom">Sinkronisasi Produk Uom ...</string>
-    <string name="sync_image">Sinkronisasi Gambar ...</string>
-    <string name="sync_contact">Sinkronisasi Kontak ...</string>
-    <string name="sync_business_partner">Sinkronisasi Business Partner ...</string>
-    <string name="sync_site">Sinkronisasi Perusahaan ...</string>
+    <string name="sync_category">synchronization Category ...</string>
+    <string name="sync_product">synchronization Products ...</string>
+    <string name="sync_product_uom">synchronization Products Uom ...</string>
+    <string name="sync_image">synchronization Images ...</string>
+    <string name="sync_contact">synchronization Contacs ...</string>
+    <string name="sync_business_partner">synchronization Business Partner ...</string>
+    <string name="sync_site">synchronization Company ...</string>
 
-    <string name="sync_campaign">Sinkronisasi Campaign ...</string>
-    <string name="sync_campaign_detail">Sinkronisasi Campaign Detail ...</string>
-    <string name="sync_image_campaign">Sinkronisasi Gambar Campaign ...</string>
+    <string name="finish_sync">Synchronization completed</string>
 
 
-    <string name="finish_sync">Sinkronisasi telah selesai</string>
-
-    <string name="data_null_sync">Data Campaign Kosong</string>
-
-    <string name="save_data">Menyimpan data ...</string>
+    <string name="save_data">Storing data ...</string>
     <string name="check_internet">Terdapat masalah dengan koneksi Internet!</string>
-
-    <string name="about_esales">
-        Ini adalah aplikasi produk katalog dan order digital dari E-Sales.
-    </string>
-
-    <string name="about">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        Fusce euismod rhoncus felis, sit amet pellentesque diam feugiat sed.
-        Vivamus ac scelerisque nisi.
-        Donec dapibus rhoncus interdum.
-        Phasellus nec feugiat velit, eget cursus risus.
-        Quisque congue auctor pretium.
-        Nulla commodo accumsan urna, suscipit convallis elit luctus nec.
-        In lacinia lobortis interdum.
-        Quisque at elementum purus.
-        Nunc et lectus in sapien aliquet viverra sit amet in libero.
-        Donec hendrerit enim eget ultrices fermentum.
-        Mauris viverra ut mauris at vulputate.
-        Vestibulum efficitur nibh orci, nec porttitor dui lobortis vitae.
-        Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-        Vivamus pulvinar ante ac accumsan facilisis.
-    </string>
-
-
+    <string name="progress_check_serial">Checking availability</string>
+    <string name="message_serial_not_found">serial not found</string>
+    <string name="message_serial_title_serial_number">Serial Number</string>
+    <string name="message_total_items">"Total items "</string>
+    <string name="message_total_items_scanned">"item has been scanned "</string>
+    <string name="message_submit_serial_number">Submit serial number ?</string>
+    <string name="message_serial_problem_repeat">a problem occurs \nrepeat the process ?</string>
+    <string name="setting_setup_parameter">Setup Parameter</string>
+    <string name="message_send_order">Send order ...</string>
+    <string name="message_wait">Pleace wait ...</string>
+    <string name="message_title_warning">Warning</string>
+    <string name="message_item_have_not_selected">You have not selected item</string>
+    <string name="message_order_destination">You have not choose a destination order</string>
+    <string name="message_title_internet_access">Internet access</string>
+    <string name="message_no_internet">No internet connection</string>
+    <string name="text_order_destination">"Order destination : "</string>
+    <string name="text_items">"Items : "</string>
+    <string name="text_price">"Price : "</string>
+    <string name="message_order_processed">Your order is being processed</string>
+    <string name="text_receipt_number">"Receipt number : "</string>
+    <string name="message_title_confirmation">Confirmation</string>
+    <string name="message_request_failed_repeat">Request failed\nRepeat process ?</string>
+    <string name="yes">Yes</string>
+    <string name="message_send_order_failed_repeat">Failed to send order\nrepeat process ?</string>
+    <string name="message_send_order_menu_failed_repeat">Failed to send order...\nrepeat process ?</string>
+    <string name="text_currency">Rp. </string>
+    <string name="text_reward">"Reward : "</string>
+    <string name="text_point">" Point :"</string>
+    <string name="text_point_end">" Points"</string>
+    <string name="text_item_end">" Items"</string>
+    <string name="text_no_description">No description</string>
+    <string name="text_button_update_order">Update order</string>
+    <string name="message_order">"Order "</string>
+    <string name="message_title_logout">Logout</string>
+    <string name="message_logout">Logout current session ?</string>
+    <string name="text_receive_from">"Received From : "</string>
+    <string name="message_confirm_sipment">Confirm shipment</string>
+    <string name="message_verified">Already verified !</string>
+    <string name="message_fetch_data">Fetching data...</string>
+    <string name="message_progress_complete">Progress complete</string>
+    <string name="message_data_unchanged">Data unchanged</string>
+    <string name="message_recheck">Something happened,\nrepeat process</string>
+    <string name="message_failed_confirm_shipment">Failed to confirm shipment</string>
+    <string name="text_serial">"Serial : "</string>
+    <string name="message_title_serial">Serial Number</string>
+    <string name="message_serial_empty">Serial Number is empty</string>
+    <string name="text_serial_alredy_scan">"Already scanned "</string>
+    <string name="text_of_total">" of total "</string>
+    <string name="message_serial_sufficed">Total serial number is sufficed</string>
+    <string name="message_incorrect_serial_number">Incorrect serial number</string>
+    <string name="message_total_scanned_item">Total scanned items</string>
+    <string name="text_date">"Date : "</string>
+    <string name="text_order_to">"Order to : "</string>
+    <string name="message_send_shipment">Sending shipment</string>
+    <string name="text_shipment">Shipment</string>
+    <string name="text_shipto">"Ship to : "</string>
+    <string name="message_ask_send_shipment">Send shipment ?</string>
+    <string name="message_scan_serial_number">Scan serial number</string>
+    <string name="message_shipping">shipping</string>
+    <string name="message_update_progress">Updating in progress</string>
+    <string name="message_serial_progress">Serial in progress</string>
+    <string name="message_failed_update_status_order">Failed to update order status</string>
+    <string name="message_process_failed_ask_repeat">Proses failed\nrepeat proses ?</string>
+    <string name="message_process_failed_repeat">Proses failed\nrepeat proses !</string>
+    <string name="text_shipment_detail">Shipment Detail</string>
+    <string name="text_shipment_date">"Shipment date : "</string>
+    <string name="text_order_date">"Order date : "</string>
+    <string name="text_order_receipt">"Order receipt : "</string>
+    <string name="message_confirm_shipment">Confirm shipment</string>
+    <string name="edit_username">Username</string>
+    <string name="edit_password">Password</string>
+    <string name="button_submit">Submit</string>
+    <string name="text_order">Order</string>
+    <string name="text_details">Details</string>
+    <string name="button_add_to_cart">Add to cart</string>
+    <string name="text_company">Company</string>
+    <string name="text_detail_order">Detail order</string>
+    <string name="text_serial_number">Serial Number</string>
+    <string name="text_info">Info</string>
+    <string name="button_check">Check</string>
+    <string name="button_reload">Reload</string>
+    <string name="button_show_more">Show More</string>
+    <string name="text_email">Email</string>
+    <string name="text_phone">Phone</string>
+    <string name="text_fax">Fax</string>
+    <string name="text_postal_code">Postal Code</string>
+    <string name="text_city">City</string>
+    <string name="text_shipment_date_view">Shipping Date</string>
+    <string name="text_shipto_view">Ship to</string>
+    <string name="button_add_description">Add description</string>
+    <string name="text_add_order_description">Add order description ?</string>
+    <string name="text_order_description">Order Description</string>
+    <string name="check_delivered">Delivered</string>
+    <string name="text_description">Description :</string>
+    <string name="text_server_url">Server URL</string>
+    <string name="message_delete_order">Delete order ?</string>
+    <string name="text_edit">Edit</string>
+    <string name="text_delete">Delete</string>
+    <string name="text_product">PRODUCT</string>
+    <string name="text_category">CATEGORY</string>
+    <string name="holder_product">"Product : "</string>
+    <string name="holder_serial">"Serial Number : "</string>
+    <string name="holder_order_qty">"Order quantity : "</string>
+    <string name="hoder_description">"Description : "</string>
+    <string name="holder_no_description">No description</string>
+    <string name="hodeler_uncategory">Uncategorized</string>
 
 </resources>
 

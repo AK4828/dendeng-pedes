@@ -32,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:text="site"
+                    android:text="@string/text_company"
                     android:textSize="22sp"
                     android:textColor="@color/colorAccent"/>
 
@@ -54,7 +54,7 @@
                         <com.joanzapata.iconify.widget.IconTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Email : "
+                            android:text="@string/text_email"
                             android:textSize="14sp"/>
 
                         <com.joanzapata.iconify.widget.IconTextView
@@ -70,7 +70,7 @@
                         <com.joanzapata.iconify.widget.IconTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Order number : "
+                            android:text="@string/text_receipt_number"
                             android:textSize="14sp"/>
 
                         <com.joanzapata.iconify.widget.IconTextView

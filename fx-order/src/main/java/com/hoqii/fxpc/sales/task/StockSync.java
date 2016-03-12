@@ -33,7 +33,7 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
     private StockUri currentUri = StockUri.defaultUri;
 
     public enum StockUri{
-        defaultUri, byProductIdUri
+        defaultUri, bySerialUri, byProductIdUri
     }
 
     public StockSync(Context context, TaskService taskService, String enumUri) {
@@ -51,6 +51,9 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
             case defaultUri:
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks?access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken()+"&max="+Integer.MAX_VALUE);
+            case bySerialUri:
+                return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/product/"+params[0]+"/serial/"+params[1]+"?access_token="
+                        + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
             case byProductIdUri:
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/product/"+params[0]+"?access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
@@ -124,11 +127,28 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                         }
                         taskService.onSuccess(SignageVariables.STOCK_GET_TASK, stocks);
                     }else {
-                        taskService.onCancel(SignageVariables.STOCK_GET_TASK, "Batal");
+                        taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    taskService.onCancel(SignageVariables.STOCK_GET_TASK, "Batal");
+                    taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
+                }
+                break;
+
+            case bySerialUri:
+                try {
+                    if (result != null) {
+                        JSONObject object = result;
+                        boolean status = object.getBoolean("status");
+                        Log.d(getClass().getSimpleName(), "status serial : " + String.valueOf(status));
+
+                        taskService.onSuccess(SignageVariables.STOCK_GET_TASK, status);
+                    }else {
+                        taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
+                    }
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
                 }
                 break;
 
@@ -178,11 +198,11 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
 
                         taskService.onSuccess(SignageVariables.STOCK_GET_TASK, s);
                     }else {
-                        taskService.onCancel(SignageVariables.STOCK_GET_TASK, "Batal");
+                        taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    taskService.onCancel(SignageVariables.STOCK_GET_TASK, "Batal");
+                    taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
                 }
                 break;
 

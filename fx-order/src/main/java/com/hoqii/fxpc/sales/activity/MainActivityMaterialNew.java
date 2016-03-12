@@ -90,17 +90,6 @@ public class MainActivityMaterialNew extends AppCompatActivity {
             isMinLoli = false;
         }
 
-        Iconify
-                .with(new FontAwesomeModule())
-                .with(new EntypoModule())
-                .with(new TypiconsModule())
-                .with(new MaterialModule())
-                .with(new MaterialCommunityModule())
-                .with(new MeteoconsModule())
-                .with(new WeathericonsModule())
-                .with(new SimpleLineIconsModule())
-                .with(new IoniconsModule());
-
         init();
         initSetup();
     }

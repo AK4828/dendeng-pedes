@@ -73,7 +73,7 @@ public class SelfHistoryOrderMenuListActivity extends AppCompatActivity implemen
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         orderId = getIntent().getExtras().getString("orderId");
-        Log.d(getClass().getSimpleName(), "order id geted:"+orderId);
+        Log.d(getClass().getSimpleName(), "order id geted : "+orderId);
 
         omDate = (TextView) findViewById(R.id.om_date);
         omReceipt = (TextView) findViewById(R.id.om_receipt);
@@ -109,13 +109,13 @@ public class SelfHistoryOrderMenuListActivity extends AppCompatActivity implemen
         Date date = new Date();
         date.setTime(getIntent().getLongExtra("orderDate", 0));
 
-        omDate.setText("Date : " + simpleDateFormat.format(date).toString());
-        omReceipt.setText("Order number : " + getIntent().getExtras().getString("orderReceipt"));
+        omDate.setText(getString(R.string.text_date) + simpleDateFormat.format(date).toString());
+        omReceipt.setText(getResources().getString(R.string.text_receipt_number) + getIntent().getExtras().getString("orderReceipt"));
         mailSite.setText("{typcn-mail} "+getIntent().getStringExtra("siteEmail"));
-        siteName.setText("Order to : " +getIntent().getStringExtra("siteName"));
+        siteName.setText(getString(R.string.text_order_to) +getIntent().getStringExtra("siteName"));
 
         loadProgress = new ProgressDialog(this);
-        loadProgress.setMessage("Fetching data...");
+        loadProgress.setMessage(getResources().getString(R.string.message_fetch_data));
 
         new Handler().post(new Runnable() {
             @Override

@@ -157,14 +157,14 @@ public class LoginActivity extends DefaultActivity {
 
     private void openDialogSetupParameter() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Setup Parameter");
+        builder.setTitle(getString(R.string.setting_setup_parameter));
         LayoutInflater inflater = this.getLayoutInflater();
         View convertView = inflater.inflate(R.layout.setup_parameter, null);
         builder.setView(convertView);
         final EditText server = (EditText) convertView.findViewById(R.id.edit_server);
         server.setText(preferences.getString("server_url", ""));
         builder.setCancelable(false);
-        builder.setPositiveButton("Simpan", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.save), new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -176,7 +176,7 @@ public class LoginActivity extends DefaultActivity {
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {

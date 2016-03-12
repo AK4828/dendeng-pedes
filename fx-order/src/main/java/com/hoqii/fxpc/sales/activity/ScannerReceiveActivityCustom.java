@@ -81,15 +81,15 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
 
                             scannedCount();
                         }else {
-                            Snackbar.make(coordinatorLayout, "Serial number sudah ada", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(coordinatorLayout, getResources().getString(R.string.text_serial_alredy_scan), Snackbar.LENGTH_LONG).show();
                         }
 
                     }else {
-                        Snackbar.make(coordinatorLayout, "Serial number salah", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(coordinatorLayout, getString(R.string.message_incorrect_serial_number), Snackbar.LENGTH_LONG).show();
                     }
 
                 }else {
-                    Snackbar.make(coordinatorLayout, "Jumlah serial number sudah tercukupi", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(coordinatorLayout, getResources().getString(R.string.message_serial_sufficed), Snackbar.LENGTH_LONG).show();
                 }
 
             }
@@ -195,8 +195,8 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
                     dialogSubmit();
                 }else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Serial Number");
-                    builder.setMessage("Serial Number masih kosong");
+                    builder.setTitle(getResources().getString(R.string.message_serial_title_serial_number));
+                    builder.setMessage(getResources().getString(R.string.message_serial_empty));
                     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -215,10 +215,10 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
     private void dialogSubmit() {
         serialNumberList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Serial Number");
-        builder.setMessage("Jumlah barang "+ tempSerialNumberList.size() +"\n" +
-                "Jumlah barang yang di scan "+ serialAdapter.getItemCount() +"\n\n" +
-                "Submit serial number ?");
+        builder.setTitle(getResources().getString(R.string.message_serial_title_serial_number));
+        builder.setMessage(getResources().getString(R.string.message_total_items)+ tempSerialNumberList.size() +"\n" +
+                getString(R.string.message_total_scanned_item)+ serialAdapter.getItemCount() +"\n\n" +
+                getResources().getString(R.string.message_submit_serial_number));
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -261,7 +261,7 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
     }
 
     public void scannedCount(){
-        viewScannedCount.setText("Sudah di scan "+ serialAdapter.getItemCount() +" dari total "+ tempSerialNumberList.size() +" barang");
+        viewScannedCount.setText(getResources().getString(R.string.text_serial_alredy_scan)+ serialAdapter.getItemCount() +getResources().getString(R.string.text_of_total)+ tempSerialNumberList.size() +getResources().getString(R.string.text_item_end));
     }
 
     @Override

@@ -120,7 +120,7 @@ public class SelfHistoryOrderListActivity extends AppCompatActivity implements T
         dataFailed = (LinearLayout) findViewById(R.id.dataFailed);
 
         loadProgress = new ProgressDialog(this);
-        loadProgress.setMessage("Fetching data...");
+        loadProgress.setMessage(getResources().getString(R.string.message_fetch_data));
         loadProgress.setCancelable(false);
 
         new Handler().post(new Runnable() {

@@ -136,7 +136,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
             Date oDate = new Date();
             oDate.setTime(getIntent().getLongExtra("orderDate", 0));
             orderId = getIntent().getStringExtra("orderId");
-            site.setText("Received From : " + getIntent().getStringExtra("siteDescription"));
+            site.setText(getString(R.string.text_receive_from) + getIntent().getStringExtra("siteDescription"));
             receiveDate.setText(simpleDateFormat.format(date));
             orderDate.setText(simpleDateFormat.format(oDate));
 
@@ -156,7 +156,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("Confirm shipment");
+        progressDialog.setMessage(getString(R.string.message_confirm_sipment));
 
         if (statusDelivery == true) {
             receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(this, orderId, true);
@@ -191,13 +191,13 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                 } else if (verifyButton.getText().equals(getResources().getText(R.string.verify_now))) {
                     confirmDelivery();
                 } else if (verifyButton.getText().equals(getResources().getText(R.string.verified))) {
-                    AlertMessage("Sudah diverifikasi !");
+                    AlertMessage(getString(R.string.message_verified));
                 }
             }
         });
 
         loadProgress = new ProgressDialog(this);
-        loadProgress.setMessage("Fetching data...");
+        loadProgress.setMessage(getString(R.string.message_fetch_data));
 
         new Handler().post(new Runnable() {
             @Override
@@ -291,7 +291,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
             } else {
                 Log.d(getClass().getSimpleName(), "======================================== update not running");
                 progressDialog.dismiss();
-                AlertMessage("Proses selesai");
+                AlertMessage(getString(R.string.message_progress_complete));
             }
 
 
@@ -698,8 +698,8 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         shipmentStatus = (ImageView) view.findViewById(R.id.img_shipment_status);
         shipmentDelivered = (CheckBox) view.findViewById(R.id.shipment_delivered);
 
-        shipmentNumber.setText("Shipment Number : " + receive.getShipment().getReceiptNumber());
-        shipmentDate.setText("Tanggal : " + simpleDateFormat.format(date));
+        shipmentNumber.setText(getResources().getString(R.string.text_receipt_number) + receive.getShipment().getReceiptNumber());
+        shipmentDate.setText(getResources().getString(R.string.text_date)+ simpleDateFormat.format(date));
 
         String status = receive.getShipment().getStatus().name();
 
@@ -751,7 +751,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                     String shipmentId = receive.getShipment().getId();
                     jobManager.addJobInBackground(new ShipmentUpdateJob(preferences.getString("server_url", ""), shipmentId, checked));
                 } else {
-                    AlertMessage("Data tidak di rubah");
+                    AlertMessage(getString(R.string.message_data_unchanged));
                 }
             }
         });
@@ -767,12 +767,12 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
     private void AlertMessage(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Peringatan");
+        builder.setTitle(getResources().getString(R.string.message_title_warning));
         builder.setMessage(message);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                dialog.dismiss();
             }
         });
         builder.show();
@@ -780,10 +780,10 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
     private void reCheckOrderMenu() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Konfirmasi");
-        builder.setMessage("Terjadi sesuatu,\nUlangi proses");
+        builder.setTitle(getResources().getString(R.string.message_title_confirmation));
+        builder.setMessage(getString(R.string.message_recheck));
         builder.setCancelable(false);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 CheckOrderMenu checkOrderMenu = new CheckOrderMenu(ReceiveDetailActivity.this, ReceiveDetailActivity.this);
@@ -795,10 +795,10 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
     private void reCheckSerialMenu() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Konfirmasi");
-        builder.setMessage("Terjadi sesuatu,\nUlangi proses");
+        builder.setTitle(getResources().getString(R.string.message_title_confirmation));
+        builder.setMessage(getString(R.string.message_recheck));
         builder.setCancelable(false);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 CheckSerialOrderMenus s = new CheckSerialOrderMenus(ReceiveDetailActivity.this, ReceiveDetailActivity.this);
@@ -867,7 +867,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                 case OrderStatusUpdateJob.PROCESS_ID: {
                     Log.d(getClass().getSimpleName(), "finis because updated");
                     progressDialog.dismiss();
-                    AlertMessage("Proses selesai");
+                    AlertMessage(getResources().getString(R.string.message_progress_complete));
 
                     break;
                 }
@@ -884,7 +884,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         switch (failed.getProcessId()) {
             case ShipmentUpdateJob.PROCESS_ID:
                 progressDialog.dismiss();
-                AlertMessage("Gagal mengkonfirmasi shipment");
+                AlertMessage(getString(R.string.message_failed_confirm_shipment));
                 break;
         }
     }

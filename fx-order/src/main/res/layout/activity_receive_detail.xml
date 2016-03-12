@@ -31,7 +31,7 @@
                     android:id="@+id/rl_site"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Receive from :"
+                    android:text="@string/text_receive_from"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"/>
@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="Receive date : "
+                    android:text="Receive date"
                     android:textSize="12sp"
                     android:textColor="@color/white"/>
 
@@ -50,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="Detail order"
+                    android:text="@string/text_detail_order"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"/>
@@ -64,7 +64,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Order number :"
+                            android:text="@string/text_order_receipt"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
                         <TextView
@@ -81,7 +81,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Order date :"
+                            android:text="@string/text_order_date"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
                         <TextView

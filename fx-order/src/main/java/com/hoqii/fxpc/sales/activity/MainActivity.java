@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -40,12 +39,10 @@ import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.event.LoginEvent;
 import com.hoqii.fxpc.sales.fragment.ReceiveListFragment;
 import com.hoqii.fxpc.sales.fragment.SellerOrderListFragment;
 import com.hoqii.fxpc.sales.job.OrderMenuJob;
 import com.hoqii.fxpc.sales.job.OrderUpdateJob;
-import com.hoqii.fxpc.sales.job.RefreshTokenJob;
 import com.hoqii.fxpc.sales.task.RequestOrderSyncTask;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
@@ -104,11 +101,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
     private boolean menuItemVisibility = true;
     private boolean orderMenuError = false;
-    private refreshTokenStatus refreshStatus = null;
 
-    public enum refreshTokenStatus {
-        submitOrder, orderFragment, receiveFragment, updateTempOrderMenu
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -185,11 +178,11 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         });
 
         dialog = new ProgressDialog(this);
-        dialog.setMessage("Send order ...");
+        dialog.setMessage(getString(R.string.message_send_order));
         dialog.setCancelable(false);
 
         dialogRefresh = new ProgressDialog(this);
-        dialogRefresh.setMessage("Pleace wait ...");
+        dialogRefresh.setMessage(getString(R.string.message_wait));
         dialogRefresh.setCancelable(false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -254,8 +247,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                     Order order = orderDbAdapter.findOrderById(orderId);
                     if (orderMenuDbAdapter.findOrderMenuByOrderId(orderId).size() == 0) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setTitle("Peringatan");
-                        builder.setMessage("Anda belum memilih barang");
+                        builder.setTitle(getString(R.string.message_title_warning));
+                        builder.setMessage(getString(R.string.message_item_have_not_selected));
                         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -264,8 +257,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         builder.show();
                     } else if (order.getSite().getId() == null) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setTitle("Peringatan");
-                        builder.setMessage("Anda belum memilih tujuan order");
+                        builder.setTitle(getString(R.string.message_title_warning));
+                        builder.setMessage(getString(R.string.message_order_destination));
                         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -291,12 +284,12 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                             }
                         } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            builder.setTitle("Internet access");
-                            builder.setMessage("No internet connection");
-                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            builder.setTitle(getString(R.string.message_title_internet_access));
+                            builder.setMessage(getString(R.string.message_no_internet));
+                            builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-
+                                    dialog.dismiss();
                                 }
                             });
                             builder.show();
@@ -304,8 +297,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Peringatan");
-                    builder.setMessage("Anda belum memilih barang");
+                    builder.setTitle(getResources().getString(R.string.message_title_warning));
+                    builder.setMessage(getString(R.string.message_item_have_not_selected));
                     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -458,9 +451,9 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
             if (order.getSite().getId() != null) {
                 Site site = siteDatabaseAdapter.findSiteById(order.getSite().getId());
-                textOrderto.setText("Order destination : " + site.getName());
+                textOrderto.setText(getString(R.string.text_order_destination) + site.getName());
             } else {
-                textOrderto.setText("Order destination : ");
+                textOrderto.setText(getString(R.string.text_order_destination) );
             }
 
             orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
@@ -471,12 +464,12 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             }
             orderMenuAdapter.addItems(orderMenus);
 
-            textTotalItem.setText("Items : " + totalItem);
-            textTotalOrder.setText("Price : " + "Rp " + decimalFormat.format(totalPrice));
+            textTotalItem.setText(getString(R.string.text_items) + totalItem);
+            textTotalOrder.setText(getString(R.string.text_price) +getString(R.string.text_currency)+ decimalFormat.format(totalPrice));
         } else {
-            textOrderto.setText("Order destination : ");
-            textTotalItem.setText("Items : ");
-            textTotalOrder.setText("Price :");
+            textOrderto.setText(getResources().getString(R.string.text_order_destination));
+            textTotalItem.setText(getResources().getText(R.string.text_items));
+            textTotalOrder.setText(getResources().getString(R.string.text_price));
             dataNull.setVisibility(View.VISIBLE);
         }
 
@@ -515,21 +508,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         invalidateOptionsMenu();
     }
 
-//    public void order(Intent intent, View image, View title, View price) {
-//        if (isMinLoli) {
-//            Pair<View, String> pariImage = Pair.create(image, getString(R.string.transition_image));
-//            Pair<View, String> pairTitle = Pair.create(title, getString(R.string.transition_title));
-//            Pair<View, String> pariPrice = Pair.create(price, getString(R.string.transition_price));
-//
-//            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, pariImage, pairTitle);
-//
-//            startActivityForResult(intent, ORDER_REQUEST, optionsCompat.toBundle());
-//        } else {
-//            startActivityForResult(intent, ORDER_REQUEST);
-//        }
-//    }
-
-
     /**
      * update order menu.
      * if refresh token failed
@@ -556,12 +534,12 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             }
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle("Internet access");
-            builder.setMessage("No internet connection");
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            builder.setTitle(getResources().getString(R.string.message_title_internet_access));
+            builder.setMessage(getResources().getString(R.string.message_no_internet));
+            builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-
+                    dialog.dismiss();
                 }
             });
             builder.show();
@@ -572,11 +550,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         Intent i = new Intent(this, MainActivityMaterial.class);
         startActivityForResult(i, ORDER_REQUEST_OPTIONS, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
     }
-
-//    public void refreshToken(String refresh) {
-//        refreshStatus = refreshTokenStatus.valueOf(refresh);
-//        jobManager.addJobInBackground(new RefreshTokenJob());
-//    }
 
 
     /**
@@ -596,8 +569,8 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         TextView textItem = (TextView) view.findViewById(R.id.text_item_cart);
         TextView textReceipt = (TextView) view.findViewById(R.id.text_item_cart_receipt);
 
-        textItem.setText("Pesanan Anda sedang kami proses");
-        textReceipt.setText("No Pesanan : " + o.getReceiptNumber());
+        textItem.setText(R.string.message_order_processed);
+        textReceipt.setText(getString(R.string.text_receipt_number) + o.getReceiptNumber());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(view);
@@ -608,7 +581,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
                 orderDbAdapter.updateSyncStatusById(orderId);
                 orderId = null;
-                refreshStatus = null;
                 orderMenuCount = 0;
                 orderMenuError = false;
                 orderMenuAdapter = new OrderMenuAdapter(MainActivity.this);
@@ -625,16 +597,16 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
     public void retryRequestSync() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Konfirmasi");
-        builder.setMessage("Request gagal\nUlangi proses ?");
+        builder.setTitle(getString(R.string.message_title_confirmation));
+        builder.setMessage(getString(R.string.message_request_failed_repeat));
         builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 saveOrder();
             }
         });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -645,10 +617,10 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
     public void retryRequestOrder() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Konfirmasi");
-        builder.setMessage("Gagal mengirim order\nUlangi proses ?");
+        builder.setTitle(getString(R.string.message_title_confirmation));
+        builder.setMessage(getString(R.string.message_send_order_failed_repeat));
         builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface d, int which) {
                 dialog.show();
@@ -664,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         preferences.getString("server_url", "")));
             }
         });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -676,10 +648,10 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     public void retryRequestOrderMenu() {
         orderMenuError = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Konfirmasi");
-        builder.setMessage("Gagal mengirim order...\nUlangi proses ?");
+        builder.setTitle(getResources().getString(R.string.message_title_confirmation));
+        builder.setMessage(getString(R.string.message_send_order_menu_failed_repeat));
         builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface d, int which) {
                 dialog.show();
@@ -697,7 +669,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 }
             }
         });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -853,97 +825,5 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 break;
         }
     }
-
-//    public void onEventMainThread(LoginEvent.LoginSuccess loginSuccess) {
-//        dialogRefresh.dismiss();
-//        Log.d(getClass().getSimpleName(), "[ refresh status " + refreshStatus.name() + " ]");
-//        if (refreshStatus != null) {
-//            switch (refreshStatus) {
-//                case submitOrder:
-//                    Log.d(getClass().getSimpleName(), "[ re running submit order ]");
-//                    saveOrder();
-//                    break;
-//                case orderFragment:
-//                    Log.d(getClass().getSimpleName(), "[ reload order ]");
-//                    sellerOrderListFragment.reloadOrder();
-//                    break;
-//                case receiveFragment:
-//                    Log.d(getClass().getSimpleName(), "[ reload receive ]");
-//                    receiveListFragment.reloadReceive();
-//                    break;
-//                case updateTempOrderMenu:
-//                    Log.d(getClass().getSimpleName(), "[ reload update tempOrderMenu ]");
-//                    startActivityForResult(tempIntentUpdateOrder, ORDER_REQUEST);
-//                    tempIntentUpdateOrder = null;
-//                    break;
-//            }
-//        }
-//        refreshStatus = null;
-//    }
-
-//    public void onEventMainThread(LoginEvent.LoginFailed loginFailed) {
-//        dialogRefresh.dismiss();
-//        Log.d(getClass().getSimpleName(), "[ refresh status failed ]");
-//        if (refreshStatus != null) {
-//            switch (refreshStatus) {
-//                case submitOrder:
-//                    Log.d(getClass().getSimpleName(), "[ refresh token submit order failed ]");
-//                    reloadRefreshToken();
-//                    break;
-//                case orderFragment:
-//                    Log.d(getClass().getSimpleName(), "[ refresh token orderfragment failed ]");
-//                    sellerOrderListFragment.reloadRefreshToken();
-//                    break;
-//                case receiveFragment:
-//                    Log.d(getClass().getSimpleName(), "[ refresh token receive failed ]");
-//                    receiveListFragment.reloadRefreshToken();
-//                    break;
-//                case updateTempOrderMenu:
-//                    Log.d(getClass().getSimpleName(), "[ refresh token update ordermenu failed ]");
-//                    reloadRefreshToken();
-//                    break;
-//            }
-//        }
-//
-//        refreshStatus = null;
-//    }
-
-    //    private void AlertMessage(String message) {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-//        builder.setTitle("Refresh Token");
-//        builder.setMessage(message);
-//        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//            }
-//        });
-//        builder.show();
-//    }
-//
-//    private void reloadRefreshToken() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-//        builder.setTitle("Refresh Token");
-//        builder.setMessage("Process failed\nRepeat process ?");
-//        builder.setCancelable(false);
-//        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                if (refreshStatus != null) {
-//                    refreshToken(refreshTokenStatus.submitOrder.name());
-//                } else {
-//                    jobManager.addJobInBackground(new RefreshTokenJob());
-//                }
-//            }
-//        });
-//        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                refreshStatus = null;
-//                dialog.dismiss();
-//            }
-//        });
-//        builder.show();
-//    }
 
 }

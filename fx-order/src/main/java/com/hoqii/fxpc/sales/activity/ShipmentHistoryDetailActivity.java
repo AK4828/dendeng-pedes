@@ -47,7 +47,7 @@ public class ShipmentHistoryDetailActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Shipment Detail");
+        actionBar.setTitle(R.string.text_shipment_detail);
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -85,10 +85,10 @@ public class ShipmentHistoryDetailActivity extends AppCompatActivity{
         Date dateOrder = new Date();
         dateOrder.setTime(shipment.getOrder().getLogInformation().getCreateDate().getTime());
 
-        to.setText("Ship to : "+shipment.getOrder().getSiteFrom().getName());
-        shipDate.setText("Shipment date : " + simpleDateFormat.format(dateSend));
-        orderNumber.setText("Order number : "+shipment.getReceiptNumber());
-        orderDate.setText("Order date : "+simpleDateFormat.format(dateOrder));
+        to.setText(getResources().getString(R.string.text_shipto)+shipment.getOrder().getSiteFrom().getName());
+        shipDate.setText(getString(R.string.text_shipment_date) + simpleDateFormat.format(dateSend));
+        orderNumber.setText(getString(R.string.text_order_receipt)+shipment.getReceiptNumber());
+        orderDate.setText(getString(R.string.text_order_date)+simpleDateFormat.format(dateOrder));
 
         ShipmentDetailPagerAdapter shipmentDetailPagerAdapter = new ShipmentDetailPagerAdapter(getSupportFragmentManager(), shipmentJson);
         viewPager.setAdapter(shipmentDetailPagerAdapter);

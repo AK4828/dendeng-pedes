@@ -113,13 +113,13 @@ public class ShipmentHistoryListActivity extends AppCompatActivity implements Ta
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("Confirm sipment");
+        progressDialog.setMessage(getString(R.string.message_confirm_shipment));
 
         dataNull = (LinearLayout) findViewById(R.id.dataNull);
         dataFailed = (LinearLayout) findViewById(R.id.dataFailed);
 
         loadProgress = new ProgressDialog(this);
-        loadProgress.setMessage("Fetching data...");
+        loadProgress.setMessage(getResources().getString(R.string.message_fetch_data));
         loadProgress.setCancelable(false);
 
         new Handler().post(new Runnable() {

@@ -81,8 +81,8 @@ public class ProductAdapter extends BaseAdapter {
         holder.title.setText(stocks.get(position).getProduct().getName());
 
 
-        holder.price.setText("Rp. " + decimalFormat.format(stocks.get(position).getProduct().getSellPrice()));
-        holder.point.setText(stocks.get(position).getProduct().getReward()+" point {typcn-star-outline}");
+        holder.price.setText(mcontext.getResources().getString(R.string.text_currency)+ decimalFormat.format(stocks.get(position).getProduct().getSellPrice()));
+        holder.point.setText(stocks.get(position).getProduct().getReward()+" "+mcontext.getResources().getString(R.string.text_point_end)+" {typcn-star-outline}");
 
         String imageUrl = preferences.getString("server_url", "")+"/api/products/"+stocks.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
 //        Glide.with(mcontext).load("file://" + ImageUtil.getImagePath(mcontext, stocks.get(position).getProduct().getId())).error(R.drawable.no_image).into(holder.imageView);

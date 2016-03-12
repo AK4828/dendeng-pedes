@@ -107,7 +107,7 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.productName.setText(orderMenuList.get(position).getProduct().getName());
-        holder.description.setText("Description : "+orderMenuList.get(position).getDescription());
+        holder.description.setText(context.getString(R.string.hoder_description)+orderMenuList.get(position).getDescription());
         holder.productCount.setText("{typcn-shopping-cart} " + Integer.toString(orderMenuList.get(position).getQty()));
         holder.scanCount.setText("{typcn-tick-outline} 0");
 
@@ -145,6 +145,7 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
             @Override
             public void onClick(View v) {
                 Intent data = new Intent(context, ScannerActivityCustom.class);
+                data.putExtra("productId", orderMenuList.get(position).getProduct().getId());
                 data.putExtra("productName", orderMenuList.get(position).getProduct().getName());
                 data.putExtra("productQty", orderMenuList.get(position).getQty());
                 data.putExtra("orderMenuId", orderMenuList.get(position).getId());

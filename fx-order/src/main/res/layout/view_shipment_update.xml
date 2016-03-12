@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Shipment Detail"
+            android:text="@string/text_shipment_detail"
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"/>
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="8dp"
-                android:text="Shipment Number :" />
+                android:text="@string/text_receipt_number" />
 
         </LinearLayout>
 
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_gravity="center_vertical"
-                android:text="Tanggal : " />
+                android:text="@string/text_date" />
 
         </LinearLayout>
 
@@ -80,7 +80,7 @@
         android:id="@+id/shipment_delivered"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Delivered"
+        android:text="@string/check_delivered"
         android:layout_marginTop="30dp"/>
 
 </LinearLayout>

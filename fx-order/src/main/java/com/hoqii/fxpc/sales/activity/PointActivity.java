@@ -1,15 +1,12 @@
 package com.hoqii.fxpc.sales.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
@@ -20,20 +17,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.core.LogInformation;
 import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.SitePoint;
 import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.event.LoginEvent;
-import com.hoqii.fxpc.sales.job.RefreshTokenJob;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
 import com.joanzapata.iconify.widget.IconTextView;
-import com.path.android.jobqueue.JobManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,7 +44,6 @@ import de.greenrobot.event.EventBus;
  */
 public class PointActivity extends AppCompatActivity implements TaskService {
     private static final int REFRESH_TOKEN_POINT = 300;
-    private List<SitePoint> PointList = new ArrayList<SitePoint>();
     private SharedPreferences preferences;
     private Toolbar toolbar;
     private SitePoint point;
@@ -111,12 +103,11 @@ public class PointActivity extends AppCompatActivity implements TaskService {
         descript.setText(AuthenticationUtils.getCurrentAuthentication().getSite().getDescription());
         siteName.setText(AuthenticationUtils.getCurrentAuthentication().getSite().getName());
         email.setText("{typcn-mail} " + AuthenticationUtils.getCurrentAuthentication().getSite().getAdminEmail());
-        reward.setText("{typcn-star-outline} Point : ---");
+        reward.setText("{typcn-star-outline} "+getResources().getString(R.string.text_point) +" ---");
     }
 
     private void initSet() {
-        reward.setText("{typcn-star-outline} Point : " + Double.toString(point.getPoint()));
-
+        reward.setText("{typcn-star-outline} "+getResources().getString(R.string.text_point) + Double.toString(point.getPoint()));
     }
 
     @Override

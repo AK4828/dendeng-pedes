@@ -58,7 +58,7 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
 
         holder.menuName.setText(orderMenuList.get(position).getProduct().getName());
         holder.menuQty.setText(q);
-        holder.totalPrice.setText("Rp " + decimalFormat.format(totalPrice));
+        holder.totalPrice.setText(context.getResources().getString(R.string.text_currency)+ decimalFormat.format(totalPrice));
 
         Glide.with(context).load("file://" + ImageUtil.getImagePath(context, orderMenuList.get(position).getProduct().getId())).error(R.drawable.no_image).into(holder.preview);
 //        String imageUrl = preferences.getString("server_url", "")+"/api/products/"+orderMenuList.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
@@ -101,9 +101,9 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
 
     private void confirmDialog(final int location, final String orderMenuId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Konfirmasi");
-        builder.setMessage("Hapus order ?");
-        builder.setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+        builder.setTitle(context.getResources().getString(R.string.message_title_confirmation));
+        builder.setMessage(context.getString(R.string.message_delete_order));
+        builder.setPositiveButton(context.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -113,7 +113,7 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
                 ((MainActivity)context).updateInfo();
             }
         });
-        builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(context.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -127,9 +127,8 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
 
     private void optionDialog(final int location, final String orderMenuId){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Konfirmasi");
-
-        builder.setItems(new String[]{"Edit", "Delete"}, new DialogInterface.OnClickListener() {
+        builder.setTitle(context.getResources().getString(R.string.message_title_confirmation));
+        builder.setItems(new String[]{context.getString(R.string.text_edit), context.getString(R.string.text_delete)}, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {

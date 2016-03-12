@@ -35,7 +35,7 @@
                         android:id="@+id/s_site"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ship to :"
+                        android:text="@string/text_shipto"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/white"/>
@@ -59,7 +59,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="8dp"
                             android:layout_gravity="center_vertical"
-                            android:text="Shipment date : "
+                            android:text="@string/text_shipment_date"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
 
@@ -69,7 +69,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Detail order"
+                        android:text="@string/text_detail_order"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:layout_marginTop="8dp"
@@ -94,7 +94,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginLeft="8dp"
-                            android:text="Order number :"
+                            android:text="@string/text_order_receipt"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
 
@@ -118,7 +118,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="8dp"
                             android:layout_gravity="center_vertical"
-                            android:text="Order date : "
+                            android:text="@string/text_order_date"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
 

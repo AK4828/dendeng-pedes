@@ -117,10 +117,6 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/esales" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.SettingActivity"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/esales" />
-        <activity
             android:name="com.hoqii.fxpc.sales.activity.SyncActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/esales" />

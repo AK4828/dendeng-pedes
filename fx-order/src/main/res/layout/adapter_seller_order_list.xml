@@ -42,7 +42,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:text="nama site"
+                    android:text="@string/text_company"
                     android:textSize="22sp"
                     android:textColor="@color/colorAccent"/>
 

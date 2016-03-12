@@ -122,7 +122,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("Send shipment");
+        progressDialog.setMessage(getString(R.string.message_send_shipment));
 
         omDate = (TextView) findViewById(R.id.om_date);
         omReceipt = (TextView) findViewById(R.id.om_receipt);
@@ -133,7 +133,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Shipment");
+        actionBar.setTitle(R.string.text_shipment);
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordianotorLayout);
@@ -159,15 +159,15 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         Date date = new Date();
         date.setTime(getIntent().getLongExtra("orderDate", 0));
 
-        omDate.setText("Date : " + simpleDateFormat.format(date).toString());
-        omReceipt.setText("Order number : " + getIntent().getExtras().getString("orderReceipt"));
+        omDate.setText(getResources().getString(R.string.text_order_date) + simpleDateFormat.format(date).toString());
+        omReceipt.setText(getResources().getString(R.string.text_order_receipt) + getIntent().getExtras().getString("orderReceipt"));
         mailSiteFrom.setText("{typcn-mail} " + getIntent().getStringExtra("siteFromEmail"));
-        siteFromName.setText("Ship to : " + getIntent().getStringExtra("siteFromName"));
+        siteFromName.setText(getString(R.string.text_shipto) + getIntent().getStringExtra("siteFromName"));
 
         checkOrderMenuSerialList();
 
         loadProgress = new ProgressDialog(this);
-        loadProgress.setMessage("Fetching data...");
+        loadProgress.setMessage(getResources().getString(R.string.message_fetch_data));
         loadProgress.setCancelable(false);
 
         new Handler().post(new Runnable() {
@@ -198,8 +198,8 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                 if (orderMenuListSerial.size() != 0) {
                     if (authenticationCeck.isNetworkAvailable()){
                         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                        alert.setTitle("Shipment");
-                        alert.setMessage("Send shipment ?");
+                        alert.setTitle(getResources().getString(R.string.text_shipment));
+                        alert.setMessage(getString(R.string.message_ask_send_shipment));
                         alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -215,11 +215,11 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                         });
                         alert.show();
                     }else {
-                        AlertMessage("No internet connection");
+                        AlertMessage(getResources().getString(R.string.message_no_internet));
                     }
 
                 } else {
-                    AlertMessage("Scan serial number");
+                    AlertMessage(getString(R.string.message_scan_serial_number));
                 }
 
                 break;
@@ -309,17 +309,17 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
         switch (requestInProgress.getProcessId()) {
             case ShipmentJob.PROCESS_ID:
-                progressDialog.setTitle("shipping");
+                progressDialog.setTitle(getString(R.string.message_shipping));
                 Log.d(getClass().getSimpleName(), "shipping");
                 break;
 
             case MenuUpdateJob.PROCESS_ID:
-                progressDialog.setTitle("Updating in progress");
+                progressDialog.setTitle(getString(R.string.message_update_progress));
                 Log.d(getClass().getSimpleName(), "Updating in progress");
                 break;
 
             case SerialJob.PROCESS_ID:
-                progressDialog.setTitle("Serial in progress");
+                progressDialog.setTitle(getString(R.string.message_serial_progress));
                 Log.d(getClass().getSimpleName(), "Serial in progress");
                 break;
 
@@ -392,10 +392,10 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                         }else {
                             updateMenuError = false;
                             AlertDialog.Builder builder = new AlertDialog.Builder(SellerOrderMenuListActivity.this);
-                            builder.setTitle("Shipment");
-                            builder.setMessage("Process finish\nShipment number : " + shipment.getReceiptNumber());
+                            builder.setTitle(getResources().getString(R.string.text_shipment));
+                            builder.setMessage(getResources().getString(R.string.message_progress_complete)+"\n"+getResources().getString(R.string.text_receipt_number) + shipment.getReceiptNumber());
                             builder.setCancelable(false);
-                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     page = 1;
@@ -460,7 +460,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                 break;
 
             case OrderUpdateJob.PROCESS_ID:
-                AlertMessage("Gagal mengupdate status order");
+                AlertMessage(getString(R.string.message_failed_update_status_order));
                 break;
         }
 
@@ -633,9 +633,9 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
     private void AlertMessage(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(SellerOrderMenuListActivity.this);
-        builder.setTitle("Shipment");
+        builder.setTitle(getResources().getString(R.string.text_shipment));
         builder.setMessage(message);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -662,17 +662,17 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
     private void resendShipment(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Shipment");
+        builder.setTitle(getResources().getString(R.string.text_shipment));
         builder.setCancelable(false);
-        builder.setMessage("Proses failed\nrepeat proses ?");
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setMessage(getString(R.string.message_process_failed_ask_repeat));
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 jobManager.addJobInBackground(new ShipmentJob(preferences.getString("server_url", ""), orderId));
                 progressDialog.show();
             }
         });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -684,10 +684,10 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     private void resendSerial(){
         serialError = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Shipment");
+        builder.setTitle(getResources().getString(R.string.text_shipment));
         builder.setCancelable(false);
-        builder.setMessage("Proses failed\nrepeat proses !");
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setMessage(getString(R.string.message_process_failed_repeat));
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 progressDialog.show();
@@ -707,10 +707,10 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     private void resendOrderMenuUpdate(){
         updateMenuError = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Shipment");
+        builder.setTitle(getResources().getString(R.string.text_shipment));
         builder.setCancelable(false);
-        builder.setMessage("Proses failed\nrepeat proses !!");
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setMessage(getString(R.string.message_process_failed_repeat));
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 progressDialog.show();

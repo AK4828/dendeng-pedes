@@ -77,9 +77,9 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Internet access");
-                    builder.setMessage("No internet connection");
-                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    builder.setTitle(getResources().getString(R.string.message_title_internet_access));
+                    builder.setMessage(getResources().getString(R.string.message_no_internet));
+                    builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -90,9 +90,9 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
             }else if (preference == logout){
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setCancelable(false);
-                builder.setTitle("Logout");
-                builder.setMessage("Logout current session ?");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                builder.setTitle(getResources().getString(R.string.message_title_logout));
+                builder.setMessage(getResources().getString(R.string.message_logout));
+                builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         AuthenticationUtils.logout();
@@ -107,7 +107,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
                         startActivity(intent);
                     }
                 });
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

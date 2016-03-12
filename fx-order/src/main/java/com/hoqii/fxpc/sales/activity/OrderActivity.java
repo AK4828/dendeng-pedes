@@ -3,7 +3,6 @@ package com.hoqii.fxpc.sales.activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -34,13 +33,11 @@ import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.entity.Stock;
 import com.hoqii.fxpc.sales.task.StockSync;
-import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.hoqii.fxpc.sales.util.ImageUtil;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
 import com.joanzapata.iconify.widget.IconTextView;
-import com.path.android.jobqueue.JobManager;
 
 import org.meruvian.midas.core.service.TaskService;
 
@@ -63,8 +60,6 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
     private OrderMenu orderMenu;
     private Button orderButton;
     private ImageButton btnMin, btnPlus;
-    private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
-
 
     private ProductDatabaseAdapter productDatabaseAdapter;
     private OrderDatabaseAdapter orderDatabaseAdapter;
@@ -76,15 +71,12 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");
     private OrderMenu.OrderType orderMenuType;
     private int qty = 0, stockProduct = 0;
-    private Bitmap preview;
-    private JobManager jobManager;
     private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
-        jobManager = SignageApplication.getInstance().getJobManager();
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -106,7 +98,6 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            product = productDatabaseAdapter.findAllProductById(productId);
             orderMenu = orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId());
         }
 
@@ -161,14 +152,14 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
         Glide.with(this).load(imageUrl).error(R.drawable.no_image).into(prodcutThumb);
         productName.setText(product.getName());
 
-        productPrice.setText("Rp." + decimalFormat.format(product.getSellPrice()));
-        reward.setText("Reward : " + Double.toString(product.getReward()) + " Points");
-        productStock.setText(Integer.toString(stockProduct)+" Items");
+        productPrice.setText(getString(R.string.text_currency) + decimalFormat.format(product.getSellPrice()));
+        reward.setText(getString(R.string.text_reward) + Double.toString(product.getReward()) + getString(R.string.text_point_end));
+        productStock.setText(Integer.toString(stockProduct)+getString(R.string.text_item_end));
         orderMenuType = OrderMenu.OrderType.PURCHASE_ORDER;
 
         if (product.getDescription().toString().equalsIgnoreCase("null")){
             Log.d(getClass().getSimpleName(), "desc null");
-            productDesc.setText("No description");
+            productDesc.setText(R.string.text_no_description);
         } else {
             Log.d(getClass().getSimpleName(), "desc not null");
             String temp = product.getDescription();
@@ -205,7 +196,7 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
         // for update order
         if (qty != 0) {
             orderCount.setText(Integer.toString(qty));
-            orderButton.setText("Update order");
+            orderButton.setText(R.string.text_button_update_order);
 
             StockSync stockSync = new StockSync(this, this, StockSync.StockUri.byProductIdUri.name());
             stockSync.execute(product.getId());
@@ -289,7 +280,7 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
         }
         if (qty != 0){
             layoutDesc.setVisibility(View.VISIBLE);
-            addOrderDesc.setText("Cancel");
+            addOrderDesc.setText(getResources().getString(R.string.cancel));
             orderDesc.setText(orderMenu.getDescription());
         }
 
@@ -298,18 +289,18 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
             public void onClick(View v) {
                 if (layoutDesc.getVisibility() == View.VISIBLE) {
                     layoutDesc.setVisibility(View.GONE);
-                    addOrderDesc.setText("Add description");
+                    addOrderDesc.setText(R.string.button_add_description);
                     orderDesc.setText("");
                 } else if (layoutDesc.getVisibility() == View.GONE) {
                     layoutDesc.setVisibility(View.VISIBLE);
-                    addOrderDesc.setText("Cancel");
+                    addOrderDesc.setText(getResources().getString(R.string.cancel));
                 }
             }
         });
 
         alert.setView(view);
-        alert.setTitle("Order " + product.getName());
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alert.setTitle(getString(R.string.message_order) + product.getName());
+        alert.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 productDatabaseAdapter.saveProduct(product);
@@ -429,7 +420,7 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
             }
         });
 
-        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -447,7 +438,7 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
     @Override
     public void onSuccess(int code, Object result) {
         Stock stock = (Stock)result;
-        productStock.setText(Integer.toString(stock.getQty())+" Items");
+        productStock.setText(Integer.toString(stock.getQty())+getResources().getString(R.string.text_item_end));
         orderButton.setEnabled(true);
     }
 
