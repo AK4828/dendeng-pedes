@@ -185,6 +185,7 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                     taskService.onCancel(SignageVariables.STOCK_GET_TASK, "Batal");
                 }
                 break;
+
         }
 
     }

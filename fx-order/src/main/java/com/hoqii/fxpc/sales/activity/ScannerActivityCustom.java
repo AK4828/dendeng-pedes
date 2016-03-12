@@ -23,6 +23,8 @@ import com.hoqii.fxpc.sales.adapter.SerialAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.DefaultDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.Stock;
+import com.hoqii.fxpc.sales.task.StockSync;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.EntypoModule;
@@ -39,13 +41,15 @@ import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
+import org.meruvian.midas.core.service.TaskService;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by miftakhul on 12/16/15.
  */
-public class ScannerActivityCustom extends AppCompatActivity {
+public class ScannerActivityCustom extends AppCompatActivity implements TaskService{
     private String productName = "product name";
     private String orderMenuId, orderId;
     private int position, qty;
@@ -208,6 +212,36 @@ public class ScannerActivityCustom extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    @Override
+    public void onExecute(int code) {
+
+    }
+
+    @Override
+    public void onSuccess(int code, Object result) {
+        Stock stock = (Stock) result;
+        if (stock != null){
+
+        }
+    }
+
+    @Override
+    public void onCancel(int code, String message) {
+
+    }
+
+    @Override
+    public void onError(int code, String message) {
+
+    }
+
+
     private void dialogSubmit() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Serial Number");
@@ -261,12 +295,12 @@ public class ScannerActivityCustom extends AppCompatActivity {
     }
 
     public void scannedCount(){
-        viewScannedCount.setText("Sudah di scan "+ serialAdapter.getItemCount() +" dari total "+ qty +" barang");
+        viewScannedCount.setText("Sudah di scan " + serialAdapter.getItemCount() + " dari total " + qty + " barang");
     }
 
-    @Override
-    public void onBackPressed() {
-        setResult(RESULT_OK);
-        finish();
+    private void chekSerial(String serial){
+
     }
+
+
 }

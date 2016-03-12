@@ -435,7 +435,6 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
                 dialog.dismiss();
             }
         });
-
         alert.show();
     }
 

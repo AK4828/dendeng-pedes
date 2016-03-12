@@ -133,6 +133,30 @@
             android:name="com.hoqii.fxpc.sales.content.MidasContentProvider"
             android:authorities="com.hoqii.fxpc.sales.content.midascontentprovider"
             android:syncable="true" />
+        
+        <receiver android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <category android:name="com.hoqii.fxpc.sales"/>
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".service.MyGcmListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+            </intent-filter>
+        </service>
+
+        <service android:name=".service.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+        
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="352d74e4f647a4e60429ac85c50649511ba11645" />
