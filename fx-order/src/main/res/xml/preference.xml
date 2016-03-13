@@ -2,19 +2,23 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="Sync Preference">
+        android:title="@string/pref_sync_title">
 
         <Preference
-            android:title="Sync"
+            android:title="@string/pref_sync"
             android:key="pref_sync"/>
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Akun">
+        android:title="@string/pref_account_title">
 
         <Preference
-            android:title="Logout"
+            android:title="@string/pref_update_token"
+            android:key="pref_refresh_token"/>
+
+        <Preference
+            android:title="@string/pref_logout"
             android:key="pref_logout"/>
 
     </PreferenceCategory>

@@ -18,6 +18,7 @@ import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.event.LoginEvent;
 import com.hoqii.fxpc.sales.job.LoginManualJob;
+import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.EntypoIcons;
@@ -46,6 +47,7 @@ public class LoginActivity extends DefaultActivity {
 
     private JobManager jobManager;
     private SharedPreferences preferences, pref;
+    private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
 
     @Override
     protected int layout() {
@@ -110,14 +112,26 @@ public class LoginActivity extends DefaultActivity {
     @OnClick(R.id.button_login)
     public void submitLogin(Button button) {
 //        startActivity(new Intent(this, MainActivity.class));
+        if (authenticationCeck.isNetworkAvailable()) {
+            LoginManualJob loginJob = new LoginManualJob(username.getText().toString(), password.getText().toString());
+            jobManager.addJobInBackground(loginJob);
 
-        LoginManualJob loginJob = new LoginManualJob(username.getText().toString(), password.getText().toString());
-        jobManager.addJobInBackground(loginJob);
-
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putString("username", username.getText().toString());
-        editor.putString("password", password.getText().toString());
-        editor.commit();
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("username", username.getText().toString());
+            editor.putString("password", password.getText().toString());
+            editor.commit();
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+            builder.setTitle(getString(R.string.message_title_internet_access));
+            builder.setMessage(getString(R.string.message_no_internet));
+            builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
+        }
     }
 
     public void onEventMainThread(LoginEvent.DoLogin doLogin) {

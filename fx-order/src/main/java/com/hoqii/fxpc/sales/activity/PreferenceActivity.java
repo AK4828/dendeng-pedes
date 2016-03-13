@@ -24,6 +24,7 @@ import de.greenrobot.event.EventBus;
  */
 public class PreferenceActivity extends android.preference.PreferenceActivity{
     private static final int REFRESH_TOKEN_SYNC = 300;
+    private static final int REFRESH_TOKEN_MANUAL = 301;
     private static AuthenticationCeck authenticationCeck = new AuthenticationCeck();
 
     @Override
@@ -45,7 +46,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
     }
 
     public static class preferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener{
-        private Preference sync, logout;
+        private Preference sync, logout, refreshToken;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -54,9 +55,11 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
 
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
             sync = (Preference) findPreference("pref_sync");
+            refreshToken = (Preference) findPreference("pref_refresh_token");
             logout = (Preference) findPreference("pref_logout");
 
             sync.setOnPreferenceClickListener(this);
+            refreshToken.setOnPreferenceClickListener(this);
             logout.setOnPreferenceClickListener(this);
 
 
@@ -75,6 +78,22 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
                         Log.d(getClass().getSimpleName(), "[ application access need to refresh ]");
                         authenticationCeck.refreshToken(getActivity(), REFRESH_TOKEN_SYNC);
                     }
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle(getResources().getString(R.string.message_title_internet_access));
+                    builder.setMessage(getResources().getString(R.string.message_no_internet));
+                    builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.show();
+                }
+            }else if (preference == refreshToken){
+                if (authenticationCeck.isNetworkAvailable()) {
+                    Log.d(getClass().getSimpleName(), "[ application access need to refresh ]");
+                    authenticationCeck.refreshToken(getActivity(), REFRESH_TOKEN_MANUAL);
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle(getResources().getString(R.string.message_title_internet_access));
@@ -126,6 +145,19 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
                 startActivity(new Intent(this, SyncActivity.class));
                 setResult(RESULT_OK);
                 finish();
+                break;
+            case REFRESH_TOKEN_MANUAL:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setCancelable(false);
+                builder.setTitle(getString(R.string.message_refresh_title));
+                builder.setMessage(getString(R.string.messsage_refresh_complated));
+                builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
                 break;
         }
     }
