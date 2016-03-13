@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         orderListRecycle.setItemAnimator(new DefaultItemAnimator());
         orderListRecycle.setAdapter(orderMenuAdapter);
 
-        MainSlidePagerAdapter mainSlidePagerAdapter = new MainSlidePagerAdapter(getSupportFragmentManager());
+        MainSlidePagerAdapter mainSlidePagerAdapter = new MainSlidePagerAdapter(getSupportFragmentManager(), this);
         slideViewPager.setAdapter(mainSlidePagerAdapter);
         slideTablayout.setupWithViewPager(slideViewPager);
 

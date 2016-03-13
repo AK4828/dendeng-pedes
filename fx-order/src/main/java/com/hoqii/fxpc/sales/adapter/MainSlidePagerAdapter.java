@@ -1,9 +1,11 @@
 package com.hoqii.fxpc.sales.adapter;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.fragment.ReceiveListFragment;
 import com.hoqii.fxpc.sales.fragment.SellerOrderListFragment;
 
@@ -15,10 +17,12 @@ import java.util.List;
  */
 public class MainSlidePagerAdapter extends FragmentPagerAdapter{
     private List<Fragment> fragmentList = new ArrayList<Fragment>();
+    private Context context;
 
-    public MainSlidePagerAdapter(FragmentManager fm) {
+    public MainSlidePagerAdapter(FragmentManager fm, Context context) {
         super(fm);
 
+        this.context = context;
         fragmentList.add(new SellerOrderListFragment());
         fragmentList.add(new ReceiveListFragment());
     }
@@ -44,9 +48,9 @@ public class MainSlidePagerAdapter extends FragmentPagerAdapter{
     public CharSequence getPageTitle(int position) {
         switch (position){
             case 0:
-                return "Order List";
+                return context.getString(R.string.text_order_list);
             case 1:
-                return "Receive List";
+                return context.getString(R.string.text_receive_list);
             default:
                 return null;
         }

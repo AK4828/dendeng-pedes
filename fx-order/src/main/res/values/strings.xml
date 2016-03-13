@@ -192,6 +192,11 @@
     <string name="hoder_description">"Description : "</string>
     <string name="holder_no_description">No description</string>
     <string name="hodeler_uncategory">Uncategorized</string>
+    <string name="text_no_order">No order in list</string>
+    <string name="text_order_list">Order List</string>
+    <string name="text_receive_list">Receive List</string>
+    <string name="nav_receiving">Receiving</string>
+    <string name="nav_preference">Preference</string>
 
 </resources>
 

@@ -38,7 +38,7 @@
         </menu>
     </item>
 
-    <item android:title="Receiving">
+    <item android:title="@string/nav_receiving">
         <menu>
             <group android:checkableBehavior="single">
                 <item
@@ -71,7 +71,7 @@
         </menu>
     </item>
 
-    <item android:title="Preference">
+    <item android:title="@string/nav_preference">
         <menu>
             <group android:checkableBehavior="single">
                 <item
