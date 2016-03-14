@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
@@ -56,7 +55,7 @@ public class SelfHistoryOrderAdapter extends RecyclerView.Adapter<SelfHistoryOrd
 
         holder.siteTo.setText(orderList.get(position).getSite().getName());
         holder.orderNumber.setText(orderList.get(position).getReceiptNumber());
-        holder.orderDate.setText("{typcn-time} Date : " + simpleDateFormat.format(date));
+        holder.orderDate.setText(context.getResources().getString(R.string.adapter_date) + simpleDateFormat.format(date));
         holder.email.setText(orderList.get(position).getSite().getEmail());
 
         switch (orderList.get(position).getStatus()){
