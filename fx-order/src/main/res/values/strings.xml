@@ -89,7 +89,7 @@
 
 
     <string name="save_data">Storing data ...</string>
-    <string name="check_internet">Terdapat masalah dengan koneksi Internet!</string>
+    <string name="check_internet">There was a problem with the Internet connection!</string>
     <string name="progress_check_serial">Checking availability</string>
     <string name="message_serial_not_found">serial not found</string>
     <string name="message_serial_title_serial_number">Serial Number</string>
