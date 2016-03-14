@@ -254,9 +254,9 @@ public class OrderActivityCustom extends AppCompatActivity {
         Log.d(getClass().getSimpleName(), " current site id adalah  " + AuthenticationUtils.getCurrentAuthentication().getSite().getId());
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Order");
-        alert.setMessage("Order " + product.getName() + " ?");
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alert.setTitle(getResources().getString(R.string.order));
+        alert.setMessage(getResources().getString(R.string.order) + " " + product.getName() + " ?");
+        alert.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String orderId = orderDatabaseAdapter.getOrderId();
@@ -363,7 +363,7 @@ public class OrderActivityCustom extends AppCompatActivity {
             }
         });
 
-        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 

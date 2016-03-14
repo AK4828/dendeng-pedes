@@ -64,6 +64,7 @@
     <string name="save">保存</string>
     <string name="cancel">取消</string>
 
+    // animation string
     <string name="transition_string">animating transition</string>
     <string name="transition_image">animating image transition</string>
     <string name="transition_title">animating title transition</string>
@@ -92,7 +93,7 @@
 
 
     <string name="save_data">Storing data ...</string>
-    <string name="check_internet">Terdapat masalah dengan koneksi Internet!</string>
+    <string name="check_internet">There was a problem with the Internet connection</string>
     <string name="progress_check_serial">Checking availability</string>
 
     <string name="message_serial_not_found">serial not found</string>
@@ -114,7 +115,7 @@
     <string name="text_items">"项目 : "</string>
     <string name="text_price">"售价 : "</string>
     <string name="message_order_processed">您的订单正在处理中</string>
-    <string name="text_receipt_number">"订购编号 : "</string>
+    <string name="text_receipt_number">"装运编号 : "</string>
     <string name="message_title_confirmation">Confirmation</string>
     <string name="message_request_failed_repeat">Request failed\nRepeat process ?</string>
     <string name="yes">是</string>
@@ -139,7 +140,7 @@
     <string name="message_recheck">Something happened,\nrepeat process</string>
     <string name="message_failed_confirm_shipment">Failed to confirm shipment</string>
     <string name="text_serial">"Serial : "</string>
-    <string name="message_title_serial">Serial Number</string>
+    <string name="message_title_serial">编号</string>
     <string name="message_serial_empty">Serial Number is empty</string>
     <string name="text_serial_alredy_scan">"已扫描 "</string>
     <string name="text_of_total">" 共 "</string>
@@ -152,7 +153,7 @@
     <string name="text_shipment">运送细节</string>
     <string name="text_shipto">"运送到 : "</string>
     <string name="message_ask_send_shipment">货物发送？</string>
-    <string name="message_scan_serial_number">Scan serial number</string>
+    <string name="message_scan_serial_number">扫描编号</string>
     <string name="message_shipping">shipping</string>
     <string name="message_update_progress">Updating in progress</string>
     <string name="message_serial_progress">Serial in progress</string>

@@ -200,14 +200,14 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                         AlertDialog.Builder alert = new AlertDialog.Builder(this);
                         alert.setTitle(getString(R.string.dialog_shipment));
                         alert.setMessage(getString(R.string.message_ask_send_shipment));
-                        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        alert.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 jobManager.addJobInBackground(new ShipmentJob(preferences.getString("server_url", ""), orderId));
                                 progressDialog.show();
                             }
                         });
-                        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        alert.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
