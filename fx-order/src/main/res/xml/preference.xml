@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
-        android:title="@string/pref_sync_title">
+    <PreferenceCategory android:title="@string/pref_sync_title">
 
         <Preference
-            android:title="@string/pref_sync"
-            android:key="pref_sync"/>
+            android:key="pref_sync"
+            android:title="@string/pref_sync" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/pref_account_title">
+    <PreferenceCategory android:title="@string/pref_language">
+
+        <!--<ListPreference
+            android:defaultValue="en"
+            android:entries="@array/language_names_array"
+            android:entryValues="@array/language_values_array"
+            android:key="@string/key_pref_language"
+            android:summary="Select a language"
+            android:title="@string/pref_select_language" />-->
 
         <Preference
-            android:title="@string/pref_update_token"
-            android:key="pref_refresh_token"/>
+            android:key="@string/key_pref_language"
+            android:title="@string/pref_sync" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_account_title">
 
         <Preference
-            android:title="@string/pref_logout"
-            android:key="pref_logout"/>
+            android:key="pref_refresh_token"
+            android:title="@string/pref_update_token" />
+
+        <Preference
+            android:key="pref_logout"
+            android:title="@string/pref_logout" />
 
     </PreferenceCategory>
 

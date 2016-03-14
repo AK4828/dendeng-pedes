@@ -62,7 +62,7 @@
     <string name="select">Select</string>
     <string name="ok">好</string>
     <string name="no">否</string>
-    <string name="save">Save</string>
+    <string name="save">保存</string>
     <string name="cancel">取消</string>
 
     <string name="transition_string">animating transition</string>
@@ -204,6 +204,16 @@
     <string name="hoder_description">"说明 : "</string>
     <string name="holder_no_description">No description</string>
     <string name="hodeler_uncategory">Uncategorized</string>
+
+    <string name="pref_sync_title">Sync Preference</string>
+    <string name="pref_sync">Sync</string>
+    <string name="pref_account_title">Account</string>
+    <string name="pref_logout">Logout</string>
+    <string name="pref_update_token">Update Token</string>
+    <string name="pref_language">Language</string>
+    <string name="pref_select_language">Select Language</string>
+    <string name="message_refresh_title">Refresh Token</string>
+    <string name="messsage_refresh_complated">Refresh token completed</string>
 
     <string name="text_no_order">名单中没有订单</string>
     <string name="text_order_list">订购清单</string>

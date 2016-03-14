@@ -14,6 +14,7 @@ import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
+import com.hoqii.fxpc.sales.util.LocaleHelper;
 
 import java.util.List;
 
@@ -22,15 +23,21 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by miftakhul on 12/22/15.
  */
-public class PreferenceActivity extends android.preference.PreferenceActivity{
+public class PreferenceActivity extends android.preference.PreferenceActivity {
     private static final int REFRESH_TOKEN_SYNC = 300;
     private static final int REFRESH_TOKEN_MANUAL = 301;
     private static AuthenticationCeck authenticationCeck = new AuthenticationCeck();
+    private static String[] languages = new String[]{"English", "Chinese"};
+
+    private static SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
+
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         getFragmentManager().beginTransaction().replace(android.R.id.content, new preferenceFragment()).commit();
     }
 
@@ -45,8 +52,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
         loadHeadersFromResource(R.xml.preference_header, target);
     }
 
-    public static class preferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener{
-        private Preference sync, logout, refreshToken;
+    public static class preferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+        private Preference sync, logout, refreshToken, language;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -57,6 +64,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
             sync = (Preference) findPreference("pref_sync");
             refreshToken = (Preference) findPreference("pref_refresh_token");
             logout = (Preference) findPreference("pref_logout");
+            language = findPreference(this.getString(R.string.key_pref_language));
 
             sync.setOnPreferenceClickListener(this);
             refreshToken.setOnPreferenceClickListener(this);
@@ -67,7 +75,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
 
         @Override
         public boolean onPreferenceClick(Preference preference) {
-            if (preference == sync){
+            if (preference == sync) {
                 if (authenticationCeck.isNetworkAvailable()) {
                     if (authenticationCeck.isAccess()) {
                         Log.d(getClass().getSimpleName(), "[ application access granted ]");
@@ -90,7 +98,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
                     });
                     builder.show();
                 }
-            }else if (preference == refreshToken){
+            } else if (preference == refreshToken) {
                 if (authenticationCeck.isNetworkAvailable()) {
                     Log.d(getClass().getSimpleName(), "[ application access need to refresh ]");
                     authenticationCeck.refreshToken(getActivity(), REFRESH_TOKEN_MANUAL);
@@ -106,7 +114,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
                     });
                     builder.show();
                 }
-            }else if (preference == logout){
+            } else if (preference == logout) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setCancelable(false);
                 builder.setTitle(getResources().getString(R.string.message_title_logout));
@@ -133,6 +141,27 @@ public class PreferenceActivity extends android.preference.PreferenceActivity{
                     }
                 });
                 builder.show();
+            } else if (preference == language) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setSingleChoiceItems(R.array.language_names_array, 0, null);
+                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String lang = mSharedPreferences.getString(getString(R.string.key_pref_language), "en");
+                        LocaleHelper.setLocale(getActivity(), lang);
+                        getActivity().recreate();
+                    }
+                });
+
+                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+
+
             }
             return false;
         }
