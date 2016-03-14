@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FXPC</string>
+    <string name="app_summary">FXPC</string>
+
+    <string name="drawer_open">open</string>
+    <string name="drawer_close">close</string>
+
+    //nav title
+    <string name="nav_order">Purchase Order</string>
+    <string name="nav_rewards">Rewards</string>
+    <string name="nav_shipment">Shipment</string>
+    <string name="nav_received"></string>
+    <string name="nav_title_preference">Preference</string>
+    <string name="nav_title_stock_list">Stock</string>
+    <string name="nav_title_receiving">Receiving</string>
+
+    //nav menu
+    <string name="nav_home">首页</string>
+    <string name="nav_order_requesition">Requesition</string>
+    <string name="nav_order_quantity">Quotation</string>
+    <string name="nav_order_purches">订购</string>
+    <string name="nav_order_purches_history">订购纪录</string>
+    <string name="nav_order_list">订购清单</string>
+    <string name="nav_order_receiving">收货中</string>
+    <string name="nav_shipment_list">Shipment List</string>
+    <string name="nav_shipment_history_list">运送记录</string>
+    <string name="nav_stock_list">库存</string>
+    <string name="nav_seller_purchase_order">Purchase Order</string>
+    <string name="nav_point">点数</string>
+    <string name="nav_preference">优先</string>
+    <string name="nav_receiving">收货中</string>
+
+    <string name="access_failed">Access failed</string>
+    <string name="data_empty">Empty</string>
+    <string name="search">Pencarian</string>
+    <string name="refresh">Refresh</string>
+    <string name="required">Required</string>
+    <string name="setting">Pengaturan</string>
+    <string name="cart">Cart</string>
+    <string name="order">订购</string>
+    <string name="select_contact">Pilih Pembeli</string>
+    <string name="submit">Submit</string>
+    <string name="add_product">Add product</string>
+    <string name="added_to_cart">Item Berhasil ditambahkan</string>
+    <string name="order_success">订购成功</string>
+    <string name="go_to_cart">Lihat Keranjang Belanja</string>
+    <string name="continue_shopping">继续购物</string>
+    <string name="add_contact">Tambah Pembeli</string>
+    <string name="businesPartner">Business Partner</string>
+    <string name="add_order">Add Order</string>
+    <string name="add_destination">Add Destination</string>
+    <string name="contact">Contact</string>
+
+    <string name="verify">确认</string>
+    <string name="verify_now">现在确认</string>
+    <string name="verified">已确认过</string>
+    <string name="text_verify_all">确认全部</string>
+    <string name="text_scan_serial_number">扫描编号</string>
+    <string name="text_cancel">取消</string>
+
+    <string name="select">Select</string>
+    <string name="ok">好</string>
+    <string name="no">否</string>
+    <string name="save">Save</string>
+    <string name="cancel">取消</string>
+
+    <string name="transition_string">animating transition</string>
+    <string name="transition_image">animating image transition</string>
+    <string name="transition_title">animating title transition</string>
+    <string name="transition_price">animating price transition</string>
+    <string name="transition_layout">animating layout transition</string>
+    <string name="transition_number">animating number transition</string>
+    <string name="transition_date">animating date transition</string>
+
+    <string name="exit">Tekan tombol back lagi untuk menutup halaman ini</string>
+    <string name="empty_form">Lengkapi form berikut dengan benar</string>
+
+    <string name="outlet_name">Nama Outlet</string>
+    <string name="description">Deskripsi :</string>
+
+    <string name="start_sync">同步开始</string>
+    <string name="start_sync_campaign">同步开始</string>
+    <string name="sync_category">synchronization Category ...</string>
+    <string name="sync_product">同步显示产品 ...</string>
+    <string name="sync_product_uom">synchronization Products Uom ...</string>
+    <string name="sync_image">同步显示图片 ...</string>
+    <string name="sync_contact">synchronization Contacs ...</string>
+    <string name="sync_business_partner">synchronization Business Partner ...</string>
+    <string name="sync_site">synchronization Company ...</string>
+
+    <string name="finish_sync">Synchronization completed</string>
+
+
+    <string name="save_data">Storing data ...</string>
+    <string name="check_internet">Terdapat masalah dengan koneksi Internet!</string>
+    <string name="progress_check_serial">Checking availability</string>
+
+    <string name="message_serial_not_found">serial not found</string>
+    <string name="message_serial_title_serial_number">编号</string>
+    <string name="message_total_items">"商品数量 "</string>
+    <string name="message_total_items_scanned">"item has been scanned "</string>
+    <string name="message_submit_serial_number">提交编号 ?</string>
+    <string name="message_serial_problem_repeat">a problem occurs \nrepeat the process ?</string>
+    <string name="setting_setup_parameter">Setup Parameter</string>
+    <string name="message_send_order">Send order ...</string>
+    <string name="message_wait">Pleace wait ...</string>
+    <string name="message_title_warning">请注意</string>
+    <string name="message_item_have_not_selected">您未选货</string>
+    <string name="message_order_destination">You have not choose a destination order</string>
+    <string name="message_title_internet_access">Internet access</string>
+    <string name="message_no_internet">No internet connection</string>
+
+    <string name="text_order_destination">"订购目标: "</string>
+    <string name="text_items">"项目 : "</string>
+    <string name="text_price">"售价 : "</string>
+    <string name="message_order_processed">您的订单正在处理中</string>
+    <string name="text_receipt_number">"订购编号 : "</string>
+    <string name="message_title_confirmation">Confirmation</string>
+    <string name="message_request_failed_repeat">Request failed\nRepeat process ?</string>
+    <string name="yes">是</string>
+    <string name="message_send_order_failed_repeat">Failed to send order\nrepeat process ?</string>
+    <string name="message_send_order_menu_failed_repeat">Failed to send order...\nrepeat process ?</string>
+    <string name="text_currency">Rp. </string>
+    <string name="text_reward">"奖励 : "</string>
+    <string name="text_point">" Point :"</string>
+    <string name="text_point_end">" 点数"</string>
+    <string name="text_item_end">"项目"</string>
+    <string name="text_no_description">No description</string>
+    <string name="text_button_update_order">Update order</string>
+    <string name="message_order">"订购 "</string>
+    <string name="message_title_logout">Logout</string>
+    <string name="message_logout">Logout current session ?</string>
+    <string name="text_receive_from">"卖家 : "</string>
+    <string name="message_confirm_sipment">Confirm shipment</string>
+    <string name="message_verified">已确认过 !</string>
+    <string name="message_fetch_data">Fetching data...</string>
+    <string name="message_progress_complete">流程结束</string>
+    <string name="message_data_unchanged">Data unchanged</string>
+    <string name="message_recheck">Something happened,\nrepeat process</string>
+    <string name="message_failed_confirm_shipment">Failed to confirm shipment</string>
+    <string name="text_serial">"Serial : "</string>
+    <string name="message_title_serial">Serial Number</string>
+    <string name="message_serial_empty">Serial Number is empty</string>
+    <string name="text_serial_alredy_scan">"已扫描 "</string>
+    <string name="text_of_total">" 共 "</string>
+    <string name="message_serial_sufficed">编号数字已足够</string>
+    <string name="message_incorrect_serial_number">Incorrect serial number</string>
+    <string name="message_total_scanned_item">已扫描商品数量</string>
+    <string name="text_date">"Date : "</string>
+    <string name="text_order_to">"Order to : "</string>
+    <string name="message_send_shipment">Sending shipment</string>
+    <string name="text_shipment">运送细节</string>
+    <string name="text_shipto">"运送到 : "</string>
+    <string name="message_ask_send_shipment">货物发送？</string>
+    <string name="message_scan_serial_number">Scan serial number</string>
+    <string name="message_shipping">shipping</string>
+    <string name="message_update_progress">Updating in progress</string>
+    <string name="message_serial_progress">Serial in progress</string>
+    <string name="message_failed_update_status_order">Failed to update order status</string>
+    <string name="message_process_failed_ask_repeat">Proses failed\nrepeat proses ?</string>
+    <string name="message_process_failed_repeat">Proses failed\nrepeat proses !</string>
+    <string name="text_shipment_detail">运送细节</string>
+    <string name="text_shipment_date">"运送日期 : "</string>
+    <string name="text_order_date">"订购日期 : "</string>
+    <string name="text_order_receipt">"订购编号 : "</string>
+    <string name="message_confirm_shipment">Confirm shipment</string>
+    <string name="edit_username">用户名</string>
+    <string name="edit_password">密码</string>
+    <string name="button_submit">Submit</string>
+    <string name="text_order">订购</string>
+    <string name="text_details">细节</string>
+    <string name="button_add_to_cart">加入购物车</string>
+    <string name="text_company">Company</string>
+    <string name="text_detail_order">订购细节</string>
+    <string name="text_serial_number">编号</string>
+    <string name="text_info">信息</string>
+    <string name="button_check">Check</string>
+    <string name="button_reload">Reload</string>
+    <string name="button_show_more">Show More</string>
+    <string name="text_email">电子邮件</string>
+    <string name="text_phone">电话号码</string>
+    <string name="text_fax">传真</string>
+    <string name="text_postal_code">邮政编码</string>
+    <string name="text_city">城市</string>
+    <string name="text_shipment_date_view">运送日期</string>
+    <string name="text_shipto_view">运送到</string>
+    <string name="button_add_description">需要添加其他说明</string>
+    <string name="text_add_order_description">需要添加其他说明？</string>
+    <string name="text_order_description"><订购说明></订购说明></string>
+    <string name="check_delivered">Delivered</string>
+    <string name="text_description">说明 :</string>
+    <string name="text_server_url">Server URL</string>
+    <string name="message_delete_order">Delete order ?</string>
+    <string name="text_edit">Edit</string>
+    <string name="text_delete">Delete</string>
+
+    <string name="text_product">产品</string>
+    <string name="text_category">种类</string>
+
+    <string name="holder_product">"产品 : "</string>
+    <string name="holder_serial">"产品编号 : "</string>
+    <string name="holder_order_qty">"Order quantity : "</string>
+    <string name="hoder_description">"说明 : "</string>
+    <string name="holder_no_description">No description</string>
+    <string name="hodeler_uncategory">Uncategorized</string>
+
+    <string name="text_no_order">名单中没有订单</string>
+    <string name="text_order_list">订购清单</string>
+    <string name="text_receive_list">收到名单</string>
+
+    <string name="adapter_date">{typcn-time} 日期 :</string>
+    <string name="adapter_seller_date">{typcn-time} 日期 :</string>
+    <string name="adapter_seller_order_number">{typcn-tag} 订购编号 :</string>
+    <string name="adapter_receive_date">收货日期 :</string>
+    <string name="adapter_receive_from">卖家 :</string>
+    <string name="adapter_receive_order_number">订购编号 :</string>
+    <string name="adapter_receive_order_date">订购日期 :</string>
+
+    <string name="dialog_shipment">运送</string>
+
+    <string name="tab_ship_item">项目</string>
+    <string name="tab_ship_detail">细节</string>
+
+</resources>
