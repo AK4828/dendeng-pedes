@@ -123,7 +123,7 @@
     <string name="message_send_order_menu_failed_repeat">Failed to send order...\nrepeat process ?</string>
     <string name="text_currency">Rp. </string>
     <string name="text_reward">"奖励 : "</string>
-    <string name="text_point">" Point :"</string>
+    <string name="text_point">" 点数 : "</string>
     <string name="text_point_end">" 点数"</string>
     <string name="text_item_end">"项目"</string>
     <string name="text_no_description">No description</string>
@@ -147,7 +147,7 @@
     <string name="message_serial_sufficed">编号数字已足够</string>
     <string name="message_incorrect_serial_number">Incorrect serial number</string>
     <string name="message_total_scanned_item">已扫描商品数量</string>
-    <string name="text_date">"Date : "</string>
+    <string name="text_date">"日期 : "</string>
     <string name="text_order_to">"Order to : "</string>
     <string name="message_send_shipment">Sending shipment</string>
     <string name="text_shipment">运送细节</string>
@@ -189,7 +189,7 @@
     <string name="text_add_order_description">需要添加其他说明？</string>
     <string name="text_order_description"><订购说明></订购说明></string>
     <string name="check_delivered">Delivered</string>
-    <string name="text_description">说明 :</string>
+    <string name="text_description">说明 : </string>
     <string name="text_server_url">Server URL</string>
     <string name="message_delete_order">Delete order ?</string>
     <string name="text_edit">Edit</string>
@@ -219,13 +219,13 @@
     <string name="text_order_list">订购清单</string>
     <string name="text_receive_list">收到名单</string>
 
-    <string name="adapter_date">{typcn-time} 日期 :</string>
-    <string name="adapter_seller_date">{typcn-time} 日期 :</string>
-    <string name="adapter_seller_order_number">{typcn-tag} 订购编号 :</string>
-    <string name="adapter_receive_date">收货日期 :</string>
-    <string name="adapter_receive_from">卖家 :</string>
-    <string name="adapter_receive_order_number">订购编号 :</string>
-    <string name="adapter_receive_order_date">订购日期 :</string>
+    <string name="adapter_date">{typcn-time} 日期 : </string>
+    <string name="adapter_seller_date">{typcn-time} 日期 : </string>
+    <string name="adapter_seller_order_number">{typcn-tag} 订购编号 : </string>
+    <string name="adapter_receive_date">收货日期 : </string>
+    <string name="adapter_receive_from">卖家 : </string>
+    <string name="adapter_receive_order_number">订购编号 : </string>
+    <string name="adapter_receive_order_date">订购日期 : </string>
 
     <string name="dialog_shipment">运送</string>
 
