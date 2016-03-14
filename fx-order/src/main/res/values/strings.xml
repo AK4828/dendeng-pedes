@@ -95,7 +95,7 @@
     <string name="message_serial_problem_repeat">a problem occurs \nrepeat the process ?</string>
     <string name="setting_setup_parameter">Setup Parameter</string>
     <string name="message_send_order">Send order ...</string>
-    <string name="message_wait">Pleace wait ...</string>
+    <string name="message_wait">Please wait ...</string>
     <string name="message_title_warning">Warning</string>
     <string name="message_item_have_not_selected">You have not selected item</string>
     <string name="message_order_destination">You have not choose a destination order</string>
@@ -192,6 +192,13 @@
     <string name="hoder_description">"Description : "</string>
     <string name="holder_no_description">No description</string>
     <string name="hodeler_uncategory">Uncategorized</string>
+    <string name="pref_sync_title">Sync Preference</string>
+    <string name="pref_sync">Sync</string>
+    <string name="pref_account_title">Account</string>
+    <string name="pref_logout">Logout</string>
+    <string name="pref_update_token">Update Token</string>
+    <string name="message_refresh_title">Refresh Token</string>
+    <string name="messsage_refresh_complated">Refresh token completed</string>
     <string name="text_no_order">No order in list</string>
     <string name="text_order_list">Order List</string>
     <string name="text_receive_list">Receive List</string>

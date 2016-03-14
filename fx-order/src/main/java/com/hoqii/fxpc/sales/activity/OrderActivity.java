@@ -73,6 +73,7 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
     private int qty = 0, stockProduct = 0;
     private SharedPreferences preferences;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -197,9 +198,10 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
         if (qty != 0) {
             orderCount.setText(Integer.toString(qty));
             orderButton.setText(R.string.text_button_update_order);
-
+            String orderId = orderDatabaseAdapter.getOrderId();
+            String siteId = orderDatabaseAdapter.findOrderById(orderId).getSite().getId();
             StockSync stockSync = new StockSync(this, this, StockSync.StockUri.byProductIdUri.name());
-            stockSync.execute(product.getId());
+            stockSync.execute(product.getId(), siteId);
         }else {
             orderCount.setText(Integer.toString(1));
         }

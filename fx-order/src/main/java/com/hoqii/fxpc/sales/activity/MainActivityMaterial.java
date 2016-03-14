@@ -22,6 +22,8 @@ import android.view.View;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.adapter.MainFragmentStateAdapter;
+import com.hoqii.fxpc.sales.content.database.adapter.OrderDatabaseAdapter;
+import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.Stock;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.event.LoginEvent;
@@ -51,6 +53,9 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
     private List<Stock> stocks = new ArrayList<Stock>();
     private ProgressDialog progress;
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
+    private OrderDatabaseAdapter orderDatabaseAdapter;
+    private Order order = new Order();
+    private String siteId = null;
 
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -67,6 +72,8 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
             isMinLoli = false;
         }
 
+        orderDatabaseAdapter = new OrderDatabaseAdapter(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -79,25 +86,29 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
         progress.setMessage(getResources().getString(R.string.message_wait));
         progress.setCancelable(false);
 
-        if (authenticationCeck.isNetworkAvailable()){
-            if (authenticationCeck.isAccess()){
-                StockSync stockSync = new StockSync(this, this, StockSync.StockUri.defaultUri.name());
-                stockSync.execute();
-            }else {
-                authenticationCeck.refreshToken(this, REFRESH_TOKEN_MAINMATERIAL);
-            }
-        }else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivityMaterial.this);
-            builder.setTitle(getResources().getString(R.string.message_title_internet_access));
-            builder.setMessage(getResources().getString(R.string.message_no_internet));
-            builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
+        if (getIntent() != null){
+            siteId = getIntent().getStringExtra("siteId");
+            if (authenticationCeck.isNetworkAvailable()){
+                if (authenticationCeck.isAccess()){
+                    StockSync stockSync = new StockSync(this, this, StockSync.StockUri.bySiteUri.name());
+                    stockSync.execute(siteId);
+                }else {
+                    authenticationCeck.refreshToken(this, REFRESH_TOKEN_MAINMATERIAL);
                 }
-            });
-            builder.show();
+            }else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivityMaterial.this);
+                builder.setTitle(getResources().getString(R.string.message_title_internet_access));
+                builder.setMessage(getResources().getString(R.string.message_no_internet));
+                builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
+            }
         }
+
     }
 
     @Override
@@ -183,8 +194,8 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
         Log.d(getClass().getSimpleName(), "request success ");
         switch (requestSuccess.getProcessId()){
             case REFRESH_TOKEN_MAINMATERIAL:
-                StockSync stockSync = new StockSync(this, this, StockSync.StockUri.defaultUri.name());
-                stockSync.execute();
+                StockSync stockSync = new StockSync(this, this, StockSync.StockUri.bySiteUri.name());
+                stockSync.execute(siteId);
                 Log.d(getClass().getSimpleName(), "syc running");
                 break;
         }

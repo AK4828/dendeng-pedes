@@ -33,7 +33,7 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
     private StockUri currentUri = StockUri.defaultUri;
 
     public enum StockUri{
-        defaultUri, bySerialUri, byProductIdUri
+        defaultUri, bySerialUri, byProductIdUri, bySiteUri
     }
 
     public StockSync(Context context, TaskService taskService, String enumUri) {
@@ -55,7 +55,10 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/product/"+params[0]+"/serial/"+params[1]+"?access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
             case byProductIdUri:
-                return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/product/"+params[0]+"?access_token="
+                return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/product/"+params[0]+"/"+params[1]+"?access_token="
+                        + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
+            case bySiteUri:
+                return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/site/"+params[0]+"?access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
             default:
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks?access_token="
@@ -197,6 +200,65 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                         s.setQty(object.getInt("qty"));
 
                         taskService.onSuccess(SignageVariables.STOCK_GET_TASK, s);
+                    }else {
+                        taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
+                    }
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
+                }
+                break;
+
+            case bySiteUri:
+                try {
+                    if (result !=null){
+                        List<Stock> stocks = new ArrayList<Stock>();
+                        JSONArray jsonArray = result.getJSONArray("content");
+                        for (int a = 0; a < jsonArray.length(); a++){
+                            JSONObject object = jsonArray.getJSONObject(a);
+                            Stock s = new Stock();
+                            s.setId(object.getString("id"));
+                            if (!object.isNull("product")){
+                                JSONObject productObject = new JSONObject();
+                                productObject = object.getJSONObject("product");
+
+                                Category parentCategory = new Category();
+                                if (!productObject.isNull("parentCategory")) {
+                                    parentCategory.setId(productObject.getJSONObject("parentCategory").getString("id"));
+                                    parentCategory.setName(productObject.getJSONObject("parentCategory").getString("name"));
+                                }
+
+                                Category category = new Category();
+                                if (!productObject.isNull("category")) {
+                                    category.setId(productObject.getJSONObject("category").getString("id"));
+                                }
+
+                                ProductUom uom = new ProductUom();
+                                if (!productObject.isNull("uom")) {
+                                    uom.setId(productObject.getJSONObject("uom").getString("id"));
+                                }
+
+                                Product product = new Product();
+                                product.setId(productObject.getString("id"));
+                                product.setName(productObject.getString("name"));
+                                if (!productObject.isNull("sellPrice")) {
+                                    product.setSellPrice(productObject.getLong("sellPrice"));
+                                } else {
+                                    product.setSellPrice(0);
+                                }
+                                product.setParentCategory(parentCategory);
+                                product.setCategory(category);
+                                product.setUom(uom);
+                                product.setCode(productObject.getString("code"));
+                                product.setDescription(productObject.getString("description"));
+                                product.setReward(new Double(productObject.getString("reward")));
+
+                                s.setProduct(product);
+                            }
+                            s.setQty(object.getInt("qty"));
+                            stocks.add(s);
+                        }
+                        taskService.onSuccess(SignageVariables.STOCK_GET_TASK, stocks);
                     }else {
                         taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
                     }

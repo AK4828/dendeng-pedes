@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
     /**
      * unregister eventbus
-     * **/
+     **/
     private void forceUnRegisterWhenExist() {
         EventBus.getDefault().unregister(this);
     }
@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
     /**
      * set navigation
-     * **/
+     **/
     private void setNav() {
         TextView parentName = (TextView) findViewById(R.id.siteName);
         parentName.setText(AuthenticationUtils.getCurrentAuthentication().getSite().getDescription());
@@ -431,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
     /**
      * update info
-     * **/
+     **/
     public void updateInfo() {
         orderId = orderDbAdapter.getOrderId();
         Log.d(getClass().getSimpleName(), "[ order id app update info " + orderId + " ]");
@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 Site site = siteDatabaseAdapter.findSiteById(order.getSite().getId());
                 textOrderto.setText(getString(R.string.text_order_destination) + site.getName());
             } else {
-                textOrderto.setText(getString(R.string.text_order_destination) );
+                textOrderto.setText(getString(R.string.text_order_destination));
             }
 
             orderMenus = orderMenuDbAdapter.findOrderMenuByOrderId(orderId);
@@ -465,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             orderMenuAdapter.addItems(orderMenus);
 
             textTotalItem.setText(getString(R.string.text_items) + totalItem);
-            textTotalOrder.setText(getString(R.string.text_price) +getString(R.string.text_currency)+ decimalFormat.format(totalPrice));
+            textTotalOrder.setText(getString(R.string.text_price) + getString(R.string.text_currency) + decimalFormat.format(totalPrice));
         } else {
             textOrderto.setText(getResources().getString(R.string.text_order_destination));
             textTotalItem.setText(getResources().getText(R.string.text_items));
@@ -502,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
 
     /**
      * show ar hide actionbar menu
-     * **/
+     **/
     private void setMenuItemVisibility(boolean visibility) {
         this.menuItemVisibility = visibility;
         invalidateOptionsMenu();
@@ -513,7 +513,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
      * if refresh token failed
      * * save intent to variable then run refresh token
      * * when refresh token finish run intent
-     * **/
+     **/
     public void orderUpdate(String jsonProduct, int qty) {
         if (authenticationCeck.isNetworkAvailable()) {
             if (authenticationCeck.isAccess()) {
@@ -547,15 +547,45 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     }
 
     public void orderOption() {
-        Intent i = new Intent(this, MainActivityMaterial.class);
-        startActivityForResult(i, ORDER_REQUEST_OPTIONS, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
+        orderId = orderDbAdapter.getOrderId();
+        if (orderId != null) {
+            Order order = orderDbAdapter.findOrderById(orderId);
+            if (order.getSite().getId() != null) {
+                Intent i = new Intent(this, MainActivityMaterial.class);
+                i.putExtra("siteId", order.getSite().getId());
+                startActivityForResult(i, ORDER_REQUEST_OPTIONS, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getString(R.string.message_title_warning));
+                builder.setMessage(getString(R.string.message_order_destination));
+                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
+            }
+        }else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.message_title_warning));
+            builder.setMessage(getString(R.string.message_order_destination));
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
+        }
     }
 
 
     /**
      * refresh token,
      * give processid to run
-     * **/
+     **/
+
     public void refreshToken(int processId) {
         authenticationCeck.refreshToken(this, processId);
     }
