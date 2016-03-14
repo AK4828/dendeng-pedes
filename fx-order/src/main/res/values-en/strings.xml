@@ -201,8 +201,6 @@
     <string name="pref_account_title">Account</string>
     <string name="pref_logout">Logout</string>
     <string name="pref_update_token">Update Token</string>
-    <string name="pref_language">Language</string>
-    <string name="pref_select_language">Select Language</string>
     <string name="message_refresh_title">Refresh Token</string>
     <string name="messsage_refresh_complated">Refresh token completed</string>
     <string name="text_no_order">No order in list</string>
@@ -224,14 +222,6 @@
     <string name="tab_ship_detail">Detail</string>
     <string name="menu_pref_server">Server</string>
     <string name="menu_pref_lang">Language</string>
-    <string name="message_title_language">Language</string>
-
-    <string name="pref_english">English</string>
-    <string name="pref_chinese">Chinese</string>
-
-    <string name="pref_value_english">en</string>
-    <string name="pref_value_chinese">zh</string>
-    <string name="key_pref_language">pref_language_list</string>
 
 
 </resources>

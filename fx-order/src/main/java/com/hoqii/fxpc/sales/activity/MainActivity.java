@@ -737,7 +737,15 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             }
         } else if (requestCode == PREFERENCE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                finish();
+                if (data != null){
+                    boolean reCreateUi = data.getBooleanExtra("reCreateUi", false);
+                    if (reCreateUi == true){
+                        Log.d(getClass().getSimpleName(), "refresh true");
+                        recreate();
+                    }
+                }else {
+                    finish();
+                }
             }
         }
 

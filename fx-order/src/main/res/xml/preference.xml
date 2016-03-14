@@ -21,7 +21,7 @@
 
         <Preference
             android:key="@string/key_pref_language"
-            android:title="@string/pref_sync" />
+            android:title="@string/pref_select_language" />
 
     </PreferenceCategory>
 

@@ -231,5 +231,7 @@
 
     <string name="tab_ship_item">项目</string>
     <string name="tab_ship_detail">细节</string>
+    <string name="menu_pref_server">Server</string>
+    <string name="menu_pref_lang">Language</string>
 
 </resources>

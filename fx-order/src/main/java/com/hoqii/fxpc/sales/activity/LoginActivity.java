@@ -3,11 +3,16 @@ package com.hoqii.fxpc.sales.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +33,8 @@ import com.path.android.jobqueue.JobManager;
 
 import org.meruvian.midas.core.defaults.DefaultActivity;
 
+import java.util.Locale;
+
 import butterknife.InjectView;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
@@ -38,8 +45,6 @@ import de.greenrobot.event.EventBus;
 public class LoginActivity extends DefaultActivity {
     @InjectView(R.id.button_login)
     Button submit;
-    @InjectView(R.id.prev_login)
-    ImageButton prevLogin;
     @InjectView(R.id.edit_username)
     TextView username;
     @InjectView(R.id.edit_password)
@@ -49,37 +54,57 @@ public class LoginActivity extends DefaultActivity {
 
     private JobManager jobManager;
     private SharedPreferences preferences, pref;
+    private SharedPreferences.Editor editor;
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
+    private Toolbar toolbar;
 
     @Override
     protected int layout() {
         return R.layout.activity_login;
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_url, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if(item.getItemId() == R.id.menu_setup_parameter){
-//            openDialogSetupParameter();
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.pref_list, menu);
+        return true;
+    }
+
+    private void changeLang(String language) {
+        editor = pref.edit();
+        editor.putString("language", language);
+        editor.commit();
+
+        Resources res = getBaseContext().getResources();
+        android.content.res.Configuration resConfig = res.getConfiguration();
+        Locale locale = new Locale(language);
+        resConfig.locale = locale;
+        res.updateConfiguration(resConfig, res.getDisplayMetrics());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_server_prev:
+                openDialogSetupParameter();
+                break;
+            case R.id.menu_lang:
+                openDialogSetupLang();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        toolbar = (Toolbar) findViewById(org.meruvian.midas.core.R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbarBottom);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
     }
 
     @Override
     public void onViewCreated(Bundle bundle) {
-//        LocaleHelper.setLocale(this, "zh");
         Log.d(getClass().getSimpleName(), LocaleHelper.getLanguage(this));
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
@@ -96,13 +121,6 @@ public class LoginActivity extends DefaultActivity {
 
         jobManager = SignageApplication.getInstance().getJobManager();
 
-        prevLogin.setImageDrawable(new IconDrawable(this, EntypoIcons.entypo_dots_three_vertical).colorRes(R.color.grey).actionBarSize());
-        prevLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialogSetupParameter();
-            }
-        });
     }
 
     @Override
@@ -191,6 +209,53 @@ public class LoginActivity extends DefaultActivity {
                 editor.putString("server_url", server.getText().toString());
                 editor.commit();
 
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
+    }
+
+    private void openDialogSetupLang() {
+        String lang = LocaleHelper.getLanguage(LoginActivity.this);
+        final String[] langSelect = {lang};
+        int langUse = 0;
+        switch (lang){
+            case "en":
+                langUse = 0;
+                break;
+            case "zh":
+                langUse = 1;
+                break;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.message_title_language));
+        builder.setSingleChoiceItems(R.array.language_names_array, langUse, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case 0:
+                        langSelect[0] = "en";
+                        break;
+                    case 1:
+                        langSelect[0] = "zh";
+                        break;
+                }
+            }
+        });
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.save), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                LocaleHelper.setLocale(LoginActivity.this, langSelect[0]);
+                recreate();
                 dialog.dismiss();
             }
         });

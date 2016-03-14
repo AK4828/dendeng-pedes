@@ -1,20 +1,16 @@
 package com.hoqii.fxpc.sales;
 
 import android.app.Application;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.support.v7.app.AlertDialog;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.event.LoginEvent;
-import com.hoqii.fxpc.sales.job.LoginManualJob;
-import com.hoqii.fxpc.sales.job.RefreshTokenJob;
-import com.hoqii.fxpc.sales.util.AuthenticationUtils;
+import com.hoqii.fxpc.sales.util.LocaleHelper;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.EntypoModule;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
@@ -35,10 +31,10 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 
-import de.greenrobot.event.EventBus;
-import io.fabric.sdk.android.Fabric;
-
 import java.io.File;
+import java.util.Locale;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by ludviantoovandi on 12/12/14.
@@ -50,6 +46,8 @@ public class SignageApplication extends Application {
     private static ObjectMapper objectMapper;
     private ObjectMapper jsonMapper;
     private JobManager jobManager;
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
 
     public SignageApplication() {
         instance = this;
@@ -59,6 +57,13 @@ public class SignageApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
+
+        String lang = LocaleHelper.getLanguage(this);
+        if (lang == null){
+            LocaleHelper.onCreate(this, "en");
+        }else {
+            LocaleHelper.setLocale(this, lang);
+        }
 
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.no_image)
