@@ -10,7 +10,6 @@
     <string name="nav_order">Purchase Order</string>
     <string name="nav_rewards">Rewards</string>
     <string name="nav_shipment">Shipment</string>
-    <string name="nav_received"></string>
     <string name="nav_title_preference">Preference</string>
     <string name="nav_title_stock_list">Stock</string>
     <string name="nav_title_receiving">Receiving</string>
@@ -233,5 +232,13 @@
     <string name="tab_ship_detail">细节</string>
     <string name="menu_pref_server">Server</string>
     <string name="menu_pref_lang">Language</string>
+    <string name="message_title_language">Language</string>
+
+    <string name="pref_english">English</string>
+    <string name="pref_chinese">Chinese</string>
+
+    <string name="pref_value_english">en</string>
+    <string name="pref_value_chinese">zh</string>
+    <string name="key_pref_language">pref_language_list</string>
 
 </resources>
