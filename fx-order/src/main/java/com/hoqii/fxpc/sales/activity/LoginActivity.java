@@ -225,7 +225,7 @@ public class LoginActivity extends DefaultActivity {
 
     private void openDialogSetupLang() {
         String lang = LocaleHelper.getLanguage(LoginActivity.this);
-        final String[] langSelect = {null};
+        final String[] langSelect = {lang};
         int langUse = 0;
         switch (lang){
             case "en":
@@ -237,7 +237,7 @@ public class LoginActivity extends DefaultActivity {
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.message_title_language));
-        builder.setSingleChoiceItems(new String[]{"English", "Chinese"}, langUse, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(R.array.language_names_array, langUse, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
@@ -255,6 +255,7 @@ public class LoginActivity extends DefaultActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 LocaleHelper.setLocale(LoginActivity.this, langSelect[0]);
+                recreate();
                 dialog.dismiss();
             }
         });

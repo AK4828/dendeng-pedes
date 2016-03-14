@@ -27,7 +27,6 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
     private static final int REFRESH_TOKEN_SYNC = 300;
     private static final int REFRESH_TOKEN_MANUAL = 301;
     private static AuthenticationCeck authenticationCeck = new AuthenticationCeck();
-    private static String[] languages = new String[]{"English", "Chinese"};
 
     private static SharedPreferences mSharedPreferences;
 
@@ -37,8 +36,9 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
         EventBus.getDefault().register(this);
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         getFragmentManager().beginTransaction().replace(android.R.id.content, new preferenceFragment()).commit();
+
+
     }
 
     @Override
@@ -51,6 +51,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
     public void onBuildHeaders(List<Header> target) {
         loadHeadersFromResource(R.xml.preference_header, target);
     }
+
 
     public static class preferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
         private Preference sync, logout, refreshToken, language;
@@ -69,7 +70,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
             sync.setOnPreferenceClickListener(this);
             refreshToken.setOnPreferenceClickListener(this);
             logout.setOnPreferenceClickListener(this);
-
+            language.setOnPreferenceClickListener(this);
 
         }
 
@@ -142,14 +143,40 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
                 });
                 builder.show();
             } else if (preference == language) {
+                String lang = LocaleHelper.getLanguage(getActivity());
+                final String[] langSelect = {lang};
+                int langUse = 0;
+                switch (lang){
+                    case "en":
+                        langUse = 0;
+                        break;
+                    case "zh":
+                        langUse = 1;
+                        break;
+                }
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setSingleChoiceItems(R.array.language_names_array, 0, null);
+                builder.setSingleChoiceItems(R.array.language_names_array, langUse, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case 0:
+                                langSelect[0] = "en";
+                                break;
+                            case 1:
+                                langSelect[0] = "zh";
+                        }
+                    }
+                });
+
+
                 builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String lang = mSharedPreferences.getString(getString(R.string.key_pref_language), "en");
-                        LocaleHelper.setLocale(getActivity(), lang);
-                        getActivity().recreate();
+                        LocaleHelper.setLocale(getActivity(), langSelect[0]);
+                        Intent data = new Intent();
+                        data.putExtra("reCreateUi", true);
+                        getActivity().setResult(RESULT_OK, data);
+                        getActivity().finish();
                     }
                 });
 
@@ -159,8 +186,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
                         dialog.dismiss();
                     }
                 });
-
-
+                builder.show();
 
             }
             return false;
