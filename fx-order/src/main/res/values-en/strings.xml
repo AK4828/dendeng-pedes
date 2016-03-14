@@ -222,7 +222,6 @@
     <string name="tab_ship_detail">Detail</string>
     <string name="menu_pref_server">Server</string>
     <string name="menu_pref_lang">Language</string>
-    <string name="message_title_language">Language</string>
 
 
 </resources>
