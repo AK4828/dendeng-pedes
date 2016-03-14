@@ -122,7 +122,7 @@ public class OrderListFragment extends Fragment implements TaskService {
             if (order.getSite().getId() != null) {
                 Site site = siteDatabaseAdapter.findSiteById(order.getSite().getId());
                 textOrderto.setText("Order ke : " + site.getName());
-            }else {
+            } else {
                 textOrderto.setText("Order ke : ");
             }
         }
@@ -182,7 +182,7 @@ public class OrderListFragment extends Fragment implements TaskService {
                             }
                         });
                         builder.show();
-                    }else if (order.getSite().getId() == null){
+                    } else if (order.getSite().getId() == null) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("Peringatan");
                         builder.setMessage("Anda belum memilih tujuan order");
@@ -193,8 +193,7 @@ public class OrderListFragment extends Fragment implements TaskService {
                             }
                         });
                         builder.show();
-                    }
-                    else {
+                    } else {
                         saveOrder();
                     }
                 } else {
@@ -251,7 +250,6 @@ public class OrderListFragment extends Fragment implements TaskService {
 //        super.onPause();
 //        EventBus.getDefault().unregister(this);
 //    }
-
 
 
     public void setTotalOrderTab() {
@@ -331,14 +329,14 @@ public class OrderListFragment extends Fragment implements TaskService {
         dialog.dismiss();
 //        Toast.makeText(getActivity(), "Gagal mengirim order", Toast.LENGTH_SHORT).show();
 //        setEnabledMenuItem(item, true);
-        Log.d(getClass().getSimpleName(), "request failed event, process id "+failed.getProcessId());
-        switch (failed.getProcessId()){
+        Log.d(getClass().getSimpleName(), "request failed event, process id " + failed.getProcessId());
+        switch (failed.getProcessId()) {
             case OrderUpdateJob.PROCESS_ID: {
                 Log.d(getClass().getSimpleName(), "request updateorder failed");
                 retryRequestOrder();
                 break;
             }
-            case OrderMenuJob.PROCESS_ID:{
+            case OrderMenuJob.PROCESS_ID: {
                 Log.d(getClass().getSimpleName(), "request update order menu failed");
                 retryRequestOrderMenu();
                 break;
@@ -385,8 +383,6 @@ public class OrderListFragment extends Fragment implements TaskService {
     }
 
 
-
-
     @Override
     public void onExecute(int code) {
     }
@@ -425,12 +421,12 @@ public class OrderListFragment extends Fragment implements TaskService {
 
     }
 
-    public void retryRequestSync(){
+    public void retryRequestSync() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Konfirmasi");
-        builder.setMessage("Request gagal\nUlangi proses ?");
+        builder.setTitle(getResources().getString(R.string.message_title_confirmation));
+        builder.setMessage(getResources().getString(R.string.message_request_failed_repeat));
         builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 saveOrder();
@@ -445,7 +441,7 @@ public class OrderListFragment extends Fragment implements TaskService {
         builder.show();
     }
 
-    public void retryRequestOrder(){
+    public void retryRequestOrder() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Konfirmasi");
         builder.setMessage("Gagal mengirim order\nUlangi proses ?");
@@ -475,7 +471,7 @@ public class OrderListFragment extends Fragment implements TaskService {
         builder.show();
     }
 
-    public void retryRequestOrderMenu(){
+    public void retryRequestOrderMenu() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Konfirmasi");
         builder.setMessage("Gagal mengirim order...\nUlangi proses ?");
@@ -505,7 +501,7 @@ public class OrderListFragment extends Fragment implements TaskService {
         });
 
         AlertDialog d = builder.create();
-        if (!d.isShowing()){
+        if (!d.isShowing()) {
             d.show();
         }
     }
