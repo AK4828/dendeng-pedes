@@ -20,19 +20,15 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.adapter.MainFragmentStateAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.Stock;
 import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.event.LoginEvent;
-import com.hoqii.fxpc.sales.job.RefreshTokenJob;
 import com.hoqii.fxpc.sales.task.StockSync;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.EntypoIcons;
-import com.path.android.jobqueue.JobManager;
 
 import org.meruvian.midas.core.service.TaskService;
 

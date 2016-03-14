@@ -40,7 +40,7 @@
                     android:id="@+id/ol_tgl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="{typcn-time} Date : "
+                    android:text="@string/adapter_date"
                     android:textSize="11sp"
                     android:transitionName="@string/transition_date"/>
 

@@ -50,7 +50,7 @@
                     android:id="@+id/ol_tgl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="{typcn-time} Date : "
+                    android:text="@string/adapter_seller_date"
                     android:textSize="11sp"
                     android:transitionName="@string/transition_date"/>
 
@@ -58,7 +58,7 @@
                     android:id="@+id/ol_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="{typcn-tag} Order number :"
+                    android:text="@string/adapter_seller_order_number"
                     android:textSize="16sp"
                     android:layout_marginTop="10dp"
                     android:transitionName="@string/transition_number"/>

@@ -612,8 +612,8 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
     private void verify() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Verifikasi");
-        builder.setItems(new String[]{"Verifikasi semua", "Scan serial number"}, new DialogInterface.OnClickListener() {
+        builder.setTitle(getString(R.string.verify));
+        builder.setItems(new String[]{getString(R.string.text_verify_all), getString(R.string.text_scan_serial_number)}, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
@@ -637,7 +637,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                 }
             }
         });
-        builder.setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.text_cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();

@@ -1,10 +1,12 @@
 package com.hoqii.fxpc.sales.adapter;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.fragment.ShipmentDetailFragment;
 import com.hoqii.fxpc.sales.fragment.ShipmentMenuListFragment;
 
@@ -16,10 +18,12 @@ import java.util.List;
  */
 public class ShipmentDetailPagerAdapter extends FragmentPagerAdapter {
     private List<Fragment> fragments = new ArrayList<Fragment>();
+    private Context context;
 
-    public ShipmentDetailPagerAdapter(FragmentManager fm, String shipmentJson) {
+    public ShipmentDetailPagerAdapter(FragmentManager fm, String shipmentJson, Context context) {
         super(fm);
 
+        this.context = context;
         ShipmentMenuListFragment shipmentMenuList = new ShipmentMenuListFragment();
         Bundle b = new Bundle();
         b.putString("shipmentJson", shipmentJson);
@@ -55,9 +59,9 @@ public class ShipmentDetailPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         if (position == 0) {
-            return "Item";
+            return context.getString(R.string.tab_ship_item);
         } else if (position == 1) {
-            return "Detail";
+            return context.getString(R.string.tab_ship_detail);
         } else {
             return null;
         }

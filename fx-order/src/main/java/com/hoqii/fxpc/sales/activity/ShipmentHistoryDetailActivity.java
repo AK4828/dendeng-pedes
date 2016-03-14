@@ -90,7 +90,7 @@ public class ShipmentHistoryDetailActivity extends AppCompatActivity{
         orderNumber.setText(getString(R.string.text_order_receipt)+shipment.getReceiptNumber());
         orderDate.setText(getString(R.string.text_order_date)+simpleDateFormat.format(dateOrder));
 
-        ShipmentDetailPagerAdapter shipmentDetailPagerAdapter = new ShipmentDetailPagerAdapter(getSupportFragmentManager(), shipmentJson);
+        ShipmentDetailPagerAdapter shipmentDetailPagerAdapter = new ShipmentDetailPagerAdapter(getSupportFragmentManager(), shipmentJson, this);
         viewPager.setAdapter(shipmentDetailPagerAdapter);
 
         tabLayout.setupWithViewPager(viewPager);

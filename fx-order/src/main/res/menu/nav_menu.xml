@@ -38,7 +38,7 @@
         </menu>
     </item>
 
-    <item android:title="@string/nav_receiving">
+    <item android:title="@string/nav_title_receiving">
         <menu>
             <group android:checkableBehavior="single">
                 <item
@@ -49,7 +49,7 @@
         </menu>
     </item>
 
-    <item android:title="@string/nav_stock_list">
+    <item android:title="@string/nav_title_stock_list">
         <menu>
             <group android:checkableBehavior="single">
                 <item
@@ -71,13 +71,13 @@
         </menu>
     </item>
 
-    <item android:title="@string/nav_preference">
+    <item android:title="@string/nav_title_preference">
         <menu>
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/preference"
                     android:icon="@drawable/ic_settings_black_24dp"
-                    android:title="@string/preference" />
+                    android:title="@string/nav_preference" />
             </group>
         </menu>
     </item>

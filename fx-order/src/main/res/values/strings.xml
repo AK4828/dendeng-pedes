@@ -10,7 +10,9 @@
     <string name="nav_rewards">Rewards</string>
     <string name="nav_shipment">Shipment</string>
     <string name="nav_received"></string>
-
+    <string name="nav_title_preference">Preference</string>
+    <string name="nav_title_stock_list">Stock</string>
+    <string name="nav_title_receiving">Receiving</string>
 
     //nav menu
     <string name="nav_home">Beranda</string>
@@ -25,6 +27,8 @@
     <string name="nav_stock_list">Stock</string>
     <string name="nav_seller_purchase_order">Purchase Order</string>
     <string name="nav_point">Point</string>
+    <string name="nav_receiving">Receiving</string>
+    <string name="nav_preference">Preference</string>
 
     <string name="access_failed">Access failed</string>
     <string name="data_empty">Empty</string>
@@ -202,8 +206,21 @@
     <string name="text_no_order">No order in list</string>
     <string name="text_order_list">Order List</string>
     <string name="text_receive_list">Receive List</string>
-    <string name="nav_receiving">Receiving</string>
-    <string name="nav_preference">Preference</string>
+    <string name="adapter_date">{typcn-time} Date :</string>
+    <string name="adapter_seller_date">{typcn-time} Date :</string>
+    <string name="adapter_seller_order_number">{typcn-tag} Order number :</string>
+    <string name="adapter_receive_date">Receive date :</string>
+    <string name="adapter_receive_from">Receive from :</string>
+    <string name="adapter_receive_order_number">Order number :</string>
+    <string name="adapter_receive_order_date">Order date :</string>
+
+    <string name="text_verify_all">Verifikasi semua</string>
+    <string name="text_scan_serial_number">Scan serial number</string>
+    <string name="text_cancel">Batal</string>
+    <string name="dialog_shipment">Shipment</string>
+    <string name="tab_ship_item">Item</string>
+    <string name="tab_ship_detail">Detail</string>
+
 
 </resources>
 

@@ -37,7 +37,7 @@
                     android:id="@+id/ol_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Oreder Number :"
+                    android:text="Order Number :"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -45,7 +45,7 @@
                     android:id="@+id/ol_tgl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tanggal : "/>
+                    android:text="Date : "/>
 
             </LinearLayout>
 

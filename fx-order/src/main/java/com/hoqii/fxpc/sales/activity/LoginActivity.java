@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,7 @@ import com.hoqii.fxpc.sales.event.LoginEvent;
 import com.hoqii.fxpc.sales.job.LoginManualJob;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
+import com.hoqii.fxpc.sales.util.LocaleHelper;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.EntypoIcons;
 import com.path.android.jobqueue.JobManager;
@@ -77,6 +79,8 @@ public class LoginActivity extends DefaultActivity {
 
     @Override
     public void onViewCreated(Bundle bundle) {
+//        LocaleHelper.setLocale(this, "zh");
+        Log.d(getClass().getSimpleName(), LocaleHelper.getLanguage(this));
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         pref = PreferenceManager.getDefaultSharedPreferences(this);

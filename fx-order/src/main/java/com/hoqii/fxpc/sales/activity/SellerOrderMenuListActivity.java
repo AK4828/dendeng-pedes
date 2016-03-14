@@ -198,7 +198,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                 if (orderMenuListSerial.size() != 0) {
                     if (authenticationCeck.isNetworkAvailable()){
                         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                        alert.setTitle(getResources().getString(R.string.text_shipment));
+                        alert.setTitle(getString(R.string.dialog_shipment));
                         alert.setMessage(getString(R.string.message_ask_send_shipment));
                         alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
