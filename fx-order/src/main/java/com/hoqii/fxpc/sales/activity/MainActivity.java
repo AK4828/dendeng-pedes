@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -206,10 +207,13 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         updateInfo();
         EventBus.getDefault().register(this);
         Log.d(getClass().getSimpleName(), "[ on start ]");
-        if (GcmUtils.isRegistered()){
-            Log.d(getClass().getSimpleName(), "token : "+GcmUtils.getGcmModel().getToken());
-            Log.d(getClass().getSimpleName(), "token : "+GcmUtils.getGcmModel().getStatus());
-        }else {
+        if (GcmUtils.isRegistered()) {
+            Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getToken());
+            Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getStatus());
+            String android_id = Settings.Secure.getString(this.getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
+            Log.d(getClass().getSimpleName(), "deevice id : " + android_id);
+        } else {
             Log.d(getClass().getSimpleName(), "token not found\nregistering token");
             GcmUtils.registerGcmSession();
         }
@@ -333,10 +337,10 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 return true;
 
             case R.id.menu_test:
-                if (GcmUtils.isRegistered()){
-                    Log.d(getClass().getSimpleName(), "token : "+GcmUtils.getGcmModel().getToken());
-                    Log.d(getClass().getSimpleName(), "token : "+GcmUtils.getGcmModel().getStatus());
-                }else {
+                if (GcmUtils.isRegistered()) {
+                    Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getToken());
+                    Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getStatus());
+                } else {
                     Log.d(getClass().getSimpleName(), "token not found\nregistering token");
                     GcmUtils.registerGcmSession();
                 }

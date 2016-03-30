@@ -52,7 +52,7 @@ public class GcmUtils {
             e.printStackTrace();
         }
 
-        Log.d("get token id", "[ " + gcmStatus.getToken() + " ]");
+        Log.d("get token id vvvfvfvv", "[ " + gcmStatus.getToken() + " ]");
         return gcmStatus;
     }
 

@@ -44,7 +44,7 @@ public class RequestSiteSyncTask extends AsyncTask<String, Void, JSONObject> {
     protected JSONObject doInBackground(String... JsonObject) {
         Log.d(getClass().getSimpleName(), "?acces_token= " + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
         return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/sites?access_token="
-                + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
+                + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&max=" + Integer.MAX_VALUE);
     }
 
     @Override
