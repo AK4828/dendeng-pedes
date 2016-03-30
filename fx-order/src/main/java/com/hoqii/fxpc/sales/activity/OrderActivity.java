@@ -306,17 +306,17 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 productDatabaseAdapter.saveProduct(product);
-                Bitmap cache = ((GlideBitmapDrawable)prodcutThumb.getDrawable()).getBitmap();
-                if (cache == null){
-                    Log.d(getClass().getSimpleName(), "cache null");
-                }else {
-                    Log.d(getClass().getSimpleName(), "cache not null");
-                }
-                try {
-                    ImageUtil.save(OrderActivity.this, product.getId(), cache);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                Bitmap cache = ((GlideBitmapDrawable)prodcutThumb.getDrawable()).getBitmap();
+//                if (cache == null){
+//                    Log.d(getClass().getSimpleName(), "cache null");
+//                }else {
+//                    Log.d(getClass().getSimpleName(), "cache not null");
+//                }
+//                try {
+//                    ImageUtil.save(OrderActivity.this, product.getId(), cache);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
                 String orderId = orderDatabaseAdapter.getOrderId();
                 int q = Integer.parseInt(orderCount.getText().toString());

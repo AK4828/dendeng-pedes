@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_test"
+        android:icon="@drawable/ic_add_circle_white_24dp"
+        android:title="test"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/menu_add_order"
         android:icon="@drawable/ic_add_circle_white_24dp"
         android:title="@string/add_order"

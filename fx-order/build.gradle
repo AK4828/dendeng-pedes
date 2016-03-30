@@ -19,8 +19,8 @@ android {
         applicationId "com.hoqii.fxpc.sales"
         minSdkVersion 17
         targetSdkVersion 21
-        versionCode 13
-        versionName "2.9.2"
+        versionCode 14
+        versionName "2.9.3"
     }
 
     packagingOptions {
@@ -101,6 +101,8 @@ dependencies {
     compile 'com.joanzapata.iconify:android-iconify-weathericons:2.1.1' // (v2.0)
     compile 'com.joanzapata.iconify:android-iconify-simplelineicons:2.1.1' // (v1.0.0)
     compile 'com.joanzapata.iconify:android-iconify-ionicons:2.1.1' // (v2.0.1)
+
+    compile 'io.jsonwebtoken:jjwt:0.6.0'
 
     compile 'com.sothree.slidinguppanel:library:3.2.1'
     compile 'com.github.supervital:swipenumberpicker:1.0.3'
