@@ -21,6 +21,7 @@ import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.MainActivity;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderMenuDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
+import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.hoqii.fxpc.sales.util.ImageUtil;
 
 import java.text.DecimalFormat;
@@ -58,11 +59,11 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
 
         holder.menuName.setText(orderMenuList.get(position).getProduct().getName());
         holder.menuQty.setText(q);
-        holder.totalPrice.setText(context.getResources().getString(R.string.text_currency)+ decimalFormat.format(totalPrice));
+        holder.totalPrice.setText(context.getResources().getString(R.string.text_currency) + decimalFormat.format(totalPrice));
 
-        Glide.with(context).load("file://" + ImageUtil.getImagePath(context, orderMenuList.get(position).getProduct().getId())).error(R.drawable.no_image).into(holder.preview);
-//        String imageUrl = preferences.getString("server_url", "")+"/api/products/"+orderMenuList.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
-//        Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
+//        Glide.with(context).load("file://" + ImageUtil.getImagePath(context, orderMenuList.get(position).getProduct().getId())).error(R.drawable.no_image).into(holder.preview);
+        String imageUrl = preferences.getString("server_url", "")+"/api/products/"+orderMenuList.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
+        Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

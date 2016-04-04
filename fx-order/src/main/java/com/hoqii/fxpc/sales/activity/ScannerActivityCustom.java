@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -63,7 +64,9 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
 
     public static final String KEY = "W06nIJR0uXN8WoZpqO5STOYDnyW59GQ9BMNy7egCWYo=";
     public static final SignatureAlgorithm KEY_ALGORITHM = SignatureAlgorithm.HS256;
-    public static final SecretKey SECRET_KEY = new SecretKeySpec(new Base64Codec().decode(KEY),
+//    public static final SecretKey SECRET_KEY = new SecretKeySpec(new Base64Codec().decode(KEY),
+//            SignatureAlgorithm.HS256.getJcaName());
+    public static final SecretKey SECRET_KEY = new SecretKeySpec(Base64.decode(KEY, Base64.DEFAULT),
             SignatureAlgorithm.HS256.getJcaName());
 
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -73,18 +76,22 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
                 if (isScanning == false){
 
                     String resultSerial = result.getText();
+                    Log.d(getClass().getSimpleName(), "descripting ============================= "+resultSerial);
+
                     if (resultSerial.length() > 50){
                         String claims = Jwts.parser()
                                 .setSigningKey(SECRET_KEY)
                                 .parsePlaintextJws(resultSerial).getBody();
 
-                        Log.d(getClass().getSimpleName(), "descripting QRCODE");
+                        Log.d(getClass().getSimpleName(), "descripting QRCODE ============================= "+claims);
 
                     }else {
                         checkSerial(result.getText());
                     }
-
+//                    checkSerial(result.getText());
                 }
+
+
 //                Log.d(getClass().getSimpleName(), "serial : " + result.getText());
 //                Log.d(getClass().getSimpleName(), "product quantity : " + Integer.toString(qty));
 //                Log.d(getClass().getSimpleName(), "adapter quantity : " + Integer.toString(serialAdapter.getItemCount()));
