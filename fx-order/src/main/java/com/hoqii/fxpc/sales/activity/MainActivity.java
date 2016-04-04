@@ -336,15 +336,15 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 orderOption();
                 return true;
 
-            case R.id.menu_test:
-                if (GcmUtils.isRegistered()) {
-                    Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getToken());
-                    Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getStatus());
-                } else {
-                    Log.d(getClass().getSimpleName(), "token not found\nregistering token");
-                    GcmUtils.registerGcmSession();
-                }
-                return true;
+//            case R.id.menu_test:
+//                if (GcmUtils.isRegistered()) {
+//                    Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getToken());
+//                    Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getStatus());
+//                } else {
+//                    Log.d(getClass().getSimpleName(), "token not found\nregistering token");
+//                    GcmUtils.registerGcmSession();
+//                }
+//                return true;
 
             default:
                 return super.onOptionsItemSelected(item);

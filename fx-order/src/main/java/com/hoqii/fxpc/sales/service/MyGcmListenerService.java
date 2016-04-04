@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.activity.MainActivity;
+import com.hoqii.fxpc.sales.activity.SellerOrderMenuListActivity;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 
 /**
@@ -31,8 +32,10 @@ public class MyGcmListenerService extends GcmListenerService {
             PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
             builder.setContentIntent(contentIntent);
             builder.setAutoCancel(true);
-            builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+            builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
             notif.notify(1, builder.build());
+        } else if (siteId.isEmpty()) {
+            Log.d("CEK", "NULL");
         }
     }
 
