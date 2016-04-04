@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -43,6 +45,8 @@ import com.hoqii.fxpc.sales.fragment.ReceiveListFragment;
 import com.hoqii.fxpc.sales.fragment.SellerOrderListFragment;
 import com.hoqii.fxpc.sales.job.OrderMenuJob;
 import com.hoqii.fxpc.sales.job.OrderUpdateJob;
+import com.hoqii.fxpc.sales.service.GcmUtils;
+import com.hoqii.fxpc.sales.service.RegistrationIntentService;
 import com.hoqii.fxpc.sales.task.RequestOrderSyncTask;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
@@ -203,6 +207,16 @@ public class MainActivity extends AppCompatActivity implements TaskService {
         updateInfo();
         EventBus.getDefault().register(this);
         Log.d(getClass().getSimpleName(), "[ on start ]");
+        if (GcmUtils.isRegistered()) {
+            Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getToken());
+            Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getStatus());
+            String android_id = Settings.Secure.getString(this.getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
+            Log.d(getClass().getSimpleName(), "deevice id : " + android_id);
+        } else {
+            Log.d(getClass().getSimpleName(), "token not found\nregistering token");
+            GcmUtils.registerGcmSession();
+        }
     }
 
     @Override
@@ -321,6 +335,16 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 forceUnRegisterWhenExist();
                 orderOption();
                 return true;
+
+//            case R.id.menu_test:
+//                if (GcmUtils.isRegistered()) {
+//                    Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getToken());
+//                    Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getStatus());
+//                } else {
+//                    Log.d(getClass().getSimpleName(), "token not found\nregistering token");
+//                    GcmUtils.registerGcmSession();
+//                }
+//                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -566,7 +590,7 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 });
                 builder.show();
             }
-        }else {
+        } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.message_title_warning));
             builder.setMessage(getString(R.string.message_order_destination));
@@ -737,13 +761,13 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             }
         } else if (requestCode == PREFERENCE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                if (data != null){
+                if (data != null) {
                     boolean reCreateUi = data.getBooleanExtra("reCreateUi", false);
-                    if (reCreateUi == true){
+                    if (reCreateUi == true) {
                         Log.d(getClass().getSimpleName(), "refresh true");
                         recreate();
                     }
-                }else {
+                } else {
                     finish();
                 }
             }

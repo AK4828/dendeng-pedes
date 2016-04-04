@@ -57,6 +57,7 @@ public class ShipmentJob extends Job {
             shipment.getOrder().setId(orderId);
             shipment.setReceiptNumber(shipmentReceipt.getReceiptNumber());
             shipment.getLogInformation().setCreateDate(new Date(System.currentTimeMillis()));
+            shipment.getLogInformation().setActiveFlag(0);
 
             response = request.post(shipment, new TypeReference<Shipment>() {});
 

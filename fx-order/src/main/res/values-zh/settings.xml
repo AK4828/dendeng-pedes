@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="data_usage">Penggunaan Data</string>
+    <string name="data_usage_summary">Menampilkan data secara online atau offline</string>
+    <string name="online_offline">Online / Offline</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="sync_periodic">Durasi Sinkronisasi</string>
+    <string name="sync_summary">Memperbarui data yang ada di device ini.</string>
+    <string-array name="sync_periodic_entries">
+        <item>1 Jam</item>
+        <item>3 Jam</item>
+        <item>6 Jam</item>
+        <item>12 Jam</item>
+        <item>1 Hari</item>
+    </string-array>
+    <string-array name="sync_periodic_values">
+        <item>1</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
+
+    <string name="slide_show">Slide Show</string>
+    <string name="campaign_setting">Campaign</string>
+    <string name="slide_show_summary">Pengaturan slide show menu Promo</string>
+    <string name="campaign_summary">Pengaturan Campaign</string>
+    <string name="slide_auto">Auto Slide</string>
+    <string name="slide_manual">Manual Slide</string>
+    <string name="slide_idle">Durasi Idle Slide Show</string>
+    <string name="slide_timer">Durasi Slide Show</string>
+
+    <string name="campaign_name">Nama Campaign</string>
+    <string name="site_name">Nama Site</string>
+
+    <string-array name="slide_time_entries">
+        <item>10 Detik</item>
+        <item>15 Detik</item>
+        <item>20 Detik</item>
+        <item>25 Detik</item>
+        <item>30 Detik</item>
+    </string-array>
+    <string-array name="slide_time_values">
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>25</item>
+        <item>30</item>
+    </string-array>
+    <string-array name="slide_idle_entries">
+        <item>Off</item>
+        <item>1 Menit</item>
+        <item>3 Menit</item>
+        <item>5 Menit</item>
+        <item>10 Menit</item>
+    </string-array>
+    <string-array name="slide_idle_values">
+        <item>0</item>
+        <item>1</item>
+        <item>3</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+</resources>

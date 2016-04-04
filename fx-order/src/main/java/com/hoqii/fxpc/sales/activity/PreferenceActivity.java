@@ -125,7 +125,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         AuthenticationUtils.logout();
                         SharedPreferences.Editor editorHas = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
-                        editorHas.putBoolean("has_sync", false);
+//                        editorHas.putBoolean("has_sync", false);
+                        editorHas.clear();
                         editorHas.commit();
                         getActivity().setResult(RESULT_OK);
                         getActivity().finish();

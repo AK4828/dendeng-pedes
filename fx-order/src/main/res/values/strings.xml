@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FXPC</string>
+    <string name="app_name">FXPC Sales</string>
     <string name="app_summary">FXPC</string>
 
     <string name="drawer_open">open</string>
@@ -9,7 +9,6 @@
     <string name="nav_order">Purchase Order</string>
     <string name="nav_rewards">Rewards</string>
     <string name="nav_shipment">Shipment</string>
-    <string name="nav_received"></string>
     <string name="nav_title_preference">Preference</string>
     <string name="nav_title_stock_list">Stock</string>
     <string name="nav_title_receiving">Receiving</string>

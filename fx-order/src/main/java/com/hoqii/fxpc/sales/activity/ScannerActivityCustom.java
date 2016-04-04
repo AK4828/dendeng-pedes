@@ -36,6 +36,13 @@ import org.meruvian.midas.core.service.TaskService;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.Base64Codec;
+
 /**
  * Created by miftakhul on 12/16/15.
  */
@@ -54,12 +61,29 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
     private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
     private ProgressDialog dialog;
 
+    public static final String KEY = "W06nIJR0uXN8WoZpqO5STOYDnyW59GQ9BMNy7egCWYo=";
+    public static final SignatureAlgorithm KEY_ALGORITHM = SignatureAlgorithm.HS256;
+    public static final SecretKey SECRET_KEY = new SecretKeySpec(new Base64Codec().decode(KEY),
+            SignatureAlgorithm.HS256.getJcaName());
+
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result != null) {
                 if (isScanning == false){
-                    checkSerial(result.getText());
+
+                    String resultSerial = result.getText();
+                    if (resultSerial.length() > 50){
+                        String claims = Jwts.parser()
+                                .setSigningKey(SECRET_KEY)
+                                .parsePlaintextJws(resultSerial).getBody();
+
+                        Log.d(getClass().getSimpleName(), "descripting QRCODE");
+
+                    }else {
+                        checkSerial(result.getText());
+                    }
+
                 }
 //                Log.d(getClass().getSimpleName(), "serial : " + result.getText());
 //                Log.d(getClass().getSimpleName(), "product quantity : " + Integer.toString(qty));

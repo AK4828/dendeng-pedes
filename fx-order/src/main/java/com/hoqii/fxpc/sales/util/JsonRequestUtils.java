@@ -36,6 +36,7 @@ public class JsonRequestUtils {
     private List<NameValuePair> queryParams = new ArrayList<NameValuePair>();
     private List<NameValuePair> headers = new ArrayList<>();
     private String requestUri;
+    private String TAG = getClass().getSimpleName();
 
     public JsonRequestUtils(String requestUri) {
         this.requestUri = requestUri;
@@ -111,10 +112,14 @@ public class JsonRequestUtils {
 
                 if (body != null)
                     r.setEntity(new StringEntity(mapper.writeValueAsString(body)));
+
+
             }
 
-            Log.d(getClass().getSimpleName(), uriRequest.getURI().toString());
-            Log.d(getClass().getSimpleName(), Arrays.asList(uriRequest.getAllHeaders()).toString());
+
+            Log.d(TAG, "URI REQUEST: " + uriRequest.getURI().toString());
+            Log.d(TAG, "URI PARAMS: " + uriRequest.getParams().toString());
+            Log.d(TAG, "ALL HEADERS" + Arrays.asList(uriRequest.getAllHeaders()).toString());
 
             HttpClient httpClient = new DefaultHttpClient();
             HttpResponse response = httpClient.execute(uriRequest);
