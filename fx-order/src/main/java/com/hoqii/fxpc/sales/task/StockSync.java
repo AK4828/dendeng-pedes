@@ -59,7 +59,7 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
             case bySiteUri:
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/site/"+params[0]+"?access_token="
-                        + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
+                        + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&max="+Integer.MAX_VALUE);
             default:
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks?access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken());

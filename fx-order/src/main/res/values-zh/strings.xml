@@ -187,7 +187,7 @@
     <string name="text_shipto_view">运送到</string>
     <string name="button_add_description">需要添加其他说明</string>
     <string name="text_add_order_description">需要添加其他说明？</string>
-    <string name="text_order_description"><订购说明></订购说明></string>
+    <string name="text_order_description">订购说明 </string>
     <string name="check_delivered">发送成功</string>
     <string name="text_description">说明 : </string>
     <string name="text_server_url">服务器URL</string>
@@ -233,5 +233,13 @@
     <string name="tab_ship_detail">细节</string>
     <string name="menu_pref_server">​服务器</string>
     <string name="menu_pref_lang">​语言</string>
+    <string name="message_title_language">Language</string>
+
+    <string name="pref_english">English</string>
+    <string name="pref_chinese">Chinese</string>
+
+    <string name="pref_value_english">en</string>
+    <string name="pref_value_chinese">zh</string>
+    <string name="key_pref_language">pref_language_list</string>
 
 </resources>
