@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -34,6 +35,12 @@ import com.journeyapps.barcodescanner.CompoundBarcodeView;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
 /**
  * Created by miftakhul on 12/16/15.
  */
@@ -49,47 +56,45 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
     private List<SerialNumber> tempSerialNumberList = new ArrayList<SerialNumber>();
 
     private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
+    private boolean isScanning = true;
+
+
+    public static final String KEY = "W06nIJR0uXN8WoZpqO5STOYDnyW59GQ9BMNy7egCWYo=";
+    public static final SignatureAlgorithm KEY_ALGORITHM = SignatureAlgorithm.HS256;
+    //    public static final SecretKey SECRET_KEY = new SecretKeySpec(new Base64Codec().decode(KEY),
+//            SignatureAlgorithm.HS256.getJcaName());
+    public static final SecretKey SECRET_KEY = new SecretKeySpec(Base64.decode(KEY, Base64.DEFAULT),
+            SignatureAlgorithm.HS256.getJcaName());
 
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result != null) {
 
-                Log.d(getClass().getSimpleName(), "serial : " + result.getText());
-                if (serialAdapter.getItemCount() < tempSerialNumberList.size()){
-                    List<String> tempSerial = new ArrayList<String>();
-                    List<String> tempSerialScan = new ArrayList<String>();
+                if (isScanning == true){
+                    String resultSerial = result.getText();
+                    Log.d(getClass().getSimpleName(), "descripting ============================= "+resultSerial);
 
-                    for (SerialNumber serial : tempSerialNumberList){
-                        tempSerial.add(serial.getSerialNumber());
-                    }
-                    for (SerialNumber serial : serialAdapter.getSerialNumber()){
-                        tempSerialScan.add(serial.getSerialNumber());
-                    }
+                    if (resultSerial.length() > 50){
+                        Log.d(getClass().getSimpleName(), " > 50 ============================= "+resultSerial);
 
-                    if (tempSerial.contains(result.getText())){
-                        if (!tempSerialScan.contains(result.getText())){
-                            barcodeView.setStatusText(result.getText());
-                            SerialNumber s = new SerialNumber();
-                            for (SerialNumber x : tempSerialNumberList){
-                                if (x.getSerialNumber().equalsIgnoreCase(result.getText())){
-                                    s.getOrderMenu().getProduct().setName(x.getOrderMenu().getProduct().getName());
-                                }
-                            }
-                            s.setSerialNumber(result.getText());
-                            serialAdapter.addSerialNumber(s);
+                        String claims = Jwts.parser()
+                                .setSigningKey(SECRET_KEY)
+                                .parsePlaintextJws(resultSerial).getBody();
 
-                            scannedCount();
-                        }else {
-                            Snackbar.make(coordinatorLayout, getResources().getString(R.string.text_serial_alredy_scan), Snackbar.LENGTH_LONG).show();
-                        }
+                        Log.d(getClass().getSimpleName(), "descripting QRCODE ============================= "+claims);
+
+                        String partStrings[] = claims.split(";");
+                        String partSerial = partStrings[2];
+                        Log.d(getClass().getSimpleName(), "part serial "+partSerial+"============================= "+partSerial);
+
+                        checkSerial(partSerial);
 
                     }else {
-                        Snackbar.make(coordinatorLayout, getString(R.string.message_incorrect_serial_number), Snackbar.LENGTH_LONG).show();
-                    }
+                        Log.d(getClass().getSimpleName(), "< 50 ============================= "+resultSerial);
+                        checkSerial(result.getText());
 
-                }else {
-                    Snackbar.make(coordinatorLayout, getResources().getString(R.string.message_serial_sufficed), Snackbar.LENGTH_LONG).show();
+                    }
                 }
 
             }
@@ -262,6 +267,63 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
 
     public void scannedCount(){
         viewScannedCount.setText(getResources().getString(R.string.text_serial_alredy_scan)+ serialAdapter.getItemCount() +getResources().getString(R.string.text_of_total)+ tempSerialNumberList.size() +getResources().getString(R.string.text_item_end));
+    }
+
+    private void checkSerial(String serialNumber){
+        Log.d(getClass().getSimpleName(), "serial : " + serialNumber);
+        if (serialAdapter.getItemCount() < tempSerialNumberList.size()){
+            List<String> tempSerial = new ArrayList<String>();
+            List<String> tempSerialScan = new ArrayList<String>();
+
+            for (SerialNumber serial : tempSerialNumberList){
+                tempSerial.add(serial.getSerialNumber());
+            }
+            for (SerialNumber serial : serialAdapter.getSerialNumber()){
+                tempSerialScan.add(serial.getSerialNumber());
+            }
+
+            if (tempSerial.contains(serialNumber)){
+                if (!tempSerialScan.contains(serialNumber)){
+                    barcodeView.setStatusText(serialNumber);
+                    SerialNumber s = new SerialNumber();
+                    for (SerialNumber x : tempSerialNumberList){
+                        if (x.getSerialNumber().equalsIgnoreCase(serialNumber)){
+                            s.getOrderMenu().getProduct().setName(x.getOrderMenu().getProduct().getName());
+                        }
+                    }
+                    s.setSerialNumber(serialNumber);
+                    serialAdapter.addSerialNumber(s);
+
+                    scannedCount();
+                }else {
+                    Snackbar.make(coordinatorLayout, getResources().getString(R.string.text_serial_alredy_scan), Snackbar.LENGTH_LONG).show();
+                    AlertMessage(getResources().getString(R.string.text_serial_alredy_scan));
+                }
+
+            }else {
+                Snackbar.make(coordinatorLayout, getString(R.string.message_incorrect_serial_number), Snackbar.LENGTH_LONG).show();
+                AlertMessage(getResources().getString(R.string.message_incorrect_serial_number));
+            }
+
+        }else {
+            Snackbar.make(coordinatorLayout, getResources().getString(R.string.message_serial_sufficed), Snackbar.LENGTH_LONG).show();
+            AlertMessage(getResources().getString(R.string.message_serial_sufficed));
+        }
+    }
+
+    private void AlertMessage(String message){
+        isScanning = false;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message);
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                isScanning = true;
+            }
+        });
+        builder.show();
     }
 
     @Override

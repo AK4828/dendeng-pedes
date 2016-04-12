@@ -51,7 +51,7 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
     private String productName = "product name", productId = null;
     private String orderMenuId, orderId, tempSerial = null;
     private int position, qty;
-    private boolean isScanning = false;
+    private boolean isScanning = true;
 
     private TextView productNameView, viewScannedCount;
     private SerialAdapter serialAdapter;
@@ -73,20 +73,32 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result != null) {
-                if (isScanning == false){
+                if (isScanning == true){
 
                     String resultSerial = result.getText();
                     Log.d(getClass().getSimpleName(), "descripting ============================= "+resultSerial);
 
                     if (resultSerial.length() > 50){
+                        Log.d(getClass().getSimpleName(), " > 50 ============================= "+resultSerial);
+
                         String claims = Jwts.parser()
                                 .setSigningKey(SECRET_KEY)
                                 .parsePlaintextJws(resultSerial).getBody();
 
                         Log.d(getClass().getSimpleName(), "descripting QRCODE ============================= "+claims);
 
+                        testDesc(claims);
+
+                        String partStrings[] = claims.split(";");
+                        String partSerial = partStrings[2];
+                        Log.d(getClass().getSimpleName(), "part serial "+partSerial+"============================= "+partSerial);
+
+                        checkSerial(partSerial);
+
                     }else {
+                        Log.d(getClass().getSimpleName(), "< 50 ============================= "+resultSerial);
                         checkSerial(result.getText());
+
                     }
 //                    checkSerial(result.getText());
                 }
@@ -128,6 +140,10 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
 
         }
     };
+
+    private void testDesc(String des){
+        Log.d("hasil desc : ", ""+ des);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -250,7 +266,7 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
     public void onExecute(int code) {
         dialog.setTitle(getString(R.string.text_serial) + tempSerial);
         dialog.show();
-        isScanning = true;
+        isScanning = false;
     }
 
     @Override
@@ -263,6 +279,7 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
             serialAdapter.addSerialNumber(s);
             tempSerial = null;
             scannedCount();
+            isScanning = true;
         }else {
             AlertMessage(getString(R.string.message_serial_not_found));
         }
@@ -376,7 +393,7 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                isScanning = false;
+                isScanning = true;
             }
         });
         builder.show();
@@ -396,6 +413,7 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                isScanning = true;
             }
         });
         builder.show();
