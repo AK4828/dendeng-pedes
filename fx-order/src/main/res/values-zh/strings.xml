@@ -246,6 +246,7 @@
     <string name="message_title_enter_serial">Enter serial number</string>
     <string name="message_serial_exist">Existing serial</string>
     <string name="text_alredy_verivfy_count">"Alredy verify "</string>
-    <string name="text_manual_verivy_of_total">" of total "</string>
+    <string name="text_verivy_of_total">" of total "</string>
+    <string name="repeat">Repeat</string>
 
 </resources>

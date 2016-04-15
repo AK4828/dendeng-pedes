@@ -8,7 +8,8 @@ public class SignageVariables {
     public static final String PGA_APP_ID = "419c6697-14b7-4853-880e-b68e3731e316";
     public static final String PGA_API_SECRET = "s3cr3t";
 //    public static final String SERVER_URL = "http://fxpc.demo.meruvian.org";
-    public static final String SERVER_URL = "http://cybers.ns.meruvian.org:8013";
+//    public static final String SERVER_URL = "http://cybers.ns.meruvian.org:8013";
+    public static final String SERVER_URL = "http://192.168.2.213:8080";
 
     public static final String PGA_REQUEST_TOKEN = "/oauth/token";
     public static final String PGA_CURRENT_ME = "/api/users/me";
