@@ -3,16 +3,15 @@ package com.hoqii.fxpc.sales.entity;
 import com.hoqii.fxpc.sales.core.DefaultPersistence;
 
 /**
- * Created by miftakhul on 1/10/16.
+ * Created by akm on 14/04/16.
  */
-public class Receive extends DefaultPersistence{
+public class Return extends DefaultPersistence {
 
-    public enum ReceiveStatus{
+    public enum ReturnStatus {
         WAIT, RECEIVED, FAILED, RETURNED
     }
-
     private Order order;
-    private ReceiveStatus status = ReceiveStatus.WAIT;
+    private ReturnStatus status = ReturnStatus.WAIT;
     private Shipment shipment;
     private String recipient;
 
@@ -24,11 +23,11 @@ public class Receive extends DefaultPersistence{
         this.order = order;
     }
 
-    public ReceiveStatus getStatus() {
+    public ReturnStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ReceiveStatus status) {
+    public void setStatus(ReturnStatus status) {
         this.status = status;
     }
 

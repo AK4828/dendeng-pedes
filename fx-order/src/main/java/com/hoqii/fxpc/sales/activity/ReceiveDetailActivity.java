@@ -21,6 +21,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -209,12 +210,32 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.receiving_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finishDetail();
+                break;
+            case R.id.menu_add_return:
+                String jsonReceive = getIntent().getStringExtra("jsonReceive");
+                orderId = getIntent().getStringExtra("orderId");
+                Intent intent = new Intent(ReceiveDetailActivity.this, ReturnDetailActivity.class);
+                intent.putExtra("orderId", orderId);
+                intent.putExtra("shipmentId", shipmentId);
+                intent.putExtra("jsonReceive", jsonReceive);
+                intent.putExtra("siteDescription", getIntent().getStringExtra("siteDescription"));
+                intent.putExtra("orderDate", getIntent().getLongExtra("orderDate", 0));
+                intent.putExtra("receiveDate", getIntent().getLongExtra("receiveDate", 0));
+                intent.putExtra("orderReceipt", getIntent().getStringExtra("orderReceipt"));
+
+
+                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -580,35 +601,8 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                     serialOrderMenuSync.execute(shipmentId);
                 }
             });
-
-//            receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(this, orderId);
-//            recyclerView.setAdapter(receiveOrderMenuAdapter);
-//
-//            for (int x = 0; x < page; x++) {
-//                final int finalX = x;
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        SerialOrderMenuSync receiveSync = new SerialOrderMenuSync(ReceiveDetailActivity.this, ReceiveDetailActivity.this, false);
-//                        receiveSync.execute(shipmentId, Integer.toString(finalX));
-//                    }
-//                }, 500);
-//            }
         }
     }
-
-//    public void loadMoreContent() {
-//        if (page < totalPage) {
-//            loadProgress.show();
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    SerialOrderMenuSync receiveSync = new SerialOrderMenuSync(ReceiveDetailActivity.this, ReceiveDetailActivity.this, true);
-//                    receiveSync.execute(shipmentId, Integer.toString(page));
-//                }
-//            }, 500);
-//        }
-//    }
 
     private void verify() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -920,6 +914,4 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         }
         finish();
     }
-
-
 }

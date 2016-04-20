@@ -12,23 +12,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.activity.ReceiveDetailActivity;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
-import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by miftakhul on 12/6/15.
+ * Created by akm on 19/04/16.
  */
-public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMenuAdapter.ViewHolder> {
-
+public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenuAdapter.ViewHolder> {
 
     private Context context;
     private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
@@ -37,7 +33,7 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
     private boolean verify = false;
     private boolean isMinLoli = false;
 
-    public ReceiveOrderMenuAdapter(Context context, String orderId) {
+    public ReturnOrderMenuAdapter(Context context, String orderId) {
         this.context = context;
 
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
@@ -48,7 +44,7 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
 
     }
 
-    public ReceiveOrderMenuAdapter(Context context, String orderId, boolean verify) {
+    public ReturnOrderMenuAdapter(Context context, String orderId, boolean verify) {
         this.context = context;
         this.verify = verify;
 
@@ -60,14 +56,14 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_receive_order_menu_list, parent, false);
+    public ReturnOrderMenuAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_return_order_menu_list, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(ReturnOrderMenuAdapter.ViewHolder holder, int position) {
         holder.productName.setText(context.getString(R.string.holder_product) + serialNumberList.get(position).getOrderMenu().getProduct().getName());
         holder.productSerial.setText(context.getString(R.string.holder_serial) + serialNumberList.get(position).getSerialNumber());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -75,6 +71,33 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
         } else {
             isMinLoli = false;
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Return");
+                builder.setMessage("Are you sure to return this item ?");
+                View view = LayoutInflater.from(context).inflate(R.layout.view_return_desc, null);
+                final TextView orderDesc = (TextView) view.findViewById(R.id.order_desc);
+                orderDesc.setText("");
+                builder.setView(view);
+                builder.setTitle("Return Items");
+
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
+            }
+        });
         if (tempSerialNumberList.contains(serialNumberList.get(position).getSerialNumber())) {
             holder.imageStatus.setVisibility(View.VISIBLE);
         } else {
@@ -101,7 +124,7 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
         return serialNumberList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView productName, productSerial;
         private ImageView imageStatus;
         private LinearLayout layout;
@@ -136,5 +159,4 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
     public void setVerify(boolean verify) {
         this.verify = verify;
     }
-
 }

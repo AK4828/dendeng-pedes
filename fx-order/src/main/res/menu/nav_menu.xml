@@ -45,6 +45,10 @@
                     android:id="@+id/nav_receiving"
                     android:icon="@drawable/ic_list_black_24dp"
                     android:title="@string/nav_order_receiving" />
+                <item
+                    android:id="@+id/nav_return"
+                    android:icon="@drawable/ic_list_black_24dp"
+                    android:title="@string/nav_return" />
             </group>
         </menu>
     </item>

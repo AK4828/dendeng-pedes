@@ -126,6 +126,15 @@
             android:name="com.hoqii.fxpc.sales.activity.SyncActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/esales" />
+        <activity android:name=".activity.ReturnListActivity"
+            android:label="Return"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".activity.ReturnDetailActivity"
+            android:label="Return"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <!--<activity-->
             <!--android:name="com.hoqii.fxpc.sales.activity.LoginActivity"-->
             <!--android:configChanges="orientation|screenSize"-->
