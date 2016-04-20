@@ -4,14 +4,17 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -20,14 +23,18 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,6 +45,7 @@ import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.ReceiveOrderMenuAdapter;
+import com.hoqii.fxpc.sales.content.database.adapter.DefaultDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
@@ -59,7 +67,12 @@ import org.json.JSONObject;
 import org.meruvian.midas.core.service.TaskService;
 import org.meruvian.midas.core.util.ConnectionUtil;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,6 +87,7 @@ import de.greenrobot.event.EventBus;
  */
 public class ReceiveDetailActivity extends AppCompatActivity implements TaskService {
     private int requestScannerCode = 123;
+    private int requestSerialFileCode = 223;
 
     private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
     private List<OrderMenu> tempOrderMenus = new ArrayList<OrderMenu>();
@@ -81,11 +95,12 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
     private SharedPreferences preferences;
     private RecyclerView recyclerView;
     private ReceiveOrderMenuAdapter receiveOrderMenuAdapter;
+    private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
     private Toolbar toolbar;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView receiveDate, orderNumber, orderDate, site;
     private String shipmentId, orderId;
-    private ProgressDialog loadProgress;
+    private ProgressDialog loadProgress, progress;
     private int page = 1, totalPage;
     private String receiveUrl = "/api/order/receives/";
     private String historyCheckUrl = "/api/orderHistory/";
@@ -97,6 +112,8 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
     private ProgressDialog progressDialog;
     private boolean statusDelivery = false;
 
+    private static final String txt = "txt";
+    private static final String csv = "csv";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +128,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         jobManager = SignageApplication.getInstance().getJobManager();
+        serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(this);
 
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -199,6 +217,9 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
         loadProgress = new ProgressDialog(this);
         loadProgress.setMessage(getString(R.string.message_fetch_data));
+        progress = new ProgressDialog(this);
+        progress.setMessage(getString(R.string.please_wait));
+        progress.setCancelable(false);
 
         new Handler().post(new Runnable() {
             @Override
@@ -211,31 +232,10 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.receiving_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finishDetail();
-                break;
-            case R.id.menu_add_return:
-                String jsonReceive = getIntent().getStringExtra("jsonReceive");
-                orderId = getIntent().getStringExtra("orderId");
-                Intent intent = new Intent(ReceiveDetailActivity.this, ReturnDetailActivity.class);
-                intent.putExtra("orderId", orderId);
-                intent.putExtra("shipmentId", shipmentId);
-                intent.putExtra("jsonReceive", jsonReceive);
-                intent.putExtra("siteDescription", getIntent().getStringExtra("siteDescription"));
-                intent.putExtra("orderDate", getIntent().getLongExtra("orderDate", 0));
-                intent.putExtra("receiveDate", getIntent().getLongExtra("receiveDate", 0));
-                intent.putExtra("orderReceipt", getIntent().getStringExtra("orderReceipt"));
-
-
-                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -601,21 +601,43 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                     serialOrderMenuSync.execute(shipmentId);
                 }
             });
+
+//            receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(this, orderId);
+//            recyclerView.setAdapter(receiveOrderMenuAdapter);
+//
+//            for (int x = 0; x < page; x++) {
+//                final int finalX = x;
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        SerialOrderMenuSync receiveSync = new SerialOrderMenuSync(ReceiveDetailActivity.this, ReceiveDetailActivity.this, false);
+//                        receiveSync.execute(shipmentId, Integer.toString(finalX));
+//                    }
+//                }, 500);
+//            }
         }
     }
+
+//    public void loadMoreContent() {
+//        if (page < totalPage) {
+//            loadProgress.show();
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    SerialOrderMenuSync receiveSync = new SerialOrderMenuSync(ReceiveDetailActivity.this, ReceiveDetailActivity.this, true);
+//                    receiveSync.execute(shipmentId, Integer.toString(page));
+//                }
+//            }, 500);
+//        }
+//    }
 
     private void verify() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.verify));
-        builder.setItems(new String[]{getString(R.string.text_verify_all), getString(R.string.text_scan_serial_number)}, new DialogInterface.OnClickListener() {
+        builder.setItems(new String[]{getString(R.string.text_scan_serial_number), getString(R.string.text_manual_verifi), getString(R.string.text_verify_from_file), getString(R.string.text_verify_all)}, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
-                    receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(ReceiveDetailActivity.this, orderId, true);
-                    recyclerView.setAdapter(receiveOrderMenuAdapter);
-                    receiveOrderMenuAdapter.addItems(serialNumberList);
-                    updateVerifyButton();
-                } else if (which == 1) {
                     Intent i = new Intent(ReceiveDetailActivity.this, ScannerReceiveActivityCustom.class);
 
                     ObjectMapper mapper = SignageApplication.getObjectMapper();
@@ -628,6 +650,91 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                         e.printStackTrace();
                     }
                     startActivityForResult(i, requestScannerCode);
+                }else if (which == 1){
+                    AlertDialog.Builder manualDialog = new AlertDialog.Builder(ReceiveDetailActivity.this);
+                    manualDialog.setCancelable(false);
+                    manualDialog.setTitle(getString(R.string.message_title_enter_serial));
+                    View customView = LayoutInflater.from(ReceiveDetailActivity.this).inflate(R.layout.view_manual_verify, null, false);
+                    final EditText editSerial = (EditText) customView.findViewById(R.id.edit_serial);
+                    final TextView textCount = (TextView) customView.findViewById(R.id.text_count_serial);
+                    final TextInputLayout titleEditSerial = (TextInputLayout) customView.findViewById(R.id.title_edit_serial);
+
+                    List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+                    textCount.setText(getResources().getString(R.string.text_alredy_verivfy_count)+sn.size()+getResources().getString(R.string.text_verivy_of_total)+serialNumberList.size());
+
+                    final List<SerialNumber> tempSerial = new ArrayList<SerialNumber>();
+                    final List<String> serialstring = new ArrayList<String>();
+                    for (SerialNumber s : serialNumberList){
+                        serialstring.add(s.getSerialNumber());
+                    }
+
+                    editSerial.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            titleEditSerial.setError(null);
+                            if (serialstring.contains(editSerial.getText().toString())){
+
+                                List<String> serialNumber = new ArrayList<String>();
+                                for (SerialNumber sn : tempSerial){
+                                    serialNumber.add(sn.getSerialNumber());
+                                }
+
+                                if (!serialNumber.contains(editSerial.getText().toString())) {
+                                    SerialNumber serialNumberObj = new SerialNumber();
+
+                                    serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
+                                    serialNumberObj.getOrderMenu().getOrder().setId(orderId);
+                                    serialNumberObj.getOrderMenu().setId(null);
+                                    serialNumberObj.setSerialNumber(editSerial.getText().toString());
+                                    serialNumberObj.getShipment().setId(shipmentId);
+                                    tempSerial.add(serialNumberObj);
+
+                                    editSerial.getText().clear();
+                                    textCount.setText(getResources().getString(R.string.text_alredy_verivfy_count)+tempSerial.size()+getResources().getString(R.string.text_verivy_of_total)+serialNumberList.size());
+                                }else {
+                                    titleEditSerial.setError(getString(R.string.message_serial_exist));
+                                }
+                            }
+                        }
+                    });
+
+                    manualDialog.setView(customView);
+                    manualDialog.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            serialNumberDatabaseAdapter.save(tempSerial);
+                            receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(ReceiveDetailActivity.this, orderId);
+                            recyclerView.setAdapter(receiveOrderMenuAdapter);
+                            receiveOrderMenuAdapter.addItems(serialNumberList);
+                            updateVerifyButton();
+                        }
+                    });
+                    manualDialog.setNegativeButton(getString(R.string.text_cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    manualDialog.show();
+                } else if (which == 2){
+                    Intent manager = new Intent(Intent.ACTION_GET_CONTENT);
+                    manager.setType("text/plain");
+                    startActivityForResult(manager, requestSerialFileCode);
+                }else if (which == 3) {
+                    receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(ReceiveDetailActivity.this, orderId, true);
+                    recyclerView.setAdapter(receiveOrderMenuAdapter);
+                    receiveOrderMenuAdapter.addItems(serialNumberList);
+                    updateVerifyButton();
                 }
             }
         });
@@ -640,18 +747,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         builder.show();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == requestScannerCode) {
-            Log.d(getClass().getSimpleName(), "result ok");
-            receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(this, orderId);
-            recyclerView.setAdapter(receiveOrderMenuAdapter);
-            receiveOrderMenuAdapter.addItems(serialNumberList);
-            updateVerifyButton();
-        }
 
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 
     private void updateVerifyButton() {
         Log.d(getClass().getSimpleName(), "[ status verivikasi "+String.valueOf(statusDelivery)+" ]");
@@ -802,6 +898,127 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         builder.show();
     }
 
+    private void finishDetail() {
+        if (statusDelivery == true) {
+            Intent i = new Intent();
+            i.putExtra("receiveId", receive.getId());
+            setResult(RESULT_OK, i);
+            Log.d(getClass().getSimpleName(), "[ status result true ]");
+        } else {
+            setResult(RESULT_OK);
+            Log.d(getClass().getSimpleName(), "[ status result false ]");
+        }
+        finish();
+    }
+
+    private List<String> readSerialFromText(String pathSerial){
+        File serialFile = new File(pathSerial);
+        FileInputStream serialStream = null;
+
+        List<String> serialList = new ArrayList<String>();
+        try {
+            serialStream = new FileInputStream(serialFile);
+            DataInputStream serialDataStream = new DataInputStream(serialStream);
+            BufferedReader buff = new BufferedReader(new InputStreamReader(serialDataStream));
+            String serialLine = null;
+            while ((serialLine = buff.readLine()) != null){
+                serialList.add(serialLine);
+            }
+            serialStream.close();
+
+
+
+        }catch (Exception e){
+            Log.d("serial file ", "failed reading serial file");
+        }
+        return serialList;
+    }
+
+    private List<String> readSerialFromCsv(String pathSerial){
+        File serialFile = new File(pathSerial);
+        FileInputStream serialStream = null;
+        String splitCaracter = ",";
+
+        List<String> serialList = new ArrayList<String>();
+        try {
+            serialStream = new FileInputStream(serialFile);
+            DataInputStream serialDataStream = new DataInputStream(serialStream);
+            BufferedReader buff = new BufferedReader(new InputStreamReader(serialDataStream));
+
+            String serialLine = null;
+            while ((serialLine = buff.readLine()) != null){
+                String[] serialLineColl = serialLine.split(splitCaracter);
+                if (serialLineColl.length > 0){
+                    for (int x = 0; x < serialLineColl.length; x++){
+                        serialList.add(serialLineColl[x]);
+                    }
+                }
+            }
+            serialStream.close();
+
+        }catch (Exception e){
+            Log.d("serial file ", "failed reading serial file");
+        }
+        return serialList;
+    }
+
+//    private List<String> readSerialFromExcel(String pathSerial){
+//        File serialFile = new File(pathSerial);
+//        FileInputStream serialStream = null;
+//
+//        List<String> serialList = new ArrayList<String>();
+//        try {
+//            serialStream = new FileInputStream(serialFile);
+//            Workbook workbook = new XSSFWorkbook(serialStream);
+////            XSSFWorkbook xssfWorkbook = new XSSFWorkbook(serialStream);
+//
+//            //get first sheet
+//            Sheet workSheet = workbook.getSheetAt(0);
+//
+//            Iterator<Row> rowIterator = workSheet.rowIterator();
+//
+//            while (rowIterator.hasNext()){
+//                Row row = (Row) rowIterator.next();
+//                Iterator<Cell> cellIterator = row.cellIterator();
+//                while (cellIterator.hasNext()){
+//                    Cell cell= (Cell) cellIterator.next();
+//                    Log.d("file excel", cell.toString());
+//                }
+//
+//            }
+//            serialStream.close();
+//
+//        }catch (Exception e){
+//            Log.d("serial file ", "failed reading serial file "+e.getMessage());
+//        }
+//        return serialList;
+//    }
+
+    private List<SerialNumber> verifyFromUploadFile(List<String> serialList){
+        List<SerialNumber> verifiedSerial = new ArrayList<SerialNumber>();
+        if (serialList.size() > 0){
+            List<String> tempSerialList = new ArrayList<String>();
+            for (SerialNumber s : serialNumberList){
+                tempSerialList.add(s.getSerialNumber());
+            }
+
+            for (String sn : tempSerialList){
+                if (serialList.contains(sn)){
+                    SerialNumber serialNumberObj = new SerialNumber();
+
+                    serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
+                    serialNumberObj.getOrderMenu().getOrder().setId(orderId);
+                    serialNumberObj.getOrderMenu().setId(null);
+                    serialNumberObj.setSerialNumber(sn);
+                    serialNumberObj.getShipment().setId(shipmentId);
+                    verifiedSerial.add(serialNumberObj);
+                }
+            }
+
+        }
+        return verifiedSerial;
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void startAnimateRevealColorFromCoordinate(View view, int x, int y) {
         float finalRadius = (float) Math.hypot(view.getWidth(), view.getHeight());
@@ -827,6 +1044,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
         anim.start();
     }
+
 
     public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
         Log.d(getClass().getSimpleName(), "RequestInProgress: " + requestInProgress.getProcessId());
@@ -890,7 +1108,6 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         EventBus.getDefault().register(this);
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -902,16 +1119,104 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         finishDetail();
     }
 
-    private void finishDetail() {
-        if (statusDelivery == true) {
-            Intent i = new Intent();
-            i.putExtra("receiveId", receive.getId());
-            setResult(RESULT_OK, i);
-            Log.d(getClass().getSimpleName(), "[ status result true ]");
-        } else {
-            setResult(RESULT_OK);
-            Log.d(getClass().getSimpleName(), "[ status result false ]");
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == requestScannerCode) {
+            Log.d(getClass().getSimpleName(), "result ok");
+            receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(this, orderId);
+            recyclerView.setAdapter(receiveOrderMenuAdapter);
+            receiveOrderMenuAdapter.addItems(serialNumberList);
+            updateVerifyButton();
+        }else if (requestCode == requestSerialFileCode){
+            if (resultCode == RESULT_OK){
+                if (data.getData().getPath() != null){
+                    Uri uriFile = data.getData();
+                    Log.d("path from uri ", uriFile.getPath());
+
+                    String path = uriFile.getPath().toString().replaceAll("\\s","");
+                    Log.d("path ", path);
+                    String type = MimeTypeMap.getFileExtensionFromUrl(path);
+                    try {
+                        if (type != null){
+                            Log.d("type ",""+type);
+                            progress.show();
+                            List<String> serialList = new ArrayList<>();
+                            switch (type){
+                                case txt:
+                                    serialList = readSerialFromText(uriFile.getPath());
+                                    if (serialList.size() > 0) {
+                                        doVerify(serialList);
+                                    }else {
+                                        progress.dismiss();
+                                        AlertMessage("Serial file empty");
+                                    }
+                                    break;
+                                case csv:
+                                    serialList = readSerialFromCsv(uriFile.getPath());
+                                    if (serialList.size() > 0) {
+                                        doVerify(serialList);
+                                    }else {
+                                        progress.dismiss();
+                                        AlertMessage("Serial file empty");
+                                    }
+                                    break;
+                                default:
+                                    progress.dismiss();
+                                    AlertMessage("File not supported");
+                                    break;
+                            }
+                        }
+                    }catch (Exception e){
+                        Log.e(getClass().getSimpleName(), e.getMessage());
+                    }
+
+                }
+            }
         }
-        finish();
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
+
+    private void doVerify(List<String> serialList){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        final List<SerialNumber> verified = verifyFromUploadFile(serialList);
+        progress.dismiss();
+        builder.setTitle(getString(R.string.verify));
+        builder.setMessage(getResources().getString(R.string.text_alredy_verivfy_count)
+                +Integer.toString(verified.size())
+                +getResources().getString(R.string.text_verivy_of_total)
+                +serialNumberList.size());
+        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (verified.size() > 0){
+                    serialNumberDatabaseAdapter.save(verified);
+                    receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(ReceiveDetailActivity.this, orderId);
+                    recyclerView.setAdapter(receiveOrderMenuAdapter);
+                    receiveOrderMenuAdapter.addItems(serialNumberList);
+                    updateVerifyButton();
+                }
+                dialog.dismiss();
+            }
+        });
+        builder.setNeutralButton(getString(R.string.repeat), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent manager = new Intent(Intent.ACTION_GET_CONTENT);
+                manager.setType("text/plain");
+                startActivityForResult(manager, requestSerialFileCode);
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+
 }
