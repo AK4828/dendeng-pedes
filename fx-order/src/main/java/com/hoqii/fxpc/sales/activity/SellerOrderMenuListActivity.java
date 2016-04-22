@@ -297,6 +297,11 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                             if (verifiedSerial.size() > 0){
                                 showVeriviedCheck();
                             }else {
+                                verifiedSerial.clear();
+                                unVerifiedSerial.clear();
+                                tempSerial.clear();
+                                maxSerialistTocheck = 0;
+                                countTocheck = 0;
                                 AlertMessage("Serial not found");
                             }
                         }
@@ -327,6 +332,11 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                     if (verifiedSerial.size() > 0){
                         showVeriviedCheck();
                     }else {
+                        verifiedSerial.clear();
+                        unVerifiedSerial.clear();
+                        tempSerial.clear();
+                        maxSerialistTocheck = 0;
+                        countTocheck = 0;
                         AlertMessage("Serial not found");
                     }
                 }
