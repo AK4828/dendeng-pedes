@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="2"
+    android:padding="16dp">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verified serial number "
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/text_verified_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00"/>
+        </LinearLayout>
+        <ListView
+            android:id="@+id/verified_serial"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:background="@color/light_grey"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Unverified serial number "
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/text_unverified_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00"/>
+        </LinearLayout>
+        <ListView
+            android:id="@+id/unverified_serial"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:background="@color/light_grey"/>
+    </LinearLayout>
+
+</LinearLayout>

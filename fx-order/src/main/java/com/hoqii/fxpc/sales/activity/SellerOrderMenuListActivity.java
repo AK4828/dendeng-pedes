@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -18,21 +19,35 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.transition.Fade;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
+import com.hoqii.fxpc.sales.adapter.ReceiveOrderMenuAdapter;
 import com.hoqii.fxpc.sales.adapter.SellerOrderMenuAdapter;
+import com.hoqii.fxpc.sales.content.database.adapter.DefaultDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.entity.Product;
+import com.hoqii.fxpc.sales.entity.SerialEvent;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.hoqii.fxpc.sales.event.GenericEvent;
@@ -41,6 +56,7 @@ import com.hoqii.fxpc.sales.job.OrderStatusUpdateJob;
 import com.hoqii.fxpc.sales.job.OrderUpdateJob;
 import com.hoqii.fxpc.sales.job.SerialJob;
 import com.hoqii.fxpc.sales.job.ShipmentJob;
+import com.hoqii.fxpc.sales.task.StockSync;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
@@ -67,6 +83,7 @@ import de.greenrobot.event.EventBus;
  */
 public class SellerOrderMenuListActivity extends AppCompatActivity implements TaskService {
     private int requestScannerCode = 123;
+    private int requestSerialFileCode = 223;
 
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
     private List<OrderMenu> orderMenuList = new ArrayList<OrderMenu>();
@@ -82,9 +99,10 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     private IconTextView mailSiteFrom;
     private String orderUrl = "/api/purchaseOrders/";
     private ProgressDialog loadProgress;
+    private ProgressDialog loadProgressCheckSerial;
     private int page = 1, totalPage;
 
-    private String orderMenuId = null;
+//    private String orderMenuId = null;
     private JobManager jobManager;
 
     private List<String> orderMenuListSerial = new ArrayList<String>();
@@ -96,6 +114,13 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     private int maxSerialist = 0;
     private boolean serialError = false, updateMenuError = false;
     private Shipment shipment = null;
+
+    //manual add serial
+    private List<SerialNumber> tempSerial = new ArrayList<SerialNumber>();
+    private List<SerialNumber> verifiedSerial = new ArrayList<SerialNumber>();
+    private List<SerialNumber> unVerifiedSerial = new ArrayList<SerialNumber>();
+    private int countTocheck = 0;
+    private int maxSerialistTocheck = 0;
 
 
     @Override
@@ -170,6 +195,10 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         loadProgress.setMessage(getResources().getString(R.string.message_fetch_data));
         loadProgress.setCancelable(false);
 
+        loadProgressCheckSerial = new ProgressDialog(this);
+        loadProgressCheckSerial.setMessage("Checking availability serial number");
+        loadProgressCheckSerial.setCancelable(false);
+
         new Handler().post(new Runnable() {
             @Override
             public void run() {
@@ -204,7 +233,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 jobManager.addJobInBackground(new ShipmentJob(preferences.getString("server_url", ""), orderId));
-                                progressDialog.show();
+                                   progressDialog.show();
                             }
                         });
                         alert.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
@@ -235,33 +264,74 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
     @Override
     public void onSuccess(int code, Object result) {
-        swipeRefreshLayout.setRefreshing(false);
-        Log.d(getClass().getSimpleName(), "order menu serial size d1: " + orderMenuListSerial.size());
-        Log.d(getClass().getSimpleName(), "order menu serial size d2: " + orderMenuListSerial.size());
-        for (String id : orderMenuListSerial) {
-            Log.d(getClass().getSimpleName(), "order menu serial id: " + id);
+        switch (code){
+            case SignageVariables.SELLER_ORDER_MENU_GET_TASK:
+                swipeRefreshLayout.setRefreshing(false);
+                Log.d(getClass().getSimpleName(), "order menu serial size d1: " + orderMenuListSerial.size());
+                Log.d(getClass().getSimpleName(), "order menu serial size d2: " + orderMenuListSerial.size());
+                for (String id : orderMenuListSerial) {
+                    Log.d(getClass().getSimpleName(), "order menu serial id: " + id);
+                }
+                Log.d(getClass().getSimpleName(), "order menu serial size d2: " + orderMenuListSerial.size());
+
+                Log.d(getClass().getSimpleName(), "order menu serial size d3: " + orderMenuListSerial.size());
+                for (String id : orderMenuListSerial) {
+                    Log.d(getClass().getSimpleName(), "order menu serial id: " + id);
+                }
+
+                sellerOrderMenuAdapter.addItems(orderMenuList);
+                break;
+            case SignageVariables.SERIAL_CHECK_GET_TASK:
+                countTocheck++;
+                SerialEvent serialEvent = (SerialEvent) result;
+                for (SerialNumber sn : tempSerial){
+                    if (sn.getSerialNumber() == serialEvent.getSerial()){
+                        boolean status = (boolean) serialEvent.isStatus();
+                        if (status == true) {
+                            verifiedSerial.add(sn);
+                        } else {
+                            unVerifiedSerial.add(sn);
+                        }
+                        if (countTocheck >= maxSerialistTocheck) {
+                            loadProgressCheckSerial.dismiss();
+                            if (verifiedSerial.size() > 0){
+                                showVeriviedCheck();
+                            }else {
+                                AlertMessage("Serial not found");
+                            }
+                        }
+                    }
+                }
+                break;
         }
-        Log.d(getClass().getSimpleName(), "order menu serial size d2: " + orderMenuListSerial.size());
 
-//        sellerOrderMenuAdapter = new SellerOrderMenuAdapter(this, orderId, orderMenuList);
-
-        Log.d(getClass().getSimpleName(), "order menu serial size d3: " + orderMenuListSerial.size());
-        for (String id : orderMenuListSerial) {
-            Log.d(getClass().getSimpleName(), "order menu serial id: " + id);
-        }
-
-//        recyclerView.setAdapter(sellerOrderMenuAdapter);
-        sellerOrderMenuAdapter.addItems(orderMenuList);
     }
 
     @Override
     public void onCancel(int code, String message) {
-        swipeRefreshLayout.setRefreshing(false);
+        if (code == SignageVariables.SELLER_ORDER_MENU_GET_TASK){
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     @Override
     public void onError(int code, String message) {
-        swipeRefreshLayout.setRefreshing(false);
+        switch (code){
+            case SignageVariables.SELLER_ORDER_MENU_GET_TASK:
+                swipeRefreshLayout.setRefreshing(false);
+                break;
+            case SignageVariables.SERIAL_CHECK_GET_TASK:
+                countTocheck++;
+                if (countTocheck >= maxSerialistTocheck) {
+                    loadProgressCheckSerial.dismiss();
+                    if (verifiedSerial.size() > 0){
+                        showVeriviedCheck();
+                    }else {
+                        AlertMessage("Serial not found");
+                    }
+                }
+                break;
+        }
     }
 
     @Override
@@ -297,7 +367,6 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                     recyclerView.setAdapter(sellerOrderMenuAdapter);
                     sellerOrderMenuAdapter.addItems(orderMenuList);
                 }
-
             }
         }
         Log.d(getClass().getSimpleName(), "order menu serial size ====== : " + orderMenuListSerial.size());
@@ -344,7 +413,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                     count = 0;
                     maxSerialist = serialList.size();
                     Log.d(getClass().getSimpleName(), " getted serial count" + serialList.size() + " ================================================ ");
-//
+
                     Log.d(getClass().getSimpleName(), " getted order menu serial count" + orderMenuListSerial.size() + " ================================================ ");
 
                     for (SerialNumber snn : serialList) {
@@ -645,12 +714,6 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     }
 
     public void openScanner(Intent data) {
-//        Intent scanner = new Intent(this, ScannerActivityCustom.class);
-//        scanner.putExtra("productName", data.getStringExtra("productName"));
-//        scanner.putExtra("orderId", orderId);
-//        scanner.putExtra("orderMenuId", data.getStringExtra("orderMenuId"));
-//        scanner.putExtra("position", data.getIntExtra("position", 0));
-
         Intent scanner = data;
         scanner.putExtra("orderId", orderId);
 
@@ -658,6 +721,199 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         Log.d(getClass().getSimpleName(), "order Menu id : " + data.getStringExtra("orderMenuId"));
 
         startActivityForResult(scanner, requestScannerCode);
+    }
+
+    public void inputSerial(final Intent data) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.verify));
+        builder.setItems(new String[]{getString(R.string.text_scan_serial_number), getString(R.string.text_manual_input_serial)}, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    Intent scanner = data;
+                    scanner.putExtra("orderId", orderId);
+
+                    Log.d(getClass().getSimpleName(), "product name : " + data.getStringExtra("productName"));
+                    Log.d(getClass().getSimpleName(), "order Menu id : " + data.getStringExtra("orderMenuId"));
+
+                    startActivityForResult(scanner, requestScannerCode);
+
+                } else if (which == 1){
+                    final String orderMenuId = data.getStringExtra("orderMenuId");
+                    final String productId = data.getStringExtra("productId");
+                    String productName = data.getStringExtra("productName");
+                    final int qty = data.getIntExtra("productQty", 0);
+
+                    AlertDialog.Builder manualDialog = new AlertDialog.Builder(SellerOrderMenuListActivity.this);
+                    manualDialog.setCancelable(false);
+                    manualDialog.setTitle(getString(R.string.message_title_enter_serial));
+                    View customView = LayoutInflater.from(SellerOrderMenuListActivity.this).inflate(R.layout.view_manual_serial, null, false);
+                    final EditText editSerial = (EditText) customView.findViewById(R.id.edit_serial);
+                    final TextView textCount = (TextView) customView.findViewById(R.id.text_count_serial);
+                    final TextInputLayout titleEditSerial = (TextInputLayout) customView.findViewById(R.id.title_edit_serial);
+                    ImageButton btnEnter = (ImageButton) customView.findViewById(R.id.btn_enter);
+
+                    List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
+                    final List<SerialNumber> allSerial = sn;
+                    textCount.setText(getString(R.string.text_already_inputted)+allSerial.size()+getResources().getString(R.string.text_verivy_of_total)+qty);
+
+                    final List<String> serialstring = new ArrayList<String>();
+                    for (SerialNumber s:allSerial){
+                        serialstring.add(s.getSerialNumber());
+                    }
+
+                    editSerial.setOnKeyListener(new View.OnKeyListener() {
+                        @Override
+                        public boolean onKey(View v, int keyCode, KeyEvent event) {
+                            if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)){
+                                if (allSerial.size() < qty) {
+                                    if (!serialstring.contains(editSerial.getText().toString())) {
+                                        titleEditSerial.setError(null);
+
+                                        SerialNumber serialNumberObj = new SerialNumber();
+                                        serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
+                                        serialNumberObj.getOrderMenu().getOrder().setId(orderId);
+                                        serialNumberObj.getOrderMenu().setId(orderMenuId);
+                                        serialNumberObj.setSerialNumber(editSerial.getText().toString());
+                                        allSerial.add(serialNumberObj);
+                                        tempSerial.add(serialNumberObj);
+                                        serialstring.add(editSerial.getText().toString());
+                                        textCount.setText(getString(R.string.text_already_inputted)+allSerial.size()+getResources().getString(R.string.text_verivy_of_total)+qty);
+
+                                        editSerial.getText().clear();
+                                    } else {
+                                        titleEditSerial.setError(getString(R.string.message_serial_exist));
+                                        editSerial.getText().clear();
+                                    }
+                                }else {
+                                    AlertMessage(getResources().getString(R.string.message_serial_sufficed));
+                                    editSerial.getText().clear();
+                                }
+                            }
+                            return false;
+                        }
+                    });
+
+                    btnEnter.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!editSerial.getText().toString().replace(" ","").matches("")){
+                                if (allSerial.size() < qty) {
+                                    if (!serialstring.contains(editSerial.getText().toString())) {
+                                        titleEditSerial.setError(null);
+
+                                        SerialNumber serialNumberObj = new SerialNumber();
+                                        serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
+                                        serialNumberObj.getOrderMenu().getOrder().setId(orderId);
+                                        serialNumberObj.getOrderMenu().setId(orderMenuId);
+                                        serialNumberObj.setSerialNumber(editSerial.getText().toString());
+                                        allSerial.add(serialNumberObj);
+                                        tempSerial.add(serialNumberObj);
+                                        serialstring.add(editSerial.getText().toString());
+                                        textCount.setText(getString(R.string.text_already_inputted)+allSerial.size()+getResources().getString(R.string.text_verivy_of_total)+qty);
+
+                                        editSerial.getText().clear();
+                                    } else {
+                                        titleEditSerial.setError(getString(R.string.message_serial_exist));
+                                        editSerial.getText().clear();
+                                    }
+                                }else {
+                                    AlertMessage(getResources().getString(R.string.message_serial_sufficed));
+                                    editSerial.getText().clear();
+                                }
+                            }
+                        }
+                    });
+
+                    manualDialog.setView(customView);
+                    manualDialog.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            loadProgressCheckSerial.show();
+                            maxSerialistTocheck = tempSerial.size();
+                            for (SerialNumber s : tempSerial){
+                                StockSync check = new StockSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, StockSync.StockUri.bySerialUri.name());
+                                check.execute(productId,s.getSerialNumber());
+                            }
+                        }
+                    });
+                    manualDialog.setNegativeButton(getString(R.string.text_cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            verifiedSerial.clear();
+                            unVerifiedSerial.clear();
+                            tempSerial.clear();
+                            maxSerialistTocheck = 0;
+                            countTocheck = 0;
+                            dialog.dismiss();
+                        }
+                    });
+                    manualDialog.show();
+                }
+            }
+        });
+        builder.setNegativeButton(getString(R.string.text_cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    private void showVeriviedCheck(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        View view = LayoutInflater.from(this).inflate(R.layout.view_manual_input_check, null, false);
+        TextView verifiedSize = (TextView) view.findViewById(R.id.text_verified_size);
+        TextView unverifiedSize = (TextView) view.findViewById(R.id.text_unverified_size);
+        ListView verifiedList = (ListView) view.findViewById(R.id.verified_serial);
+        ListView unverifiedList = (ListView) view.findViewById(R.id.unverified_serial);
+
+        verifiedSize.setText(Integer.toString(verifiedSerial.size()));
+        unverifiedSize.setText(Integer.toString(unVerifiedSerial.size()));
+
+        List<String> verifiedString = new ArrayList<String>();
+        for (SerialNumber s : verifiedSerial){
+            verifiedString.add(s.getSerialNumber());
+        }
+        List<String> unverifiedString = new ArrayList<String>();
+        for (SerialNumber s : unVerifiedSerial){
+            unverifiedString.add(s.getSerialNumber());
+        }
+
+        ArrayAdapter<String> verifiedAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, verifiedString);
+        verifiedList.setAdapter(verifiedAdapter);
+        ArrayAdapter<String> unverifiedAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, unverifiedString);
+        unverifiedList.setAdapter(unverifiedAdapter);
+
+        builder.setTitle(getResources().getString(R.string.text_serial_number));
+        builder.setView(view);
+        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                serialNumberDatabaseAdapter.save(verifiedSerial);
+                checkOrderMenuSerialList();
+                sellerOrderMenuAdapter.updateOrderMenuSerial(orderMenuListSerial);
+                verifiedSerial.clear();
+                unVerifiedSerial.clear();
+                tempSerial.clear();
+                maxSerialistTocheck = 0;
+                countTocheck = 0;
+            }
+        });
+        builder.setNegativeButton(getString(R.string.text_cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                verifiedSerial.clear();
+                unVerifiedSerial.clear();
+                tempSerial.clear();
+                maxSerialistTocheck = 0;
+                countTocheck = 0;
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     private void resendShipment(){
@@ -728,5 +984,6 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         });
         builder.show();
     }
+
 
 }

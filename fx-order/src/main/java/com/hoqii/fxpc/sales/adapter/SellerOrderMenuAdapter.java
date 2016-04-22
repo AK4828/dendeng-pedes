@@ -66,35 +66,35 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
     }
 
 
-    public SellerOrderMenuAdapter(Context context, String orderId, List<OrderMenu> orderMenus) {
-        this.context = context;
-        this.orderId = orderId;
-        this.orderMenuList = orderMenus;
-
-        orderMenuListSerial.add("default");
-        serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
-        serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-        for (int x = 0; x < serialNumbers.size(); x++) {
-            String id = serialNumbers.get(x).getOrderMenu().getId();
-            if (!orderMenuListSerial.contains(id)){
-                orderMenuListSerial.add(id);
-            }
-        }
-    }
-
-    public SellerOrderMenuAdapter(Context context, String orderId, List<OrderMenu> orderMenus, List<String> orderMenuListSerial) {
-        this.context = context;
-        this.orderId = orderId;
-        this.orderMenuList = orderMenus;
-        this.orderMenuListSerial = orderMenuListSerial;
-
-        orderMenuListSerial.add("default");
-        serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
-        serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-        for (int x = 0; x < serialNumbers.size(); x++) {
-            orderMenuListSerial.add(serialNumbers.get(x).getOrderMenu().getId());
-        }
-    }
+//    public SellerOrderMenuAdapter(Context context, String orderId, List<OrderMenu> orderMenus) {
+//        this.context = context;
+//        this.orderId = orderId;
+//        this.orderMenuList = orderMenus;
+//
+//        orderMenuListSerial.add("default");
+//        serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
+//        serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+//        for (int x = 0; x < serialNumbers.size(); x++) {
+//            String id = serialNumbers.get(x).getOrderMenu().getId();
+//            if (!orderMenuListSerial.contains(id)){
+//                orderMenuListSerial.add(id);
+//            }
+//        }
+//    }
+//
+//    public SellerOrderMenuAdapter(Context context, String orderId, List<OrderMenu> orderMenus, List<String> orderMenuListSerial) {
+//        this.context = context;
+//        this.orderId = orderId;
+//        this.orderMenuList = orderMenus;
+//        this.orderMenuListSerial = orderMenuListSerial;
+//
+//        orderMenuListSerial.add("default");
+//        serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
+//        serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+//        for (int x = 0; x < serialNumbers.size(); x++) {
+//            orderMenuListSerial.add(serialNumbers.get(x).getOrderMenu().getId());
+//        }
+//    }
 
 
     @Override
@@ -151,7 +151,8 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
                 data.putExtra("orderMenuId", orderMenuList.get(position).getId());
                 data.putExtra("position", position);
 
-                ((SellerOrderMenuListActivity) context).openScanner(data);
+//                ((SellerOrderMenuListActivity) context).openScanner(data);
+                ((SellerOrderMenuListActivity) context).inputSerial(data);
             }
         });
 

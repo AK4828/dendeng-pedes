@@ -8,8 +8,8 @@ public class SignageVariables {
     public static final String PGA_APP_ID = "419c6697-14b7-4853-880e-b68e3731e316";
     public static final String PGA_API_SECRET = "s3cr3t";
 //    public static final String SERVER_URL = "http://fxpc.demo.meruvian.org";
-//    public static final String SERVER_URL = "http://cybers.ns.meruvian.org:8013";
-    public static final String SERVER_URL = "http://192.168.2.213:8080";
+    public static final String SERVER_URL = "http://cybers.ns.meruvian.org:8013";
+//    public static final String SERVER_URL = "http://192.168.2.213:8080";
 
     public static final String PGA_REQUEST_TOKEN = "/oauth/token";
     public static final String PGA_CURRENT_ME = "/api/users/me";
@@ -56,5 +56,6 @@ public class SignageVariables {
     public static final int SERIAL_ORDER_MENU_GET_TASK = 25;
     public static final int SERIAL_ORDER_MENU_CHECK_TASK = 26;
     public static final int STOCK_GET_TASK = 27;
+    public static final int SERIAL_CHECK_GET_TASK = 28;
 
 }

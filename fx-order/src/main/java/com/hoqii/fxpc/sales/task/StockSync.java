@@ -10,6 +10,7 @@ import com.hoqii.fxpc.sales.entity.Category;
 import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.entity.ProductUom;
 import com.hoqii.fxpc.sales.entity.Stock;
+import com.hoqii.fxpc.sales.entity.SerialEvent;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 
 import org.json.JSONArray;
@@ -20,7 +21,6 @@ import org.meruvian.midas.core.util.ConnectionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by miftakhul on 3/5/16.
@@ -31,6 +31,7 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
     private TaskService taskService;
     private SharedPreferences preferences;
     private StockUri currentUri = StockUri.defaultUri;
+    private String serial = null;
 
     public enum StockUri{
         defaultUri, bySerialUri, byProductIdUri, bySiteUri
@@ -52,6 +53,7 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks?access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken()+"&max="+Integer.MAX_VALUE);
             case bySerialUri:
+                serial = params[1];
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/product/"+params[0]+"/serial/"+params[1]+"?access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
             case byProductIdUri:
@@ -146,12 +148,19 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                         Log.d(getClass().getSimpleName(), "status serial : " + String.valueOf(status));
 
                         taskService.onSuccess(SignageVariables.STOCK_GET_TASK, status);
+
+                        SerialEvent se = new SerialEvent();
+                        se.setStatus(status);
+                        se.setSerial(serial);
+                        taskService.onSuccess(SignageVariables.SERIAL_CHECK_GET_TASK, se);
                     }else {
                         taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
+                        taskService.onError(SignageVariables.SERIAL_CHECK_GET_TASK, "Batal");
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
                     taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
+                    taskService.onError(SignageVariables.SERIAL_CHECK_GET_TASK, "Batal");
                 }
                 break;
 
