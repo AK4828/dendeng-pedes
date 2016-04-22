@@ -50,11 +50,11 @@ import java.util.List;
 /**
  * Created by miftakhul on 12/2/15.
  */
-public class OrderActivity extends AppCompatActivity implements TaskService{
+public class OrderActivity extends AppCompatActivity implements TaskService {
 
     private Toolbar toolbar;
     private ImageView prodcutThumb;
-    private TextView productName, productPrice, productDesc, productStock ,orderDesc, orderCount;
+    private TextView productName, productPrice, productDesc, productStock, orderDesc, orderCount;
     private IconTextView reward;
     private Product product;
     private OrderMenu orderMenu;
@@ -113,11 +113,11 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home :
+        switch (item.getItemId()) {
+            case android.R.id.home:
                 super.onBackPressed();
                 break;
-            case R.id.menu_cart :
+            case R.id.menu_cart:
                 dialogOrder();
                 break;
         }
@@ -149,25 +149,25 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
 
 //        Glide.with(this).load(preview).error(R.drawable.no_image).into(prodcutThumb);
-        String imageUrl = preferences.getString("server_url", "")+"/api/products/"+product.getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
+        String imageUrl = preferences.getString("server_url", "") + "/api/products/" + product.getId() + "/image?access_token=" + AuthenticationUtils.getCurrentAuthentication().getAccessToken();
         Glide.with(this).load(imageUrl).error(R.drawable.no_image).into(prodcutThumb);
         productName.setText(product.getName());
 
         productPrice.setText(getString(R.string.text_currency) + decimalFormat.format(product.getSellPrice()));
         reward.setText(getString(R.string.text_reward) + Double.toString(product.getReward()) + getString(R.string.text_point_end));
-        productStock.setText(Integer.toString(stockProduct)+getString(R.string.text_item_end));
+        productStock.setText(Integer.toString(stockProduct) + getString(R.string.text_item_end));
         orderMenuType = OrderMenu.OrderType.PURCHASE_ORDER;
 
-        if (product.getDescription().toString().equalsIgnoreCase("null")){
+        if (product.getDescription().toString().equalsIgnoreCase("null")) {
             Log.d(getClass().getSimpleName(), "desc null");
             productDesc.setText(R.string.text_no_description);
         } else {
             Log.d(getClass().getSimpleName(), "desc not null");
             String temp = product.getDescription();
-            final String desc = temp.replace("\n"," ");
+            final String desc = temp.replace("\n", " ");
 
             int length = desc.length();
-            if (length > 100){
+            if (length > 100) {
                 final boolean[] clicked = {false};
                 int cut = length / 2;
                 final String newDesc = desc.substring(0, cut);
@@ -179,13 +179,13 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
                         if (clicked[0] == false) {
                             clicked[0] = true;
                             productDesc.setText(desc);
-                        }else {
+                        } else {
                             clicked[0] = false;
                             productDesc.setText(newDesc + "\n\nooo");
                         }
                     }
                 });
-            }else {
+            } else {
                 productDesc.setText(desc);
             }
         }
@@ -202,13 +202,13 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
             String siteId = orderDatabaseAdapter.findOrderById(orderId).getSite().getId();
             StockSync stockSync = new StockSync(this, this, StockSync.StockUri.byProductIdUri.name());
             stockSync.execute(product.getId(), siteId);
-        }else {
+        } else {
             orderCount.setText(Integer.toString(1));
         }
-        if (stockProduct == 0){
+        if (stockProduct == 0) {
             orderButton.setEnabled(false);
         }
-        if (product.getSellPrice() == 0){
+        if (product.getSellPrice() == 0) {
             orderButton.setEnabled(false);
         }
 
@@ -233,19 +233,20 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
 
 
     }
-    private void addOrderCount(int count){
+
+    private void addOrderCount(int count) {
         int c = Integer.parseInt(orderCount.getText().toString());
         int totalCount = c + count;
-        if (totalCount > stockProduct){
+        if (totalCount > stockProduct) {
 
-        }else {
-            if (count > 0){
+        } else {
+            if (count > 0) {
                 c += count;
                 orderCount.setText(Integer.toString(c));
             }
-            if (count < 0){
+            if (count < 0) {
                 if (c > 1) {
-                    Log.d(getClass().getSimpleName(), "min data "+Integer.toString(c));
+                    Log.d(getClass().getSimpleName(), "min data " + Integer.toString(c));
                     c += count;
                     orderCount.setText(Integer.toString(c));
                 }
@@ -270,17 +271,17 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
         return orderDatabaseAdapter.saveOrder(order);
     }
 
-    private void dialogOrder(){
+    private void dialogOrder() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         View view = getLayoutInflater().from(OrderActivity.this).inflate(R.layout.view_order_desc, null);
         orderDesc = (TextView) view.findViewById(R.id.order_desc);
         final LinearLayout layoutDesc = (LinearLayout) view.findViewById(R.id.layout_desc);
         final Button addOrderDesc = (Button) view.findViewById(R.id.btn_addOrderDesc);
 
-        if (!isMinLoli){
+        if (!isMinLoli) {
             addOrderDesc.setTextColor(getResources().getColor(R.color.colorAccent));
         }
-        if (qty != 0){
+        if (qty != 0) {
             layoutDesc.setVisibility(View.VISIBLE);
             addOrderDesc.setText(getResources().getString(R.string.cancel));
             orderDesc.setText(orderMenu.getDescription());
@@ -306,18 +307,6 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 productDatabaseAdapter.saveProduct(product);
-//                Bitmap cache = ((GlideBitmapDrawable)prodcutThumb.getDrawable()).getBitmap();
-//                if (cache == null){
-//                    Log.d(getClass().getSimpleName(), "cache null");
-//                }else {
-//                    Log.d(getClass().getSimpleName(), "cache not null");
-//                }
-//                try {
-//                    ImageUtil.save(OrderActivity.this, product.getId(), cache);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-
                 String orderId = orderDatabaseAdapter.getOrderId();
                 int q = Integer.parseInt(orderCount.getText().toString());
 
@@ -439,8 +428,8 @@ public class OrderActivity extends AppCompatActivity implements TaskService{
 
     @Override
     public void onSuccess(int code, Object result) {
-        Stock stock = (Stock)result;
-        productStock.setText(Integer.toString(stock.getQty())+getResources().getString(R.string.text_item_end));
+        Stock stock = (Stock) result;
+        productStock.setText(Integer.toString(stock.getQty()) + getResources().getString(R.string.text_item_end));
         orderButton.setEnabled(true);
     }
 

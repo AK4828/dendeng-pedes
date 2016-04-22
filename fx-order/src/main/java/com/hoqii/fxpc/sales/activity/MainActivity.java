@@ -335,17 +335,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 forceUnRegisterWhenExist();
                 orderOption();
                 return true;
-
-//            case R.id.menu_test:
-//                if (GcmUtils.isRegistered()) {
-//                    Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getToken());
-//                    Log.d(getClass().getSimpleName(), "token : " + GcmUtils.getGcmModel().getStatus());
-//                } else {
-//                    Log.d(getClass().getSimpleName(), "token not found\nregistering token");
-//                    GcmUtils.registerGcmSession();
-//                }
-//                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -395,6 +384,17 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         } else {
                             startActivity(receiveIntent);
                         }
+                        break;
+
+                    case R.id.nav_return:
+                        forceUnRegisterWhenExist();
+                        Intent returnIntent = new Intent(MainActivity.this, ReturnListActivity.class);
+                        if (isMinLoli) {
+                            startActivity(returnIntent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                        } else {
+                            startActivity(returnIntent);
+                        }
+
                         break;
 
                     case R.id.seller_purchase_order_list:

@@ -29,6 +29,7 @@
     <string name="nav_point">Point</string>
     <string name="nav_receiving">Receiving</string>
     <string name="nav_preference">Preference</string>
+    <string name="nav_return">Return</string>
 
     <string name="access_failed">Access failed</string>
     <string name="data_empty">Empty</string>
@@ -181,6 +182,7 @@
     <string name="text_shipto_view">Ship to</string>
     <string name="button_add_description">Add description</string>
     <string name="text_add_order_description">Add order description ?</string>
+    <string name="text_add_return_description">Add return description ?</string>
     <string name="text_order_description">Order Description</string>
     <string name="check_delivered">Delivered</string>
     <string name="text_description">Description :</string>
