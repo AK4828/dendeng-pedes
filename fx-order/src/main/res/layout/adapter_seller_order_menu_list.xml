@@ -11,8 +11,8 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="4dp"
-        app:contentPadding="8dp"
+        app:cardElevation="1dp"
+        app:contentPadding="16dp"
         app:cardUseCompatPadding="true"
         android:foreground="?android:attr/selectableItemBackground"
         app:cardBackgroundColor="@color/white">
@@ -23,10 +23,10 @@
 
             <ImageView
                 android:id="@+id/om_preview"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
                 android:layout_alignParentLeft="true"
-                android:layout_marginRight="16dp"/>
+                android:layout_marginRight="24dp"/>
 
             <LinearLayout
                 android:id="@+id/om_info"
@@ -64,7 +64,7 @@
                 android:layout_below="@id/om_info"
                 android:layout_toRightOf="@id/om_preview"
                 android:layout_alignParentBottom="true"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="0dp"
                 android:layout_marginBottom="8dp">
 
                 <com.joanzapata.iconify.widget.IconTextView

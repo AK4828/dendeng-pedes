@@ -39,29 +39,57 @@
                 android:layout_height="70dp"
                 android:background="#F5F7F9">
 
-                <com.joanzapata.iconify.widget.IconTextView
-                    android:id="@+id/text_point"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:text="{typcn-star-outline}"
-                    android:textColor="@color/grey"
-                    android:textSize="11sp"
-                    android:layout_margin="8dp"/>
+                <!--<com.joanzapata.iconify.widget.IconTextView-->
+                    <!--android:id="@+id/text_point"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignParentRight="true"-->
+                    <!--android:layout_alignParentTop="true"-->
+                    <!--android:text="{typcn-star-outline}"-->
+                    <!--android:textColor="@color/grey"-->
+                    <!--android:textSize="11sp"-->
+                    <!--android:layout_margin="8dp"/>-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/text_name"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignParentLeft="true"-->
+                    <!--android:layout_toLeftOf="@id/text_point"-->
+                    <!--android:text="-&#45;&#45;"-->
+                    <!--android:textColor="@color/grey"-->
+                    <!--android:textStyle="bold"-->
+                    <!--android:layout_margin="8dp"-->
+                    <!--android:textSize="11sp"-->
+                    <!--android:transitionName="@string/transition_title"/>-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/text_price"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignParentLeft="true"-->
+                    <!--android:layout_below="@id/text_name"-->
+                    <!--android:text="-&#45;&#45;"-->
+                    <!--android:textColor="@color/grey"-->
+                    <!--android:textStyle="bold"-->
+                    <!--android:textSize="11sp"-->
+                    <!--android:layout_marginLeft="8dp"-->
+                    <!--android:transitionName="@string/transition_price"/>-->
 
                 <TextView
                     android:id="@+id/text_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:layout_toLeftOf="@id/text_point"
                     android:text="---"
-                    android:textColor="@color/grey"
                     android:textStyle="bold"
-                    android:layout_margin="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="4dp"
                     android:textSize="11sp"
-                    android:transitionName="@string/transition_title"/>
+                    android:transitionName="@string/transition_title"
+                    style="@style/TextAppearance.AppCompat.Title"/>
 
                 <TextView
                     android:id="@+id/text_price"
@@ -72,9 +100,21 @@
                     android:text="---"
                     android:textColor="@color/grey"
                     android:textStyle="bold"
-                    android:textSize="11sp"
+                    android:textSize="10sp"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
                     android:transitionName="@string/transition_price"/>
+
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:id="@+id/text_point"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/text_price"
+                    android:text="{typcn-star-outline}"
+                    android:textColor="@color/grey"
+                    android:textSize="9sp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"/>
 
             </RelativeLayout>
 

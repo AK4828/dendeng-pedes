@@ -110,7 +110,9 @@ public class AuthenticationCeck {
         dialogRefresh.setCancelable(false);
 
         Log.d(TAG, "process id : " + currentProcess);
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
 
         if (EventBus.getDefault().isRegistered(this)) {
             Log.d(TAG, "[ event registered ]");

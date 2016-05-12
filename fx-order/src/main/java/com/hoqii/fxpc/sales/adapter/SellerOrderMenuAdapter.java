@@ -3,16 +3,13 @@ package com.hoqii.fxpc.sales.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -21,16 +18,10 @@ import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.ScannerActivityCustom;
 import com.hoqii.fxpc.sales.activity.SellerOrderMenuListActivity;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
-import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
-import com.joanzapata.iconify.Icon;
 import com.joanzapata.iconify.widget.IconTextView;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +98,11 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.productName.setText(orderMenuList.get(position).getProduct().getName());
-        holder.description.setText(context.getString(R.string.hoder_description)+orderMenuList.get(position).getDescription());
+        if (orderMenuList.get(position).getDescription().equals("")){
+            holder.description.setText(context.getString(R.string.hoder_description)+" No description");
+        }else {
+            holder.description.setText(context.getString(R.string.hoder_description) + orderMenuList.get(position).getDescription());
+        }
         holder.productCount.setText("{typcn-shopping-cart} " + Integer.toString(orderMenuList.get(position).getQty()));
         holder.scanCount.setText("{typcn-tick-outline} 0");
 
@@ -132,7 +127,7 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
             }
         }
 
-        Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
+        Glide.with(context).load(imageUrl).error(R.drawable.ic_description_24dp).into(holder.preview);
 
         final List<Integer> count = new ArrayList<Integer>();
         int maxCount = orderMenuList.get(position).getQty();

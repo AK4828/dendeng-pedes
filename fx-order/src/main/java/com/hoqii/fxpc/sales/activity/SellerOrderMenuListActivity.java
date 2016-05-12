@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -37,6 +39,7 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
@@ -49,6 +52,7 @@ import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.entity.SerialEvent;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.SerialTemplate;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.job.MenuUpdateJob;
@@ -59,20 +63,46 @@ import com.hoqii.fxpc.sales.job.ShipmentJob;
 import com.hoqii.fxpc.sales.task.StockSync;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
+import com.hoqii.fxpc.sales.util.DirUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
 import com.joanzapata.iconify.widget.IconTextView;
+import com.opencsv.CSVWriter;
 import com.path.android.jobqueue.JobManager;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.meruvian.midas.core.service.TaskService;
 import org.meruvian.midas.core.util.ConnectionUtil;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -98,7 +128,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     private TextView omDate, omReceipt, siteFromName, omBusinessPartner;
     private IconTextView mailSiteFrom;
     private String orderUrl = "/api/purchaseOrders/";
-    private ProgressDialog loadProgress;
+    private ProgressDialog loadProgress, progress;
     private ProgressDialog loadProgressCheckSerial;
     private int page = 1, totalPage;
 
@@ -121,6 +151,10 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     private List<SerialNumber> unVerifiedSerial = new ArrayList<SerialNumber>();
     private int countTocheck = 0;
     private int maxSerialistTocheck = 0;
+
+    private static final String txt = "txt";
+    private static final String csv = "csv";
+    private static final String excel = "xls";
 
 
     @Override
@@ -195,6 +229,10 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         loadProgress.setMessage(getResources().getString(R.string.message_fetch_data));
         loadProgress.setCancelable(false);
 
+        progress = new ProgressDialog(this);
+        progress.setMessage(getString(R.string.please_wait));
+        progress.setCancelable(false);
+
         loadProgressCheckSerial = new ProgressDialog(this);
         loadProgressCheckSerial.setMessage("Checking availability serial number");
         loadProgressCheckSerial.setCancelable(false);
@@ -208,7 +246,6 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         });
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -252,6 +289,9 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                 }
 
                 break;
+            case R.id.menu_serial_options:
+                inputAllSerial();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -282,6 +322,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                 sellerOrderMenuAdapter.addItems(orderMenuList);
                 break;
             case SignageVariables.SERIAL_CHECK_GET_TASK:
+                Log.d("check serial", "y");
                 countTocheck++;
                 SerialEvent serialEvent = (SerialEvent) result;
                 for (SerialNumber sn : tempSerial){
@@ -376,6 +417,77 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                     sellerOrderMenuAdapter = new SellerOrderMenuAdapter(this, orderId);
                     recyclerView.setAdapter(sellerOrderMenuAdapter);
                     sellerOrderMenuAdapter.addItems(orderMenuList);
+                }
+            }
+        } else if (requestCode == requestSerialFileCode){
+            if (resultCode == RESULT_OK){
+                if (data.getData().getPath() != null){
+                    Uri uriFile = data.getData();
+                    Log.d("path from uri ", uriFile.getPath());
+
+                    String path = uriFile.getPath().toString().replaceAll("\\s","");
+                    Log.d("path ", path);
+                    String type = MimeTypeMap.getFileExtensionFromUrl(path);
+                    try {
+                        if (type != null){
+                            Log.d("type ",""+type);
+                            loadProgressCheckSerial.show();
+                            List<SerialTemplate> serialList = new ArrayList<>();
+                            switch (type){
+//                                case txt:
+//                                    serialList = readSerialFromText(uriFile.getPath());
+//                                    if (serialList.size() > 0) {
+//                                        doVerify(serialList);
+//                                    }else {
+//                                        progress.dismiss();
+//                                        AlertMessage("Serial file empty");
+//                                    }
+//                                    break;
+                                case csv:
+                                    serialList = readSerialFromCsv(uriFile.getPath());
+                                    if (serialList.size() > 0) {
+                                        Log.d("serial", "size "+Integer.toString(serialList.size()));
+                                        for (SerialTemplate s : serialList){
+                                            Log.d("sku "+s.getSku(), "serial "+s.getSerialNumber());
+                                        }
+                                        maxSerialistTocheck = serialList.size();
+                                        for (SerialTemplate s : serialList){
+                                            StockSync check = new StockSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, StockSync.StockUri.bySerialUri.name());
+                                            check.execute(s.getSku(),s.getSerialNumber());
+                                        }
+
+                                    }else {
+                                        loadProgressCheckSerial.dismiss();
+                                        AlertMessage("Serial file empty");
+                                    }
+                                    break;
+                                case excel:
+                                    serialList = readSerialFromExcel(uriFile.getPath());
+                                    if (serialList.size() > 0) {
+                                        Log.d("serial", "size "+Integer.toString(serialList.size()));
+                                        for (SerialTemplate s : serialList){
+                                            Log.d("sku "+s.getSku(), "serial "+s.getSerialNumber());
+                                        }
+                                        maxSerialistTocheck = serialList.size();
+                                        for (SerialTemplate s : serialList){
+                                            StockSync check = new StockSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, StockSync.StockUri.bySerialUri.name());
+                                            check.execute(s.getSku(),s.getSerialNumber());
+                                        }
+                                    }else {
+                                        loadProgressCheckSerial.dismiss();
+                                        AlertMessage("Serial file empty");
+                                    }
+                                    break;
+                                default:
+                                    loadProgressCheckSerial.dismiss();
+                                    AlertMessage("File not supported");
+                                    break;
+                            }
+                        }
+                    }catch (Exception e){
+                        Log.e(getClass().getSimpleName(), e.getMessage());
+                    }
+
                 }
             }
         }
@@ -595,6 +707,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                         OrderMenu orderMenu = new OrderMenu();
                         orderMenu.setId(object.getString("id"));
                         orderMenu.setQty(object.getInt("qty"));
+                        orderMenu.setQtyOrder(object.getInt("qtyOrder"));
                         orderMenu.setDescription(object.getString("description"));
 
 
@@ -723,6 +836,19 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         builder.show();
     }
 
+    private void AlertMessage(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(SellerOrderMenuListActivity.this);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.show();
+    }
+
     public void openScanner(Intent data) {
         Intent scanner = data;
         scanner.putExtra("orderId", orderId);
@@ -776,28 +902,30 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                         @Override
                         public boolean onKey(View v, int keyCode, KeyEvent event) {
                             if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)){
-                                if (allSerial.size() < qty) {
-                                    if (!serialstring.contains(editSerial.getText().toString())) {
-                                        titleEditSerial.setError(null);
+                                if (!editSerial.getText().toString().replace(" ","").matches("")) {
+                                    if (allSerial.size() < qty) {
+                                        if (!serialstring.contains(editSerial.getText().toString())) {
+                                            titleEditSerial.setError(null);
 
-                                        SerialNumber serialNumberObj = new SerialNumber();
-                                        serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
-                                        serialNumberObj.getOrderMenu().getOrder().setId(orderId);
-                                        serialNumberObj.getOrderMenu().setId(orderMenuId);
-                                        serialNumberObj.setSerialNumber(editSerial.getText().toString());
-                                        allSerial.add(serialNumberObj);
-                                        tempSerial.add(serialNumberObj);
-                                        serialstring.add(editSerial.getText().toString());
-                                        textCount.setText(getString(R.string.text_already_inputted)+allSerial.size()+getResources().getString(R.string.text_verivy_of_total)+qty);
+                                            SerialNumber serialNumberObj = new SerialNumber();
+                                            serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
+                                            serialNumberObj.getOrderMenu().getOrder().setId(orderId);
+                                            serialNumberObj.getOrderMenu().setId(orderMenuId);
+                                            serialNumberObj.setSerialNumber(editSerial.getText().toString());
+                                            allSerial.add(serialNumberObj);
+                                            tempSerial.add(serialNumberObj);
+                                            serialstring.add(editSerial.getText().toString());
+                                            textCount.setText(getString(R.string.text_already_inputted) + allSerial.size() + getResources().getString(R.string.text_verivy_of_total) + qty);
 
-                                        editSerial.getText().clear();
+                                            editSerial.getText().clear();
+                                        } else {
+                                            titleEditSerial.setError(getString(R.string.message_serial_exist));
+                                            editSerial.getText().clear();
+                                        }
                                     } else {
-                                        titleEditSerial.setError(getString(R.string.message_serial_exist));
+                                        AlertMessage(getResources().getString(R.string.message_serial_sufficed));
                                         editSerial.getText().clear();
                                     }
-                                }else {
-                                    AlertMessage(getResources().getString(R.string.message_serial_sufficed));
-                                    editSerial.getText().clear();
                                 }
                             }
                             return false;
@@ -839,11 +967,13 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                     manualDialog.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            loadProgressCheckSerial.show();
-                            maxSerialistTocheck = tempSerial.size();
-                            for (SerialNumber s : tempSerial){
-                                StockSync check = new StockSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, StockSync.StockUri.bySerialUri.name());
-                                check.execute(productId,s.getSerialNumber());
+                            if (tempSerial.size() > 0) {
+                                loadProgressCheckSerial.show();
+                                maxSerialistTocheck = tempSerial.size();
+                                for (SerialNumber s : tempSerial) {
+                                    StockSync check = new StockSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, StockSync.StockUri.bySerialUri.name());
+                                    check.execute(productId, s.getSerialNumber());
+                                }
                             }
                         }
                     });
@@ -869,6 +999,182 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
             }
         });
         builder.show();
+    }
+
+    public void inputAllSerial() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.verify));
+        builder.setItems(new String[]{"Download Master Sku",getString(R.string.text_serial_from_file)}, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+//                if (which == 0) {
+//                    Intent scanner = data;
+//                    scanner.putExtra("orderId", orderId);
+//
+//                    Log.d(getClass().getSimpleName(), "product name : " + data.getStringExtra("productName"));
+//                    Log.d(getClass().getSimpleName(), "order Menu id : " + data.getStringExtra("orderMenuId"));
+//
+//                    startActivityForResult(scanner, requestScannerCode);
+//
+//                } else if (which == 1){
+//                    final String orderMenuId = data.getStringExtra("orderMenuId");
+//                    final String productId = data.getStringExtra("productId");
+//                    String productName = data.getStringExtra("productName");
+//                    final int qty = data.getIntExtra("productQty", 0);
+//
+//                    AlertDialog.Builder manualDialog = new AlertDialog.Builder(SellerOrderMenuListActivity.this);
+//                    manualDialog.setCancelable(false);
+//                    manualDialog.setTitle(getString(R.string.message_title_enter_serial));
+//                    View customView = LayoutInflater.from(SellerOrderMenuListActivity.this).inflate(R.layout.view_manual_serial, null, false);
+//                    final EditText editSerial = (EditText) customView.findViewById(R.id.edit_serial);
+//                    final TextView textCount = (TextView) customView.findViewById(R.id.text_count_serial);
+//                    final TextInputLayout titleEditSerial = (TextInputLayout) customView.findViewById(R.id.title_edit_serial);
+//                    ImageButton btnEnter = (ImageButton) customView.findViewById(R.id.btn_enter);
+//
+//                    List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
+//                    final List<SerialNumber> allSerial = sn;
+//                    textCount.setText(getString(R.string.text_already_inputted)+allSerial.size()+getResources().getString(R.string.text_verivy_of_total)+qty);
+//
+//                    final List<String> serialstring = new ArrayList<String>();
+//                    for (SerialNumber s:allSerial){
+//                        serialstring.add(s.getSerialNumber());
+//                    }
+//
+//                    editSerial.setOnKeyListener(new View.OnKeyListener() {
+//                        @Override
+//                        public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                            if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)){
+//                                if (allSerial.size() < qty) {
+//                                    if (!serialstring.contains(editSerial.getText().toString())) {
+//                                        titleEditSerial.setError(null);
+//
+//                                        SerialNumber serialNumberObj = new SerialNumber();
+//                                        serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
+//                                        serialNumberObj.getOrderMenu().getOrder().setId(orderId);
+//                                        serialNumberObj.getOrderMenu().setId(orderMenuId);
+//                                        serialNumberObj.setSerialNumber(editSerial.getText().toString());
+//                                        allSerial.add(serialNumberObj);
+//                                        tempSerial.add(serialNumberObj);
+//                                        serialstring.add(editSerial.getText().toString());
+//                                        textCount.setText(getString(R.string.text_already_inputted)+allSerial.size()+getResources().getString(R.string.text_verivy_of_total)+qty);
+//
+//                                        editSerial.getText().clear();
+//                                    } else {
+//                                        titleEditSerial.setError(getString(R.string.message_serial_exist));
+//                                        editSerial.getText().clear();
+//                                    }
+//                                }else {
+//                                    AlertMessage(getResources().getString(R.string.message_serial_sufficed));
+//                                    editSerial.getText().clear();
+//                                }
+//                            }
+//                            return false;
+//                        }
+//                    });
+//
+//                    btnEnter.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            if (!editSerial.getText().toString().replace(" ","").matches("")){
+//                                if (allSerial.size() < qty) {
+//                                    if (!serialstring.contains(editSerial.getText().toString())) {
+//                                        titleEditSerial.setError(null);
+//
+//                                        SerialNumber serialNumberObj = new SerialNumber();
+//                                        serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
+//                                        serialNumberObj.getOrderMenu().getOrder().setId(orderId);
+//                                        serialNumberObj.getOrderMenu().setId(orderMenuId);
+//                                        serialNumberObj.setSerialNumber(editSerial.getText().toString());
+//                                        allSerial.add(serialNumberObj);
+//                                        tempSerial.add(serialNumberObj);
+//                                        serialstring.add(editSerial.getText().toString());
+//                                        textCount.setText(getString(R.string.text_already_inputted)+allSerial.size()+getResources().getString(R.string.text_verivy_of_total)+qty);
+//
+//                                        editSerial.getText().clear();
+//                                    } else {
+//                                        titleEditSerial.setError(getString(R.string.message_serial_exist));
+//                                        editSerial.getText().clear();
+//                                    }
+//                                }else {
+//                                    AlertMessage(getResources().getString(R.string.message_serial_sufficed));
+//                                    editSerial.getText().clear();
+//                                }
+//                            }
+//                        }
+//                    });
+//
+//                    manualDialog.setView(customView);
+//                    manualDialog.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            loadProgressCheckSerial.show();
+//                            maxSerialistTocheck = tempSerial.size();
+//                            for (SerialNumber s : tempSerial){
+//                                StockSync check = new StockSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, StockSync.StockUri.bySerialUri.name());
+//                                check.execute(productId,s.getSerialNumber());
+//                            }
+//                        }
+//                    });
+//                    manualDialog.setNegativeButton(getString(R.string.text_cancel), new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            verifiedSerial.clear();
+//                            unVerifiedSerial.clear();
+//                            tempSerial.clear();
+//                            maxSerialistTocheck = 0;
+//                            countTocheck = 0;
+//                            dialog.dismiss();
+//                        }
+//                    });
+//                    manualDialog.show();
+//                } else
+                if (which == 0){
+                    AlertDialog.Builder saveDialog = new AlertDialog.Builder(SellerOrderMenuListActivity.this);
+                    saveDialog.setTitle("Save Options");
+                    saveDialog.setItems(new String[]{"Save to csv", "Save to xls"}, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which){
+                                case 0:
+                                    saveToCsvFile();
+                                    break;
+                                case 1:
+                                    saveToExcelFile();
+                                    break;
+                            }
+                        }
+                    });
+                    saveDialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    saveDialog.show();
+
+                }else if (which == 1){
+                    clearTemp();
+                    Intent manager = new Intent(Intent.ACTION_GET_CONTENT);
+                    manager.setType("text/plain");
+                    startActivityForResult(manager, requestSerialFileCode);
+                }
+            }
+        });
+        builder.setNegativeButton(getString(R.string.text_cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    private void clearTemp(){
+        verifiedSerial.clear();
+        unVerifiedSerial.clear();
+        tempSerial.clear();
+        maxSerialistTocheck = 0;
+        countTocheck = 0;
     }
 
     private void showVeriviedCheck(){
@@ -995,5 +1301,251 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         builder.show();
     }
 
+
+    /**
+     * save master sku to csv file
+     */
+    private void saveToCsvFile(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+        Date date = new Date();
+
+        String downlowdTime = dateFormat.format(date);
+        String csv = DirUtils.getDirectory()+File.separator+SignageVariables.CSV_TEMPLATE_NAME+downlowdTime+".csv";
+
+        try {
+            CSVWriter csvWriter = new CSVWriter(new FileWriter(csv));
+            List<String[]> serialTemplate = new ArrayList<>();
+            serialTemplate.add(new String[] {"Sku", "Serial Number"});
+
+            for (OrderMenu menu : orderMenuList){
+                for (int x = 0; x < menu.getQtyOrder(); x++) {
+                    serialTemplate.add(new String[]{menu.getProduct().getName(), ""});
+                }
+            }
+
+            csvWriter.writeAll(serialTemplate);
+            csvWriter.close();
+            AlertMessage("Master Sku","Download Complate");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * save master sku to xls file
+     */
+    private void saveToExcelFile() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+        Date date = new Date();
+
+        String downlowdTime = dateFormat.format(date);
+        String excel = DirUtils.getDirectory()+File.separator+SignageVariables.CSV_TEMPLATE_NAME+downlowdTime+".xls";
+        File file = new File(excel);
+
+        Workbook workbook = new HSSFWorkbook();
+        Cell cell = null;
+
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setFillForegroundColor(HSSFColor.LIME.index);
+        cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+
+        Sheet sheet = null;
+        sheet = workbook.createSheet();
+
+        Row row = sheet.createRow(0);
+
+        cell = row.createCell(0);
+        cell.setCellValue("Sku");
+        cell.setCellStyle(cellStyle);
+
+        cell = row.createCell(1);
+        cell.setCellValue("Serial Number");
+        cell.setCellStyle(cellStyle);
+
+        for (OrderMenu menu : orderMenuList){
+            for (int x = 0; x < menu.getQtyOrder(); x++) {
+                row = sheet.createRow(x+1);
+
+                cell = row.createCell(0);
+                cell.setCellValue(menu.getProduct().getName());
+            }
+        }
+
+        sheet.setColumnWidth(0, (15 * 500));
+        sheet.setColumnWidth(1, (15 * 500));
+
+        FileOutputStream excelOut = null;
+        try {
+            excelOut = new FileOutputStream(file);
+            workbook.write(excelOut);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (excelOut != null){
+                try {
+                    excelOut.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            AlertMessage("Master Sku","Download Complate");
+        }
+    }
+
+    /**
+     * read serial from csv file
+     * @param pathSerial
+     * @return
+     */
+    private List<SerialTemplate> readSerialFromCsv(String pathSerial){
+        File serialFile = new File(pathSerial);
+        FileInputStream serialStream = null;
+        String splitCharacter = ",";
+
+        List<SerialTemplate> serialList = new ArrayList<SerialTemplate>();
+        try {
+            serialStream = new FileInputStream(serialFile);
+            DataInputStream serialDataStream = new DataInputStream(serialStream);
+            BufferedReader buff = new BufferedReader(new InputStreamReader(serialDataStream));
+
+            String serialLine = null;
+            while ((serialLine = buff.readLine()) != null){
+                String[] serialLineColl = serialLine.split(splitCharacter);
+                if (serialLineColl.length > 1){
+
+                    String name = serialLineColl[0];
+                    String serial = serialLineColl[1];
+
+                    SerialNumber serialNumberObj = new SerialNumber();
+                    serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
+                    serialNumberObj.getOrderMenu().getOrder().setId(orderId);
+                    serialNumberObj.getOrderMenu().setId(getOrderMenuId(name));
+                    serialNumberObj.setSerialNumber(serial);
+                    tempSerial.add(serialNumberObj);
+
+                    SerialTemplate st = new SerialTemplate();
+                    String sku = serialLineColl[0].replaceAll(" ","_");
+                    st.setSku(sku);
+                    st.setSerialNumber(serialLineColl[1]);
+                    serialList.add(st);
+                }
+            }
+            serialStream.close();
+
+        }catch (Exception e){
+            Log.d("serial file ", "failed reading serial file");
+        }
+        return serialList;
+    }
+
+    /**
+     * read serial from excel file
+     * @param pathSerial
+     * @return
+     */
+    private List<SerialTemplate> readSerialFromExcel(String pathSerial){
+        File serialFile = new File(pathSerial);
+
+
+        List<SerialTemplate> serialList = new ArrayList<>();
+//        try {
+//            Workbook workbook = WorkbookFactory.create(serialFile);
+//            Sheet sheet = workbook.getSheetAt(0);
+//            Iterator rowIterator = sheet.rowIterator();
+//
+//            while (rowIterator.hasNext()){
+//                Row row = (Row) rowIterator.next();
+//                Iterator celIterator = row.cellIterator();
+//                while (celIterator.hasNext()){
+//                    Cell cell = (Cell) celIterator.next();
+//                    Log.d("cell value", cell.toString());
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (InvalidFormatException e) {
+//            e.printStackTrace();
+//        }
+
+//        try {
+//            XSSFWorkbook workbook = new XSSFWorkbook(serialFile);
+//            XSSFSheet sheet = workbook.getSheetAt(0);
+//            Iterator rowIterator = sheet.rowIterator();
+//
+//            while (rowIterator.hasNext()){
+//                XSSFRow row = (XSSFRow) rowIterator.next();
+//                Iterator celIterator = row.cellIterator();
+//                while (celIterator.hasNext()){
+//                    XSSFCell cell = (XSSFCell) celIterator.next();
+//                    Log.d("cell value", cell.toString());
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (InvalidFormatException e) {
+//            e.printStackTrace();
+//        }
+
+        try {
+            POIFSFileSystem poifsFileSystem = new POIFSFileSystem(serialFile);
+            HSSFWorkbook workbook = new HSSFWorkbook(poifsFileSystem);
+            HSSFSheet sheet = workbook.getSheetAt(0);
+            Iterator rowIterator = sheet.rowIterator();
+
+            while (rowIterator.hasNext()){
+                HSSFRow row = (HSSFRow) rowIterator.next();
+                Iterator celIterator = row.cellIterator();
+                ArrayList<String> tempCell = new ArrayList<>();
+                while (celIterator.hasNext()){
+                    HSSFCell cell = (HSSFCell) celIterator.next();
+                    String str = cell.toString();
+                    if(str.contains(".0")){
+                        tempCell.add(str.substring(0, str.length() - 2));
+                    }else {
+                        tempCell.add(str);
+                    }
+                }
+
+                String name = tempCell.get(0);
+                String serial = tempCell.get(1);
+
+                SerialNumber serialNumberObj = new SerialNumber();
+                serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
+                serialNumberObj.getOrderMenu().getOrder().setId(orderId);
+                serialNumberObj.getOrderMenu().setId(getOrderMenuId(name));
+                serialNumberObj.setSerialNumber(serial);
+                tempSerial.add(serialNumberObj);
+
+
+                SerialTemplate st = new SerialTemplate();
+                String sku = tempCell.get(0).replaceAll(" ","_");
+                st.setSku(sku);
+                st.setSerialNumber(serial);
+                serialList.add(st);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return serialList;
+    }
+
+    /**
+     * get ordermenu id by product name
+     * @param name
+     * @return
+     */
+    private String getOrderMenuId(String name){
+        for (OrderMenu m : orderMenuList){
+            if (m.getProduct().getName().matches(name)){
+                return m.getId();
+            }
+        }
+        return null;
+    }
 
 }

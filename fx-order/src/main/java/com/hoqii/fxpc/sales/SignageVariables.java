@@ -18,7 +18,8 @@ public class SignageVariables {
 
     public static final String PGA_PARENT_SITE = "/api/sites/";
 
-    public static final String PUBLIC_FOLDER = "signage";
+    public static final String PUBLIC_FOLDER = "FXPC_Directory";
+    public static final String CSV_TEMPLATE_NAME = "Master_SKU";
 
     public static final String ACTIVE = "1";
     public static final String INACTIVE = "0";
