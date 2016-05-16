@@ -38,6 +38,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -71,10 +72,14 @@ public class ConnectionUtil {
 		JSONObject json = null;
 
 		try {
+			Log.d("ConnectionUtil", "URL Get: " + url);
+
+//			String encodeUrl = URLEncoder.encode(url, "UTF-8");
+
 			HttpClient httpClient = new DefaultHttpClient(getHttpParams(TIMEOUT, TIMEOUT));
 			HttpGet httpGet = new HttpGet(url);
 
-			Log.d("ConnectionUtil", "URL Get: " + url);
+//			Log.d("ConnectionUtil", "URL Get: " + encodeUrl);
 
 			httpGet.setHeader("Content-Type", "application/json");
 			HttpResponse response = httpClient.execute(httpGet);
