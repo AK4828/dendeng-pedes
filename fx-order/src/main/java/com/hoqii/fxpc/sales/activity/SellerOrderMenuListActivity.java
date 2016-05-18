@@ -118,6 +118,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
     private List<OrderMenu> orderMenuList = new ArrayList<OrderMenu>();
+    private List<Order> orders = new ArrayList<Order>();
     private SharedPreferences preferences;
     private RecyclerView recyclerView;
     private SellerOrderMenuAdapter sellerOrderMenuAdapter;
