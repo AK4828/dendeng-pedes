@@ -1,14 +1,11 @@
 package com.hoqii.fxpc.sales.job;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.hoqii.fxpc.sales.SignageApplication;
-import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.service.GcmUtils;
+import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.hoqii.fxpc.sales.util.JsonRequestUtils;
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
@@ -20,18 +17,18 @@ import org.meruvian.midas.core.job.Priority;
 import de.greenrobot.event.EventBus;
 
 /**
- * Created by miftakhul on 12/19/15.
+ * Created by akm on 16/05/16.
  */
-public class GcmJob extends Job {
-    public static final int PROCESS_ID = 90;
+public class UnregisterGCMJob extends Job {
+    public static final int PROCESS_ID = 322;
+    private String deviceId;
+    private String url;
     private JsonRequestUtils.HttpResponseWrapper<String> response;
-    private String url, gcmToken;
 
-    public GcmJob(String url, String gcmToken) {
+    public UnregisterGCMJob(String url, String deviceId) {
         super(new Params(Priority.HIGH).requireNetwork().persist());
-
+        this.deviceId = deviceId;
         this.url = url;
-        this.gcmToken = gcmToken;
     }
 
     @Override
@@ -41,23 +38,14 @@ public class GcmJob extends Job {
 
     @Override
     public void onRun() throws Throwable {
-        Log.d(getClass().getSimpleName(), "gcm send token running");
-        JsonRequestUtils request = new JsonRequestUtils(url + "/api/device/register");
-
-        response = request.post(gcmToken, new TypeReference<String>() {
-        });
-
+        String urlReq = url + "/api/device/unregister";
+        JsonRequestUtils request = new JsonRequestUtils(urlReq);
+        response = request.post(deviceId, new TypeReference<String>() {});
+        Log.d("deviceId", deviceId);
         HttpResponse r = response.getHttpResponse();
-        Log.d(getClass().getSimpleName(), "response : " + r.getStatusLine().getStatusCode());
-        Log.d(getClass().getSimpleName(), "response : " + r.getStatusLine().getReasonPhrase());
-
-        if (r.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            Log.d(getClass().getSimpleName(), "Response Code :" + r.getStatusLine().getStatusCode());
-            GcmUtils.saveGcmToken(gcmToken, true);
+        if (r.getStatusLine().getStatusCode() == HttpStatus.SC_OK || r.getStatusLine().getStatusCode() == HttpStatus.SC_NO_CONTENT) {
             EventBus.getDefault().post(new GenericEvent.RequestSuccess(PROCESS_ID, response, null, null));
-            Log.d(getClass().getSimpleName(), "[ token sended ]");
         } else {
-            Log.d(getClass().getSimpleName(), "Response Code :" + r.getStatusLine().getStatusCode());
             EventBus.getDefault().post(new GenericEvent.RequestFailed(PROCESS_ID, response));
         }
     }
@@ -71,6 +59,4 @@ public class GcmJob extends Job {
     protected boolean shouldReRunOnThrowable(Throwable throwable) {
         return false;
     }
-
 }
-

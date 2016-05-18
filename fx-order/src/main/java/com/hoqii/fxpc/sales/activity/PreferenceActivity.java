@@ -7,14 +7,21 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.hoqii.fxpc.sales.R;
+import com.hoqii.fxpc.sales.SignageApplication;
+import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.event.GenericEvent;
+import com.hoqii.fxpc.sales.job.UnregisterGCMJob;
+import com.hoqii.fxpc.sales.service.GcmUtils;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.hoqii.fxpc.sales.util.LocaleHelper;
+import com.path.android.jobqueue.JobManager;
 
 import java.util.List;
 
@@ -26,9 +33,11 @@ import de.greenrobot.event.EventBus;
 public class PreferenceActivity extends android.preference.PreferenceActivity {
     private static final int REFRESH_TOKEN_SYNC = 300;
     private static final int REFRESH_TOKEN_MANUAL = 301;
+    private static final int UNREGISTER = 322;
     private static AuthenticationCeck authenticationCeck = new AuthenticationCeck();
 
     private static SharedPreferences mSharedPreferences;
+    private static JobManager jobManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,17 +132,13 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
                 builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        AuthenticationUtils.logout();
-                        SharedPreferences.Editor editorHas = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
-//                        editorHas.putBoolean("has_sync", false);
-                        editorHas.clear();
-                        editorHas.commit();
-                        getActivity().setResult(RESULT_OK);
-                        getActivity().finish();
 
-                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
+                        Log.d("GCM TOKN", GcmUtils.getGcmModel().getToken());
+
+                        String deviceId = GcmUtils.getGcmModel().getToken();
+                        mSharedPreferences = SignageApplication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
+                        jobManager = SignageApplication.getInstance().getJobManager();
+                        jobManager.addJobInBackground(new UnregisterGCMJob(mSharedPreferences.getString("server_url", ""), deviceId));
                     }
                 });
                 builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
@@ -147,7 +152,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
                 String lang = LocaleHelper.getLanguage(getActivity());
                 final String[] langSelect = {lang};
                 int langUse = 0;
-                switch (lang){
+                switch (lang) {
                     case "en":
                         langUse = 0;
                         break;
@@ -159,7 +164,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
                 builder.setSingleChoiceItems(R.array.language_names_array, langUse, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
+                        switch (which) {
                             case 0:
                                 langSelect[0] = "en";
                                 break;
@@ -214,6 +219,25 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
                     }
                 });
                 builder.show();
+                break;
+            case UNREGISTER:
+                AuthenticationUtils.logout();
+                SharedPreferences.Editor editorHas = PreferenceManager.getDefaultSharedPreferences(this).edit();
+                editorHas.clear();
+                editorHas.commit();
+                this.setResult(RESULT_OK);
+                this.finish();
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+        }
+    }
+
+    public void onEventMainThread(GenericEvent.RequestFailed requestFailed) {
+        Log.d("Status Code", String.valueOf(requestFailed.getResponse().getHttpResponse().getStatusLine().getStatusCode()));
+        switch (requestFailed.getProcessId()) {
+            case UNREGISTER:
+                Toast.makeText(this, "Logout failed", Toast.LENGTH_LONG).show();
                 break;
         }
     }

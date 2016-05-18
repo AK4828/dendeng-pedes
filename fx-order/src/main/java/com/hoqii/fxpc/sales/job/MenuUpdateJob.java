@@ -51,23 +51,13 @@ public class MenuUpdateJob extends Job {
         Log.d(getClass().getSimpleName(), "Update orde menu running");
         JsonRequestUtils request = new JsonRequestUtils(url + "/api/orders/" + orderId + "/menu/" + orderMenuId );
 
-        responseGetOrderMenu = request.get(new TypeReference<OrderMenu>() {
-        });
+        responseGetOrderMenu = request.get(new TypeReference<OrderMenu>() {});
 
         HttpResponse rOm = responseGetOrderMenu.getHttpResponse();
-        Log.d(getClass().getSimpleName(), "response : " + rOm.getStatusLine().getStatusCode());
-        Log.d(getClass().getSimpleName(), "response : " + rOm.getStatusLine().getReasonPhrase());
 
         if (rOm.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            Log.d(getClass().getSimpleName(), "order menu Response Code :" + rOm.getStatusLine().getStatusCode());
             OrderMenu orderMenu = responseGetOrderMenu.getContent();
 
-            Log.d(getClass().getSimpleName(), "order menu id : " + orderMenu.getId().toString());
-            Log.d(getClass().getSimpleName(), "order menu data : " + orderMenu.toString());
-            Log.d(getClass().getSimpleName(), "order menu data : " + String.valueOf(orderMenu));
-
-            //====================
-            Log.d(getClass().getSimpleName(), "Updating order menu running");
             JsonRequestUtils requestUpdate = new JsonRequestUtils(url + "/api/orders/" + orderId + "/menu/" + orderMenuId );
 
             SerialNumberDatabaseAdapter snAdapter = new SerialNumberDatabaseAdapter(SignageApplication.getInstance());

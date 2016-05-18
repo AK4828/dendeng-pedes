@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -26,25 +25,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
-import com.hoqii.fxpc.sales.adapter.ReceiveOrderMenuAdapter;
 import com.hoqii.fxpc.sales.adapter.ReturnOrderMenuAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.entity.Receive;
+import com.hoqii.fxpc.sales.entity.Retur;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.hoqii.fxpc.sales.event.GenericEvent;
@@ -97,6 +90,7 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
     private JobManager jobManager;
     private ProgressDialog progressDialog;
     private boolean statusDelivery = false;
+    private Retur retur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -359,6 +353,7 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
                             serialNumber.setOrderMenu(orderMenu);
                         }
                         serialNumbers.add(serialNumber);
+                        returnOrderMenuAdapter.addItem(serialNumber);
                     }
                     tempSerialNumbers = serialNumbers;
 

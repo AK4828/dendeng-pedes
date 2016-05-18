@@ -27,6 +27,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -232,10 +233,31 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.receiving_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finishDetail();
+                break;
+            case R.id.menu_add_return:
+                String jsonReceive = getIntent().getStringExtra("jsonReceive");
+                orderId = getIntent().getStringExtra("orderId");
+                Intent intent = new Intent(ReceiveDetailActivity.this, ReturnDetailActivity.class);
+                intent.putExtra("orderId", orderId);
+                intent.putExtra("shipmentId", shipmentId);
+                intent.putExtra("jsonReceive", jsonReceive);
+                intent.putExtra("siteDescription", getIntent().getStringExtra("siteDescription"));
+                intent.putExtra("orderDate", getIntent().getLongExtra("orderDate", 0));
+                intent.putExtra("receiveDate", getIntent().getLongExtra("receiveDate", 0));
+                intent.putExtra("orderReceipt", getIntent().getStringExtra("orderReceipt"));
+
+
+                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -352,9 +374,6 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         protected JSONObject doInBackground(String... JsonObject) {
             Log.d(getClass().getSimpleName(), "?acces_token= " + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
             Log.d(getClass().getSimpleName(), " param : " + JsonObject[0]);
-            //disable load more
-//            return ConnectionUtil.get(preferences.getString("server_url", "") + receiveUrl + JsonObject[0] + "/menus?access_token="
-//                    + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&page=" + JsonObject[1]);
             return ConnectionUtil.get(preferences.getString("server_url", "") + receiveUrl + JsonObject[0] + "/menus?access_token="
                     + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&max=" + Integer.MAX_VALUE);
         }
@@ -380,7 +399,6 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                     JSONArray jsonArray = result.getJSONArray("content");
 
                     totalPage = result.getInt("totalPages");
-                    Log.d(getClass().getSimpleName(), "serial menu : " + result.toString());
                     for (int a = 0; a < jsonArray.length(); a++) {
                         JSONObject object = jsonArray.getJSONObject(a);
                         SerialNumber serialNumber = new SerialNumber();
@@ -618,18 +636,6 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         }
     }
 
-//    public void loadMoreContent() {
-//        if (page < totalPage) {
-//            loadProgress.show();
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    SerialOrderMenuSync receiveSync = new SerialOrderMenuSync(ReceiveDetailActivity.this, ReceiveDetailActivity.this, true);
-//                    receiveSync.execute(shipmentId, Integer.toString(page));
-//                }
-//            }, 500);
-//        }
-//    }
 
     private void verify() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -962,37 +968,6 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         return serialList;
     }
 
-//    private List<String> readSerialFromExcel(String pathSerial){
-//        File serialFile = new File(pathSerial);
-//        FileInputStream serialStream = null;
-//
-//        List<String> serialList = new ArrayList<String>();
-//        try {
-//            serialStream = new FileInputStream(serialFile);
-//            Workbook workbook = new XSSFWorkbook(serialStream);
-////            XSSFWorkbook xssfWorkbook = new XSSFWorkbook(serialStream);
-//
-//            //get first sheet
-//            Sheet workSheet = workbook.getSheetAt(0);
-//
-//            Iterator<Row> rowIterator = workSheet.rowIterator();
-//
-//            while (rowIterator.hasNext()){
-//                Row row = (Row) rowIterator.next();
-//                Iterator<Cell> cellIterator = row.cellIterator();
-//                while (cellIterator.hasNext()){
-//                    Cell cell= (Cell) cellIterator.next();
-//                    Log.d("file excel", cell.toString());
-//                }
-//
-//            }
-//            serialStream.close();
-//
-//        }catch (Exception e){
-//            Log.d("serial file ", "failed reading serial file "+e.getMessage());
-//        }
-//        return serialList;
-//    }
 
     private List<SerialNumber> verifyFromUploadFile(List<String> serialList){
         List<SerialNumber> verifiedSerial = new ArrayList<SerialNumber>();

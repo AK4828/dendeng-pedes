@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -24,13 +23,11 @@ import android.widget.LinearLayout;
 
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageVariables;
-import com.hoqii.fxpc.sales.adapter.ReceiveAdapter;
 import com.hoqii.fxpc.sales.adapter.ReturnAdapter;
 import com.hoqii.fxpc.sales.core.LogInformation;
 import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.Order;
-import com.hoqii.fxpc.sales.entity.Receive;
-import com.hoqii.fxpc.sales.entity.Return;
+import com.hoqii.fxpc.sales.entity.Retur;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.util.AuthenticationCeck;
@@ -58,7 +55,7 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
     private int requestDetailCode = 101;
     private static final int REFRESH_TOKEN_RECEIVE_LIST = 301;
 
-    private List<Return> returnList = new ArrayList<Return>();
+    private List<Retur> returList = new ArrayList<Retur>();
     private SharedPreferences preferences;
     private RecyclerView recyclerView;
     private ReturnAdapter returnAdapter;
@@ -88,7 +85,7 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Return");
+        actionBar.setTitle("Retur");
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
 
         returnAdapter = new ReturnAdapter(this);
@@ -148,10 +145,10 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
     @Override
     public void onSuccess(int code, Object result) {
         swipeRefreshLayout.setRefreshing(false);
-        returnAdapter.addItems(returnList);
+        returnAdapter.addItems(returList);
         dataFailed.setVisibility(View.GONE);
 
-        if (returnList.size() > 0) {
+        if (returList.size() > 0) {
             dataNull.setVisibility(View.GONE);
         } else {
             dataNull.setVisibility(View.VISIBLE);
@@ -214,7 +211,7 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
             try {
                 if (result != null) {
 
-                    List<Return> returns = new ArrayList<Return>();
+                    List<Retur> returs = new ArrayList<Retur>();
 
                     totalPage = result.getInt("totalPages");
                     Log.d("result order =====", result.toString());
@@ -222,8 +219,8 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
                     for (int a = 0; a < jsonArray.length(); a++) {
                         JSONObject object = jsonArray.getJSONObject(a);
 
-                        Return aReturn = new Return();
-                        aReturn.setId(object.getString("id"));
+                        Retur aRetur = new Retur();
+                        aRetur.setId(object.getString("id"));
 
                         JSONObject logInformationObject = new JSONObject();
                         if (!object.isNull("logInformation")) {
@@ -232,78 +229,19 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
                             LogInformation logInformation = new LogInformation();
                             logInformation.setCreateDate(new Date(logInformationObject.getLong("createDate")));
 
-                            aReturn.setLogInformation(logInformation);
+                            aRetur.setLogInformation(logInformation);
                         }
 
                         JSONObject shipmentObject = new JSONObject();
-                        if (!object.isNull("shipment")) {
-                            shipmentObject = object.getJSONObject("shipment");
-                            Shipment shipment = new Shipment();
-                            shipment.setId(shipmentObject.getString("id"));
-                            shipment.setReceiptNumber(shipmentObject.getString("receiptNumber"));
-                            shipment.setDeliveryServiceName(shipmentObject.getString("deliveryServiceName"));
-                            if (shipmentObject.getString("status").equalsIgnoreCase("WAIT")) {
-                                shipment.setStatus(Shipment.ShipmentStatus.WAIT);
-                            } else if (shipmentObject.getString("status").equalsIgnoreCase("DELIVERED")) {
-                                shipment.setStatus(Shipment.ShipmentStatus.DELIVERED);
-                            } else if (shipmentObject.getString("status").equalsIgnoreCase("FAILED")) {
-                                shipment.setStatus(Shipment.ShipmentStatus.FAILED);
-                            }
 
-                            JSONObject shipmentLogInformationObject = new JSONObject();
-                            if (!shipmentObject.isNull("logInformation")) {
-                                shipmentLogInformationObject = shipmentObject.getJSONObject("logInformation");
-
-                                LogInformation logInformation = new LogInformation();
-                                logInformation.setCreateDate(new Date(shipmentLogInformationObject.getLong("createDate")));
-
-                                shipment.setLogInformation(logInformation);
-                            }
-
-                            aReturn.setShipment(shipment);
-                        }
-
-                        if (object.getString("status").equalsIgnoreCase("WAIT")) {
-                            aReturn.setStatus(Return.ReturnStatus.WAIT);
-                        } else if (object.getString("status").equalsIgnoreCase("RECEIVED")) {
-                            aReturn.setStatus(Return.ReturnStatus.RECEIVED);
+                        if (object.getString("status").equalsIgnoreCase("RETURNED")) {
+                            aRetur.setStatus(Retur.ReturnStatus.RETURNED);
                         } else if (object.getString("status").equalsIgnoreCase("FAILED")) {
-                            aReturn.setStatus(Return.ReturnStatus.FAILED);
+                            aRetur.setStatus(Retur.ReturnStatus.FAILED);
                         }
 
-                        aReturn.setRecipient(object.getString("recipient"));
-
-                        JSONObject orderObject = new JSONObject();
-                        if (!object.isNull("order")) {
-                            orderObject = object.getJSONObject("order");
-
-                            Order order = new Order();
-                            order.setId(orderObject.getString("id"));
-                            order.setReceiptNumber(orderObject.getString("receiptNumber"));
-
-                            JSONObject orderLogInformationObject = new JSONObject();
-                            if (!orderObject.isNull("logInformation")) {
-                                orderLogInformationObject = orderObject.getJSONObject("logInformation");
-
-                                LogInformation logInformation = new LogInformation();
-                                logInformation.setCreateDate(new Date(orderLogInformationObject.getLong("createDate")));
-
-                                order.setLogInformation(logInformation);
-                            }
-
-                            JSONObject siteObject = new JSONObject();
-                            if (!orderObject.isNull("site")) {
-                                siteObject = orderObject.getJSONObject("site");
-
-                                Site site = new Site();
-                                site.setId(siteObject.getString("id"));
-                                site.setName(siteObject.getString("name"));
-                                site.setDescription(siteObject.getString("description"));
-                                order.setSite(site);
-                            }
-                            aReturn.setOrder(order);
-                        }
-                        returns.add(aReturn);
+                        aRetur.setRecipient(object.getString("recipient"));
+                        returs.add(aRetur);
                     }
 
                     if (isLoadMore) {
@@ -311,7 +249,7 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
                         loadProgress.dismiss();
                     }
 
-                    returnList = returns;
+                    returList = returs;
                     taskService.onSuccess(SignageVariables.RECEIVE_GET_TASK, true);
                 } else {
                     taskService.onError(SignageVariables.RECEIVE_GET_TASK, "Error");

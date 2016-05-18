@@ -39,8 +39,6 @@ import java.util.List;
  * Created by miftakhul on 12/6/15.
  */
 public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenuAdapter.ViewHolder> {
-
-
     private Context context;
     private String orderId;
     private List<OrderMenu> orderMenuList = new ArrayList<OrderMenu>();
@@ -115,8 +113,6 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
 
         for (String orderMenuId : orderMenuListSerial){
             if (orderMenuList.get(position).getId().equalsIgnoreCase(orderMenuId)) {
-                Log.d(getClass().getSimpleName(), "same id detected in position " + position);
-
                 List<SerialNumber> serials = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
                 if (serials.size() > 0){
                     holder.scanCount.setText("{typcn-tick-outline} " + serials.size());
@@ -205,27 +201,18 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
 
     public void addOrderMenuSerial(String orderMenuId) {
         if (!orderMenuListSerial.contains(orderMenuId)) {
-            Log.d(getClass().getSimpleName(), "bevore added " + orderMenuListSerial.size());
             for (String s : orderMenuListSerial) {
-                Log.d(getClass().getSimpleName(), "bevore added serial" + s);
             }
             orderMenuListSerial.add(orderMenuId);
-            Log.d(getClass().getSimpleName(), "after added " + orderMenuListSerial.size());
             for (String s : orderMenuListSerial) {
-                Log.d(getClass().getSimpleName(), "bevore added serial" + s);
             }
-
-            Log.d(getClass().getSimpleName(), "item serial added");
         }
     }
 
     public void updateOrderMenuSerial(List<String> orderMenuserilsIds){
         this.orderMenuListSerial = orderMenuserilsIds;
-        Log.d(getClass().getSimpleName(), "Serching contains same id");
-
         if (orderMenuListSerial.size() > 0){
             for (int x = 0; x < orderMenuList.size(); x++){
-                Log.d(getClass().getSimpleName(), "found at "+x);
                 orderMenuListSerial.contains(orderMenuList.get(x).getId());
                 notifyItemChanged(x);
             }
@@ -237,10 +224,8 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
     public void removeOrderMenuSerial(String orderMenuId) {
 
         for (int x = 0; x < orderMenuListSerial.size(); x++){
-            Log.d(getClass().getSimpleName(), "Serching contains order menu id");
             if (orderMenuListSerial.get(x).equalsIgnoreCase(orderMenuId)){
                 orderMenuListSerial.remove(x);
-                Log.d(getClass().getSimpleName(), "item serial removed");
                 break;
             }else {
                 Log.d(getClass().getSimpleName(), "item serial not found, so not removed");

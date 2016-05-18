@@ -14,11 +14,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
-import com.hoqii.fxpc.sales.activity.ReceiveDetailActivity;
-import com.hoqii.fxpc.sales.activity.ReceiveListActivity;
+import com.hoqii.fxpc.sales.activity.ReturnDetailActivity;
 import com.hoqii.fxpc.sales.activity.ReturnListActivity;
-import com.hoqii.fxpc.sales.entity.Receive;
-import com.hoqii.fxpc.sales.entity.Return;
+import com.hoqii.fxpc.sales.entity.Retur;
 import com.hoqii.fxpc.sales.entity.Shipment;
 
 import java.text.SimpleDateFormat;
@@ -32,16 +30,16 @@ import java.util.List;
 public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder> {
 
     private Context context;
-    private List<Return> returnList = new ArrayList<Return>();
+    private List<Retur> returList = new ArrayList<Retur>();
 
     public ReturnAdapter(Context context) {
         this.context = context;
 
     }
 
-    public ReturnAdapter(Context context, List<Return> returns) {
+    public ReturnAdapter(Context context, List<Retur> returs) {
         this.context = context;
-        this.returnList = returns;
+        this.returList = returs;
     }
 
 
@@ -59,17 +57,17 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy / hh:mm:ss");
         Date date = new Date();
-        date.setTime(returnList.get(position).getLogInformation().getCreateDate().getTime());
+        date.setTime(returList.get(position).getLogInformation().getCreateDate().getTime());
 
         Date orderDate = new Date();
-        orderDate.setTime(returnList.get(position).getOrder().getLogInformation().getCreateDate().getTime());
+        orderDate.setTime(returList.get(position).getSerialNumber().getOrderMenu().getOrder().getLogInformation().getCreateDate().getTime());
 
-        holder.site.setText(context.getResources().getString(R.string.text_receive_from)+ returnList.get(position).getOrder().getSite().getName());
+        holder.site.setText(context.getResources().getString(R.string.text_receive_from)+ returList.get(position).getSerialNumber().getOrderMenu().getOrder().getSite().getName());
         holder.shipmentDate.setText(context.getResources().getString(R.string.text_date)+ simpleDateFormat.format(date));
-        holder.orderNumber.setText(context.getResources().getString(R.string.text_order_receipt)+ returnList.get(position).getOrder().getReceiptNumber());
+        holder.orderNumber.setText(context.getResources().getString(R.string.text_order_receipt)+ returList.get(position).getSerialNumber().getOrderMenu().getOrder().getReceiptNumber());
         holder.orderDate.setText(context.getResources().getString(R.string.text_order_date)+ simpleDateFormat.format(orderDate));
 
-        switch (returnList.get(position).getShipment().getStatus()){
+        switch (returList.get(position).getSerialNumber().getShipment().getStatus()){
             case WAIT:
                 holder.statusDelivery.setVisibility(View.GONE);
                 break;
@@ -84,19 +82,19 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, ReceiveDetailActivity.class);
-                intent.putExtra("receiveId", returnList.get(position).getId());
-                intent.putExtra("receiveDate", returnList.get(position).getLogInformation().getCreateDate().getTime());
-                intent.putExtra("orderId", returnList.get(position).getOrder().getId());
-                intent.putExtra("orderReceipt", returnList.get(position).getOrder().getReceiptNumber());
-                intent.putExtra("orderDate", returnList.get(position).getOrder().getLogInformation().getCreateDate().getTime());
-                intent.putExtra("shipmentId", returnList.get(position).getShipment().getId());
-                intent.putExtra("site", returnList.get(position).getOrder().getSite().getName());
-                intent.putExtra("siteDescription", returnList.get(position).getOrder().getSite().getDescription());
+                Intent intent = new Intent(context, ReturnDetailActivity.class);
+                intent.putExtra("receiveId", returList.get(position).getId());
+                intent.putExtra("receiveDate", returList.get(position).getLogInformation().getCreateDate().getTime());
+                intent.putExtra("orderId", returList.get(position).getSerialNumber().getOrderMenu().getOrder().getId());
+                intent.putExtra("orderReceipt", returList.get(position).getSerialNumber().getOrderMenu().getOrder().getReceiptNumber());
+                intent.putExtra("orderDate", returList.get(position).getSerialNumber().getOrderMenu().getOrder().getLogInformation().getCreateDate().getTime());
+                intent.putExtra("shipmentId", returList.get(position).getSerialNumber().getShipment().getId());
+                intent.putExtra("site", returList.get(position).getSerialNumber().getOrderMenu().getOrder().getSite().getName());
+                intent.putExtra("siteDescription", returList.get(position).getSerialNumber().getOrderMenu().getOrder().getSite().getDescription());
 
                 ObjectMapper om = SignageApplication.getObjectMapper();
                 try {
-                    String jsonReceive = om.writeValueAsString(returnList.get(position));
+                    String jsonReceive = om.writeValueAsString(returList.get(position));
                     intent.putExtra("jsonReceive", jsonReceive);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
@@ -115,7 +113,7 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
             holder.layout.setLayoutParams(params);
         }
 
-        if (position == returnList  .size() -1){
+        if (position == returList.size() -1){
             ((ReturnListActivity)context).loadMoreContent();
         }
 
@@ -123,7 +121,7 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return returnList.size();
+        return returList.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -141,10 +139,10 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
         }
     }
 
-    public void addItems(List<Return> returns){
-        for (Return r : returns){
-            if (!returnList.contains(r)){
-                returnList.add(r);
+    public void addItems(List<Retur> returs){
+        for (Retur r : returs){
+            if (!returList.contains(r)){
+                returList.add(r);
                 notifyDataSetChanged();
             }
         }
@@ -152,10 +150,10 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
 
     public void updateStatusDelivered(String receiveId){
         Log.d(getClass().getSimpleName(), "[ mencari receive berdasarkan id "+receiveId+" ]");
-        for (int x= 0; x < returnList.size(); x++){
-            if (returnList.get(x).getId().equalsIgnoreCase(receiveId)){
+        for (int x = 0; x < returList.size(); x++){
+            if (returList.get(x).getId().equalsIgnoreCase(receiveId)){
                 Log.d(getClass().getSimpleName(), "[ data id "+receiveId+" ditemukan]");
-                returnList.get(x).getShipment().setStatus(Shipment.ShipmentStatus.DELIVERED);
+                returList.get(x).getSerialNumber().getShipment().setStatus(Shipment.ShipmentStatus.DELIVERED);
                 notifyItemChanged(x);
             }
         }

@@ -9,13 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
+import com.hoqii.fxpc.sales.content.database.adapter.ReturnDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
+import com.hoqii.fxpc.sales.entity.Retur;
 import com.hoqii.fxpc.sales.entity.SerialNumber;
 
 import java.util.ArrayList;
@@ -28,15 +29,19 @@ public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenu
 
     private Context context;
     private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
+    private List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
     private List<String> tempSerialNumberList = new ArrayList<String>();
     private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
+    private ReturnDatabaseAdapter returnDatabaseAdapter;
     private boolean verify = false;
     private boolean isMinLoli = false;
+    private SerialNumber serialNumber;
 
     public ReturnOrderMenuAdapter(Context context, String orderId) {
         this.context = context;
 
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
+        returnDatabaseAdapter = new ReturnDatabaseAdapter(context);
         List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
         for (SerialNumber s : sn) {
             tempSerialNumberList.add(s.getSerialNumber());
@@ -63,7 +68,7 @@ public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenu
     }
 
     @Override
-    public void onBindViewHolder(ReturnOrderMenuAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ReturnOrderMenuAdapter.ViewHolder holder, final int position) {
         holder.productName.setText(context.getString(R.string.holder_product) + serialNumberList.get(position).getOrderMenu().getProduct().getName());
         holder.productSerial.setText(context.getString(R.string.holder_serial) + serialNumberList.get(position).getSerialNumber());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -75,18 +80,25 @@ public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenu
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Return");
+                builder.setTitle("Retur");
                 builder.setMessage("Are you sure to return this item ?");
                 View view = LayoutInflater.from(context).inflate(R.layout.view_return_desc, null);
                 final TextView orderDesc = (TextView) view.findViewById(R.id.order_desc);
                 orderDesc.setText("");
                 builder.setView(view);
                 builder.setTitle("Return Items");
-
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        Retur retur = new Retur();
+                        serialNumber = new SerialNumber();
+                        retur.setStatus(Retur.ReturnStatus.RETURNED);
+                        retur.setRecipient("");
+                        retur.setSender("");
+                        retur.setDescription(orderDesc.getText().toString());
+                        serialNumber.setSerialNumber("HAHAHAHAHAHAH");
+                        retur.setSerialNumber(serialNumber);
+                        returnDatabaseAdapter.saveReturn(retur);
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -146,17 +158,13 @@ public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenu
         }
         if (tempSerialNumberList.size() == serialNumberList.size()) {
             this.verify = true;
-            Log.d(getClass().getSimpleName(), "verify true");
         }
         notifyDataSetChanged();
-        Log.d(getClass().getSimpleName(), "adapter updated");
     }
 
-    public boolean isVerify() {
-        return verify;
+    public void addItem(SerialNumber serialNumber){
+        serialNumbers.add(serialNumber);
+        Log.d("CEK VALUE", serialNumber.getOrderMenu().getProduct().getName());
     }
 
-    public void setVerify(boolean verify) {
-        this.verify = verify;
-    }
 }

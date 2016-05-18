@@ -73,9 +73,6 @@ public class SellerOrderAdapter extends RecyclerView.Adapter<SellerOrderAdapter.
                 Intent intent = new Intent(context, SellerOrderMenuListActivity.class);
                 intent.putExtra("orderId", orderList.get(position).getId());
                 intent.putExtra("orderDate", orderList.get(position).getLogInformation().getCreateDate().getTime());
-                Log.d("date send ", Long.toString(orderList.get(position).getLogInformation().getCreateDate().getTime()));
-//                intent.putExtra("orderBusinessPartnerName", orderList.get(position).getContact().getBusinessPartner().getName());
-//                intent.putExtra("orderParentSiteName", orderList.get(position).getParentSite().getName());
                 intent.putExtra("orderReceipt", orderList.get(position).getReceiptNumber());
                 intent.putExtra("siteFromName", orderList.get(position).getSiteFrom().getName());
                 intent.putExtra("siteFromEmail", orderList.get(position).getSiteFrom().getEmail());
