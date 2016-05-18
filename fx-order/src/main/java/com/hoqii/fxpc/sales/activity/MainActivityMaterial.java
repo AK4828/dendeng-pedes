@@ -2,6 +2,7 @@ package com.hoqii.fxpc.sales.activity;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -9,18 +10,25 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.adapter.MainFragmentStateAdapter;
+import com.hoqii.fxpc.sales.adapter.SelfHistoryOrderAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.Stock;
@@ -52,6 +60,8 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
     private OrderDatabaseAdapter orderDatabaseAdapter;
     private Order order = new Order();
     private String siteId = null;
+    private LinearLayout layoutNoItem;
+    private TextView centerTitle;
 
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -61,6 +71,9 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
         setContentView(R.layout.activity_main_material);
         EventBus.getDefault().register(this);
         tabLayout = (TabLayout) findViewById(R.id.main_tab);
+        layoutNoItem = (LinearLayout) findViewById(R.id.layout_no_item);
+        centerTitle = (TextView) findViewById(R.id.title_center);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isMinLoli = true;
             getWindow().setEnterTransition(new Fade());
@@ -78,7 +91,7 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, EntypoIcons.entypo_chevron_left).colorRes(R.color.white).actionBarSize());
         viewPager = (ViewPager) findViewById(R.id.main_viewPager);
 
-        progress = new ProgressDialog(this);
+        progress = new ProgressDialog(MainActivityMaterial.this);
         progress.setMessage(getResources().getString(R.string.message_wait));
         progress.setCancelable(false);
 
@@ -135,6 +148,47 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search, menu);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                StockSync stockSync = new StockSync(MainActivityMaterial.this, MainActivityMaterial.this, StockSync.StockUri.bySiteUriSearch.name());
+                stockSync.execute(siteId, query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                centerTitle.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                centerTitle.setVisibility(View.VISIBLE);
+                StockSync stockSync = new StockSync(MainActivityMaterial.this, MainActivityMaterial.this, StockSync.StockUri.bySiteUri.name());
+                stockSync.execute(siteId);
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case android.R.id.home :
@@ -172,7 +226,11 @@ public class MainActivityMaterial extends AppCompatActivity implements TaskServi
             MainFragmentStateAdapter viewPagerAdapter = new MainFragmentStateAdapter(getSupportFragmentManager(), this, stocks);
             viewPager.setAdapter(viewPagerAdapter);
             tabLayout.setupWithViewPager(viewPager);
-
+            layoutNoItem.setVisibility(View.GONE);
+        }else {
+            tabLayout.removeAllTabs();
+            viewPager.removeAllViews();
+            layoutNoItem.setVisibility(View.VISIBLE);
         }
     }
 

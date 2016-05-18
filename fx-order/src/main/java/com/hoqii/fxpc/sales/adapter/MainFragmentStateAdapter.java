@@ -76,4 +76,9 @@ public class MainFragmentStateAdapter extends FragmentStatePagerAdapter{
             return null;
         }
     }
+
+    public void cleraData(){
+        fragmentList.clear();
+        notifyDataSetChanged();
+    }
 }

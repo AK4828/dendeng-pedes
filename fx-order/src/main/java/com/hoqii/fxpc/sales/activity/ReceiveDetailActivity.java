@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -640,7 +639,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
     private void verify() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.verify));
-        builder.setItems(new String[]{getString(R.string.text_scan_serial_number), getString(R.string.text_manual_verifi), getString(R.string.text_verify_from_file), getString(R.string.text_verify_all)}, new DialogInterface.OnClickListener() {
+        builder.setItems(new String[]{getString(R.string.text_scan_serial_number), getString(R.string.text_manual_serial), getString(R.string.text_serial_from_file), getString(R.string.text_verify_all)}, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
@@ -666,7 +665,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                     final TextInputLayout titleEditSerial = (TextInputLayout) customView.findViewById(R.id.title_edit_serial);
 
                     List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-                    textCount.setText(getResources().getString(R.string.text_alredy_verivfy_count)+sn.size()+getResources().getString(R.string.text_verivy_of_total)+serialNumberList.size());
+                    textCount.setText(getResources().getString(R.string.text_already_verivfy_count)+sn.size()+getResources().getString(R.string.text_verivy_of_total)+serialNumberList.size());
 
                     final List<SerialNumber> tempSerial = new ArrayList<SerialNumber>();
                     final List<String> serialstring = new ArrayList<String>();
@@ -706,7 +705,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                                     tempSerial.add(serialNumberObj);
 
                                     editSerial.getText().clear();
-                                    textCount.setText(getResources().getString(R.string.text_alredy_verivfy_count)+tempSerial.size()+getResources().getString(R.string.text_verivy_of_total)+serialNumberList.size());
+                                    textCount.setText(getResources().getString(R.string.text_already_verivfy_count)+tempSerial.size()+getResources().getString(R.string.text_verivy_of_total)+serialNumberList.size());
                                 }else {
                                     titleEditSerial.setError(getString(R.string.message_serial_exist));
                                 }
@@ -752,8 +751,6 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         });
         builder.show();
     }
-
-
 
     private void updateVerifyButton() {
         Log.d(getClass().getSimpleName(), "[ status verivikasi "+String.valueOf(statusDelivery)+" ]");
@@ -1158,7 +1155,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         final List<SerialNumber> verified = verifyFromUploadFile(serialList);
         progress.dismiss();
         builder.setTitle(getString(R.string.verify));
-        builder.setMessage(getResources().getString(R.string.text_alredy_verivfy_count)
+        builder.setMessage(getResources().getString(R.string.text_already_verivfy_count)
                 +Integer.toString(verified.size())
                 +getResources().getString(R.string.text_verivy_of_total)
                 +serialNumberList.size());

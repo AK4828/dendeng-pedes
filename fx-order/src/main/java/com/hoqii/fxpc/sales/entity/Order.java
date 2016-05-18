@@ -3,6 +3,9 @@ package com.hoqii.fxpc.sales.entity;
 import com.hoqii.fxpc.sales.core.DefaultPersistence;
 import com.hoqii.fxpc.sales.core.commons.Site;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Order extends DefaultPersistence {
 	public enum OrderStatus {
 		PROCESSED, SENDING, RECEIVED, DONE, CANCELED
@@ -171,4 +174,5 @@ public class Order extends DefaultPersistence {
 	public void setSiteFrom(Site siteFrom) {
 		this.siteFrom = siteFrom;
 	}
+
 }

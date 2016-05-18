@@ -150,7 +150,7 @@ public class OrderActivity extends AppCompatActivity implements TaskService {
 
 //        Glide.with(this).load(preview).error(R.drawable.no_image).into(prodcutThumb);
         String imageUrl = preferences.getString("server_url", "") + "/api/products/" + product.getId() + "/image?access_token=" + AuthenticationUtils.getCurrentAuthentication().getAccessToken();
-        Glide.with(this).load(imageUrl).error(R.drawable.no_image).into(prodcutThumb);
+        Glide.with(this).load(imageUrl).error(R.drawable.ic_description_24dp).into(prodcutThumb);
         productName.setText(product.getName());
 
         productPrice.setText(getString(R.string.text_currency) + decimalFormat.format(product.getSellPrice()));

@@ -128,7 +128,7 @@ public class CategoryGridAdapter extends BaseAdapter {
 //        }
 
         String imageUrl = preferences.getString("server_url", "")+"/api/products/"+stocks.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
-        Glide.with(mcontext).load(imageUrl).error(R.drawable.no_image).into(holder.imageView);
+        Glide.with(mcontext).load(imageUrl).error(R.drawable.ic_description_24dp).into(holder.imageView);
         holder.title.setText(stocks.get(position).getProduct().getParentCategory().getName());
         holder.layout.setBackgroundColor(Color.parseColor(color.get(position)));
 //

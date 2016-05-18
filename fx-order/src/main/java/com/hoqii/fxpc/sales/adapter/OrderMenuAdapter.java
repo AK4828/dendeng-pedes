@@ -63,7 +63,7 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.View
 
 //        Glide.with(context).load("file://" + ImageUtil.getImagePath(context, orderMenuList.get(position).getProduct().getId())).error(R.drawable.no_image).into(holder.preview);
         String imageUrl = preferences.getString("server_url", "")+"/api/products/"+orderMenuList.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
-        Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
+        Glide.with(context).load(imageUrl).error(R.drawable.ic_description_24dp).into(holder.preview);
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

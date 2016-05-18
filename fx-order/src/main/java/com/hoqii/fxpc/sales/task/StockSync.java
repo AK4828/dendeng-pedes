@@ -10,7 +10,9 @@ import com.hoqii.fxpc.sales.entity.Category;
 import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.entity.ProductUom;
 import com.hoqii.fxpc.sales.entity.Stock;
+import com.hoqii.fxpc.sales.entity.SerialEvent;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
+import com.hoqii.fxpc.sales.util.StringUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,9 +20,10 @@ import org.json.JSONObject;
 import org.meruvian.midas.core.service.TaskService;
 import org.meruvian.midas.core.util.ConnectionUtil;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by miftakhul on 3/5/16.
@@ -31,9 +34,10 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
     private TaskService taskService;
     private SharedPreferences preferences;
     private StockUri currentUri = StockUri.defaultUri;
+    private String serial = null;
 
     public enum StockUri{
-        defaultUri, bySerialUri, byProductIdUri, bySiteUri
+        defaultUri, bySerialUri, byProductIdUri, bySiteUri, bySiteUriSearch
     }
 
     public StockSync(Context context, TaskService taskService, String enumUri) {
@@ -46,12 +50,13 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
 
     @Override
     protected JSONObject doInBackground(String... params) {
-        Log.d(getClass().getSimpleName(), "?acces_token= " + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
+        Log.d(getClass().getSimpleName(), "?access_token= " + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
         switch (currentUri){
             case defaultUri:
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks?access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken()+"&max="+Integer.MAX_VALUE);
             case bySerialUri:
+                serial = params[1];
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/product/"+params[0]+"/serial/"+params[1]+"?access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
             case byProductIdUri:
@@ -59,6 +64,15 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
             case bySiteUri:
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/site/"+params[0]+"?access_token="
+                        + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&max="+Integer.MAX_VALUE);
+            case bySiteUriSearch:
+//                String encodeQ = null;
+//                try {
+//                    encodeQ = URLEncoder.encode(params[1], "UTF-8");
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
+                return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/site/"+params[0]+"?q="+ StringUtils.encodeString(params[1])+"&access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&max="+Integer.MAX_VALUE);
             default:
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks?access_token="
@@ -146,12 +160,19 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                         Log.d(getClass().getSimpleName(), "status serial : " + String.valueOf(status));
 
                         taskService.onSuccess(SignageVariables.STOCK_GET_TASK, status);
+
+                        SerialEvent se = new SerialEvent();
+                        se.setStatus(status);
+                        se.setSerial(serial);
+                        taskService.onSuccess(SignageVariables.SERIAL_CHECK_GET_TASK, se);
                     }else {
                         taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
+                        taskService.onError(SignageVariables.SERIAL_CHECK_GET_TASK, "Batal");
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
                     taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
+                    taskService.onError(SignageVariables.SERIAL_CHECK_GET_TASK, "Batal");
                 }
                 break;
 
@@ -210,6 +231,65 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                 break;
 
             case bySiteUri:
+                try {
+                    if (result !=null){
+                        List<Stock> stocks = new ArrayList<Stock>();
+                        JSONArray jsonArray = result.getJSONArray("content");
+                        for (int a = 0; a < jsonArray.length(); a++){
+                            JSONObject object = jsonArray.getJSONObject(a);
+                            Stock s = new Stock();
+                            s.setId(object.getString("id"));
+                            if (!object.isNull("product")){
+                                JSONObject productObject = new JSONObject();
+                                productObject = object.getJSONObject("product");
+
+                                Category parentCategory = new Category();
+                                if (!productObject.isNull("parentCategory")) {
+                                    parentCategory.setId(productObject.getJSONObject("parentCategory").getString("id"));
+                                    parentCategory.setName(productObject.getJSONObject("parentCategory").getString("name"));
+                                }
+
+                                Category category = new Category();
+                                if (!productObject.isNull("category")) {
+                                    category.setId(productObject.getJSONObject("category").getString("id"));
+                                }
+
+                                ProductUom uom = new ProductUom();
+                                if (!productObject.isNull("uom")) {
+                                    uom.setId(productObject.getJSONObject("uom").getString("id"));
+                                }
+
+                                Product product = new Product();
+                                product.setId(productObject.getString("id"));
+                                product.setName(productObject.getString("name"));
+                                if (!productObject.isNull("sellPrice")) {
+                                    product.setSellPrice(productObject.getLong("sellPrice"));
+                                } else {
+                                    product.setSellPrice(0);
+                                }
+                                product.setParentCategory(parentCategory);
+                                product.setCategory(category);
+                                product.setUom(uom);
+                                product.setCode(productObject.getString("code"));
+                                product.setDescription(productObject.getString("description"));
+                                product.setReward(new Double(productObject.getString("reward")));
+
+                                s.setProduct(product);
+                            }
+                            s.setQty(object.getInt("qty"));
+                            stocks.add(s);
+                        }
+                        taskService.onSuccess(SignageVariables.STOCK_GET_TASK, stocks);
+                    }else {
+                        taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
+                    }
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    taskService.onError(SignageVariables.STOCK_GET_TASK, "Batal");
+                }
+                break;
+
+            case bySiteUriSearch:
                 try {
                     if (result !=null){
                         List<Stock> stocks = new ArrayList<Stock>();
