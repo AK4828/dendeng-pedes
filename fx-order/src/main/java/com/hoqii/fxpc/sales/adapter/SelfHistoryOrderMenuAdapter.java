@@ -2,7 +2,6 @@ package com.hoqii.fxpc.sales.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +16,7 @@ import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.SelfHistoryOrderMenuListActivity;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
 import java.util.List;

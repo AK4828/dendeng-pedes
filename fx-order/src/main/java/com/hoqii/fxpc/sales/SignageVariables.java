@@ -58,5 +58,6 @@ public class SignageVariables {
     public static final int SERIAL_ORDER_MENU_CHECK_TASK = 26;
     public static final int STOCK_GET_TASK = 27;
     public static final int SERIAL_CHECK_GET_TASK = 28;
+    public static final int RETUR_GET_TASK = 29;
 
 }

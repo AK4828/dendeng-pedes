@@ -5,7 +5,7 @@ import com.hoqii.fxpc.sales.core.DefaultPersistence;
 /**
  * Created by miftakhul on 1/5/16.
  */
-public class SerialNumber extends DefaultPersistence{
+public class OrderMenuSerial extends DefaultPersistence{
 
     private OrderMenu orderMenu = new OrderMenu();
     private Shipment shipment = new Shipment();

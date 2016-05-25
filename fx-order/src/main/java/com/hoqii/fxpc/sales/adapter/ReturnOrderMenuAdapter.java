@@ -14,10 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.content.database.adapter.ReturnDatabaseAdapter;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
-import com.hoqii.fxpc.sales.entity.Retur;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
+import com.hoqii.fxpc.sales.job.ReturnJob;
+import com.path.android.jobqueue.JobManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,22 +29,22 @@ import java.util.List;
 public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenuAdapter.ViewHolder> {
 
     private Context context;
-    private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
-    private List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> orderMenuSerialList = new ArrayList<OrderMenuSerial>();
+    private List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
     private List<String> tempSerialNumberList = new ArrayList<String>();
     private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
-    private ReturnDatabaseAdapter returnDatabaseAdapter;
     private boolean verify = false;
     private boolean isMinLoli = false;
-    private SerialNumber serialNumber;
+    private OrderMenuSerial orderMenuSerial;
+    private String site;
+    private JobManager jobManager;
 
     public ReturnOrderMenuAdapter(Context context, String orderId) {
         this.context = context;
 
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
-        returnDatabaseAdapter = new ReturnDatabaseAdapter(context);
-        List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-        for (SerialNumber s : sn) {
+        List<OrderMenuSerial> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+        for (OrderMenuSerial s : sn) {
             tempSerialNumberList.add(s.getSerialNumber());
         }
 
@@ -54,8 +55,8 @@ public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenu
         this.verify = verify;
 
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
-        List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-        for (SerialNumber s : sn) {
+        List<OrderMenuSerial> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+        for (OrderMenuSerial s : sn) {
             tempSerialNumberList.add(s.getSerialNumber());
         }
     }
@@ -69,8 +70,8 @@ public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenu
 
     @Override
     public void onBindViewHolder(ReturnOrderMenuAdapter.ViewHolder holder, final int position) {
-        holder.productName.setText(context.getString(R.string.holder_product) + serialNumberList.get(position).getOrderMenu().getProduct().getName());
-        holder.productSerial.setText(context.getString(R.string.holder_serial) + serialNumberList.get(position).getSerialNumber());
+        holder.productName.setText(context.getString(R.string.holder_product) + orderMenuSerialList.get(position).getOrderMenu().getProduct().getName());
+        holder.productSerial.setText(context.getString(R.string.holder_serial) + orderMenuSerialList.get(position).getSerialNumber());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isMinLoli = true;
         } else {
@@ -90,15 +91,10 @@ public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenu
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Retur retur = new Retur();
-                        serialNumber = new SerialNumber();
-                        retur.setStatus(Retur.ReturnStatus.RETURNED);
-                        retur.setRecipient("");
-                        retur.setSender("");
-                        retur.setDescription(orderDesc.getText().toString());
-                        serialNumber.setSerialNumber("HAHAHAHAHAHAH");
-                        retur.setSerialNumber(serialNumber);
-                        returnDatabaseAdapter.saveReturn(retur);
+                        jobManager = SignageApplication.getInstance().getJobManager();
+                        Log.d("SerialId", orderMenuSerialList.get(position).getId());
+                        Log.d("siteToId", site);
+                        jobManager.addJobInBackground(new ReturnJob(site, orderDesc.getText().toString(), orderMenuSerialList.get(position).getId()));
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -110,7 +106,7 @@ public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenu
                 builder.show();
             }
         });
-        if (tempSerialNumberList.contains(serialNumberList.get(position).getSerialNumber())) {
+        if (tempSerialNumberList.contains(orderMenuSerialList.get(position).getSerialNumber())) {
             holder.imageStatus.setVisibility(View.VISIBLE);
         } else {
             holder.imageStatus.setVisibility(View.GONE);
@@ -133,7 +129,7 @@ public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenu
 
     @Override
     public int getItemCount() {
-        return serialNumberList.size();
+        return orderMenuSerialList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -150,21 +146,22 @@ public class ReturnOrderMenuAdapter extends RecyclerView.Adapter<ReturnOrderMenu
         }
     }
 
-    public void addItems(List<SerialNumber> serialNumbers) {
-        for (SerialNumber s : serialNumbers) {
-            if (!serialNumberList.contains(s)) {
-                serialNumberList.add(s);
+    public void addItems(List<OrderMenuSerial> orderMenuSerials, String siteTo) {
+        for (OrderMenuSerial s : orderMenuSerials) {
+            if (!orderMenuSerialList.contains(s)) {
+                orderMenuSerialList.add(s);
             }
+            site = siteTo;
         }
-        if (tempSerialNumberList.size() == serialNumberList.size()) {
+        if (tempSerialNumberList.size() == orderMenuSerialList.size()) {
             this.verify = true;
         }
         notifyDataSetChanged();
     }
 
-    public void addItem(SerialNumber serialNumber){
-        serialNumbers.add(serialNumber);
-        Log.d("CEK VALUE", serialNumber.getOrderMenu().getProduct().getName());
+    public void addItem(OrderMenuSerial orderMenuSerial){
+        orderMenuSerials.add(orderMenuSerial);
+        Log.d("CEK VALUE", orderMenuSerial.getOrderMenu().getProduct().getName());
     }
 
 }

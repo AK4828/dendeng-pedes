@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.util.JsonRequestUtils;
 import com.path.android.jobqueue.Job;
@@ -61,7 +61,7 @@ public class MenuUpdateJob extends Job {
             JsonRequestUtils requestUpdate = new JsonRequestUtils(url + "/api/orders/" + orderId + "/menu/" + orderMenuId );
 
             SerialNumberDatabaseAdapter snAdapter = new SerialNumberDatabaseAdapter(SignageApplication.getInstance());
-            List<SerialNumber> sn = snAdapter.getSerialNumberListByOrderIdAndOrderMenuIdAndHasSync(orderId, orderMenuId);
+            List<OrderMenuSerial> sn = snAdapter.getSerialNumberListByOrderIdAndOrderMenuIdAndHasSync(orderId, orderMenuId);
 
             Log.d(getClass().getSimpleName(), "menu quantity =========================: "+orderMenu.getQty());
             Log.d(getClass().getSimpleName(), "serial quantity =========================: "+sn.size());

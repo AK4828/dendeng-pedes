@@ -38,6 +38,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,12 +50,13 @@ import com.hoqii.fxpc.sales.content.database.adapter.DefaultDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.entity.Receive;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.job.OrderStatusUpdateJob;
+import com.hoqii.fxpc.sales.job.ReturnJob;
 import com.hoqii.fxpc.sales.job.ShipmentUpdateJob;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
@@ -89,9 +91,9 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
     private int requestScannerCode = 123;
     private int requestSerialFileCode = 223;
 
-    private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> orderMenuSerialList = new ArrayList<OrderMenuSerial>();
     private List<OrderMenu> tempOrderMenus = new ArrayList<OrderMenu>();
-    private List<SerialNumber> tempSerialNumbers = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> tempOrderMenuSerials = new ArrayList<OrderMenuSerial>();
     private SharedPreferences preferences;
     private RecyclerView recyclerView;
     private ReceiveOrderMenuAdapter receiveOrderMenuAdapter;
@@ -254,6 +256,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                 intent.putExtra("orderDate", getIntent().getLongExtra("orderDate", 0));
                 intent.putExtra("receiveDate", getIntent().getLongExtra("receiveDate", 0));
                 intent.putExtra("orderReceipt", getIntent().getStringExtra("orderReceipt"));
+                intent.putExtra("siteToId", getIntent().getStringExtra("siteToId"));
 
 
                 startActivity(intent);
@@ -261,7 +264,6 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         }
         return super.onOptionsItemSelected(item);
     }
-
     @Override
     public void onExecute(int code) {
 
@@ -277,7 +279,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                 receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(this, orderId);
             }
             recyclerView.setAdapter(receiveOrderMenuAdapter);
-            receiveOrderMenuAdapter.addItems(serialNumberList);
+            receiveOrderMenuAdapter.addItems(orderMenuSerialList);
             updateVerifyButton();
 
         } else if (code == SignageVariables.HISTORY_ORDER_MENU_GET_TASK) {
@@ -298,7 +300,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                 Log.d(getClass().getSimpleName(), "[ jumlah order " + qty + " ]");
                 Log.d(getClass().getSimpleName(), "[ default serial " + qtySerial + " ]");
 
-                for (SerialNumber sn : tempSerialNumbers) {
+                for (OrderMenuSerial sn : tempOrderMenuSerials) {
                     Log.d(getClass().getSimpleName(), "[ mencari serial dengan id order menu " + orderMenuId + "]");
                     if (sn.getOrderMenu().getId().equalsIgnoreCase(orderMenuId)) {
                         qtySerial += 1;
@@ -394,15 +396,15 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         protected void onPostExecute(JSONObject result) {
             try {
                 if (result != null) {
-                    List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+                    List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
                     JSONArray jsonArray = result.getJSONArray("content");
 
                     totalPage = result.getInt("totalPages");
                     for (int a = 0; a < jsonArray.length(); a++) {
                         JSONObject object = jsonArray.getJSONObject(a);
-                        SerialNumber serialNumber = new SerialNumber();
-                        serialNumber.setId(object.getString("id"));
-                        serialNumber.setSerialNumber(object.getString("serialNumber"));
+                        OrderMenuSerial orderMenuSerial = new OrderMenuSerial();
+                        orderMenuSerial.setId(object.getString("id"));
+                        orderMenuSerial.setSerialNumber(object.getString("serialNumber"));
 
                         JSONObject orderMenuObject = new JSONObject();
                         if (!object.isNull("orderMenu")) {
@@ -423,11 +425,11 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                                 product.setName(productObject.getString("name"));
                                 orderMenu.setProduct(product);
                             }
-                            serialNumber.setOrderMenu(orderMenu);
+                            orderMenuSerial.setOrderMenu(orderMenu);
                         }
-                        serialNumbers.add(serialNumber);
+                        orderMenuSerials.add(orderMenuSerial);
                     }
-                    serialNumberList = serialNumbers;
+                    orderMenuSerialList = orderMenuSerials;
 
                     if (isLoadMore == true) {
                         page++;
@@ -477,15 +479,15 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         protected void onPostExecute(JSONObject result) {
             try {
                 if (result != null) {
-                    List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+                    List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
                     JSONArray jsonArray = result.getJSONArray("content");
 
                     Log.d(getClass().getSimpleName(), "serial menu : " + result.toString());
                     for (int a = 0; a < jsonArray.length(); a++) {
                         JSONObject object = jsonArray.getJSONObject(a);
-                        SerialNumber serialNumber = new SerialNumber();
-                        serialNumber.setId(object.getString("id"));
-                        serialNumber.setSerialNumber(object.getString("serialNumber"));
+                        OrderMenuSerial orderMenuSerial = new OrderMenuSerial();
+                        orderMenuSerial.setId(object.getString("id"));
+                        orderMenuSerial.setSerialNumber(object.getString("serialNumber"));
 
                         JSONObject orderMenuObject = new JSONObject();
                         if (!object.isNull("orderMenu")) {
@@ -506,11 +508,11 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                                 product.setName(productObject.getString("name"));
                                 orderMenu.setProduct(product);
                             }
-                            serialNumber.setOrderMenu(orderMenu);
+                            orderMenuSerial.setOrderMenu(orderMenu);
                         }
-                        serialNumbers.add(serialNumber);
+                        orderMenuSerials.add(orderMenuSerial);
                     }
-                    tempSerialNumbers = serialNumbers;
+                    tempOrderMenuSerials = orderMenuSerials;
 
                     taskService.onSuccess(SignageVariables.SERIAL_ORDER_MENU_CHECK_TASK, true);
                 } else {
@@ -601,13 +603,13 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
         if (verifyButton.getText().equals(getResources().getString(R.string.verified))) {
             receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(ReceiveDetailActivity.this, orderId, true);
             recyclerView.setAdapter(receiveOrderMenuAdapter);
-            receiveOrderMenuAdapter.addItems(serialNumberList);
+            receiveOrderMenuAdapter.addItems(orderMenuSerialList);
             swipeRefreshLayout.setRefreshing(false);
             updateVerifyButton();
         } else if (verifyButton.getText().equals(getResources().getString(R.string.verify_now))) {
             receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(ReceiveDetailActivity.this, orderId, true);
             recyclerView.setAdapter(receiveOrderMenuAdapter);
-            receiveOrderMenuAdapter.addItems(serialNumberList);
+            receiveOrderMenuAdapter.addItems(orderMenuSerialList);
             swipeRefreshLayout.setRefreshing(false);
             updateVerifyButton();
         } else {
@@ -647,7 +649,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
 
                     ObjectMapper mapper = SignageApplication.getObjectMapper();
                     try {
-                        String jsonSerial = mapper.writeValueAsString(serialNumberList);
+                        String jsonSerial = mapper.writeValueAsString(orderMenuSerialList);
                         i.putExtra("orderId", orderId);
                         i.putExtra("shipmentId", shipmentId);
                         i.putExtra("jsonSerial", jsonSerial);
@@ -664,12 +666,12 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                     final TextView textCount = (TextView) customView.findViewById(R.id.text_count_serial);
                     final TextInputLayout titleEditSerial = (TextInputLayout) customView.findViewById(R.id.title_edit_serial);
 
-                    List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-                    textCount.setText(getResources().getString(R.string.text_already_verivfy_count)+sn.size()+getResources().getString(R.string.text_verivy_of_total)+serialNumberList.size());
+                    List<OrderMenuSerial> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+                    textCount.setText(getResources().getString(R.string.text_already_verivfy_count)+sn.size()+getResources().getString(R.string.text_verivy_of_total)+ orderMenuSerialList.size());
 
-                    final List<SerialNumber> tempSerial = new ArrayList<SerialNumber>();
+                    final List<OrderMenuSerial> tempSerial = new ArrayList<OrderMenuSerial>();
                     final List<String> serialstring = new ArrayList<String>();
-                    for (SerialNumber s : serialNumberList){
+                    for (OrderMenuSerial s : orderMenuSerialList){
                         serialstring.add(s.getSerialNumber());
                     }
 
@@ -690,22 +692,22 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                             if (serialstring.contains(editSerial.getText().toString())){
 
                                 List<String> serialNumber = new ArrayList<String>();
-                                for (SerialNumber sn : tempSerial){
+                                for (OrderMenuSerial sn : tempSerial){
                                     serialNumber.add(sn.getSerialNumber());
                                 }
 
                                 if (!serialNumber.contains(editSerial.getText().toString())) {
-                                    SerialNumber serialNumberObj = new SerialNumber();
+                                    OrderMenuSerial orderMenuSerialObj = new OrderMenuSerial();
 
-                                    serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
-                                    serialNumberObj.getOrderMenu().getOrder().setId(orderId);
-                                    serialNumberObj.getOrderMenu().setId(null);
-                                    serialNumberObj.setSerialNumber(editSerial.getText().toString());
-                                    serialNumberObj.getShipment().setId(shipmentId);
-                                    tempSerial.add(serialNumberObj);
+                                    orderMenuSerialObj.setId(DefaultDatabaseAdapter.generateId());
+                                    orderMenuSerialObj.getOrderMenu().getOrder().setId(orderId);
+                                    orderMenuSerialObj.getOrderMenu().setId(null);
+                                    orderMenuSerialObj.setSerialNumber(editSerial.getText().toString());
+                                    orderMenuSerialObj.getShipment().setId(shipmentId);
+                                    tempSerial.add(orderMenuSerialObj);
 
                                     editSerial.getText().clear();
-                                    textCount.setText(getResources().getString(R.string.text_already_verivfy_count)+tempSerial.size()+getResources().getString(R.string.text_verivy_of_total)+serialNumberList.size());
+                                    textCount.setText(getResources().getString(R.string.text_already_verivfy_count)+tempSerial.size()+getResources().getString(R.string.text_verivy_of_total)+ orderMenuSerialList.size());
                                 }else {
                                     titleEditSerial.setError(getString(R.string.message_serial_exist));
                                 }
@@ -720,7 +722,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                             serialNumberDatabaseAdapter.save(tempSerial);
                             receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(ReceiveDetailActivity.this, orderId);
                             recyclerView.setAdapter(receiveOrderMenuAdapter);
-                            receiveOrderMenuAdapter.addItems(serialNumberList);
+                            receiveOrderMenuAdapter.addItems(orderMenuSerialList);
                             updateVerifyButton();
                         }
                     });
@@ -738,7 +740,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                 }else if (which == 3) {
                     receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(ReceiveDetailActivity.this, orderId, true);
                     recyclerView.setAdapter(receiveOrderMenuAdapter);
-                    receiveOrderMenuAdapter.addItems(serialNumberList);
+                    receiveOrderMenuAdapter.addItems(orderMenuSerialList);
                     updateVerifyButton();
                 }
             }
@@ -966,24 +968,24 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
     }
 
 
-    private List<SerialNumber> verifyFromUploadFile(List<String> serialList){
-        List<SerialNumber> verifiedSerial = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> verifyFromUploadFile(List<String> serialList){
+        List<OrderMenuSerial> verifiedSerial = new ArrayList<OrderMenuSerial>();
         if (serialList.size() > 0){
             List<String> tempSerialList = new ArrayList<String>();
-            for (SerialNumber s : serialNumberList){
+            for (OrderMenuSerial s : orderMenuSerialList){
                 tempSerialList.add(s.getSerialNumber());
             }
 
             for (String sn : tempSerialList){
                 if (serialList.contains(sn)){
-                    SerialNumber serialNumberObj = new SerialNumber();
+                    OrderMenuSerial orderMenuSerialObj = new OrderMenuSerial();
 
-                    serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
-                    serialNumberObj.getOrderMenu().getOrder().setId(orderId);
-                    serialNumberObj.getOrderMenu().setId(null);
-                    serialNumberObj.setSerialNumber(sn);
-                    serialNumberObj.getShipment().setId(shipmentId);
-                    verifiedSerial.add(serialNumberObj);
+                    orderMenuSerialObj.setId(DefaultDatabaseAdapter.generateId());
+                    orderMenuSerialObj.getOrderMenu().getOrder().setId(orderId);
+                    orderMenuSerialObj.getOrderMenu().setId(null);
+                    orderMenuSerialObj.setSerialNumber(sn);
+                    orderMenuSerialObj.getShipment().setId(shipmentId);
+                    verifiedSerial.add(orderMenuSerialObj);
                 }
             }
 
@@ -1097,7 +1099,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
             Log.d(getClass().getSimpleName(), "result ok");
             receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(this, orderId);
             recyclerView.setAdapter(receiveOrderMenuAdapter);
-            receiveOrderMenuAdapter.addItems(serialNumberList);
+            receiveOrderMenuAdapter.addItems(orderMenuSerialList);
             updateVerifyButton();
         }else if (requestCode == requestSerialFileCode){
             if (resultCode == RESULT_OK){
@@ -1152,13 +1154,13 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
     private void doVerify(List<String> serialList){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
-        final List<SerialNumber> verified = verifyFromUploadFile(serialList);
+        final List<OrderMenuSerial> verified = verifyFromUploadFile(serialList);
         progress.dismiss();
         builder.setTitle(getString(R.string.verify));
         builder.setMessage(getResources().getString(R.string.text_already_verivfy_count)
                 +Integer.toString(verified.size())
                 +getResources().getString(R.string.text_verivy_of_total)
-                +serialNumberList.size());
+                + orderMenuSerialList.size());
         builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -1166,7 +1168,7 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
                     serialNumberDatabaseAdapter.save(verified);
                     receiveOrderMenuAdapter = new ReceiveOrderMenuAdapter(ReceiveDetailActivity.this, orderId);
                     recyclerView.setAdapter(receiveOrderMenuAdapter);
-                    receiveOrderMenuAdapter.addItems(serialNumberList);
+                    receiveOrderMenuAdapter.addItems(orderMenuSerialList);
                     updateVerifyButton();
                 }
                 dialog.dismiss();

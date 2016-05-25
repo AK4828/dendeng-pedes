@@ -20,8 +20,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.transition.Fade;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -37,21 +35,17 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
-import com.hoqii.fxpc.sales.adapter.ReceiveOrderMenuAdapter;
 import com.hoqii.fxpc.sales.adapter.SellerOrderMenuAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.DefaultDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.entity.SerialEvent;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.entity.SerialTemplate;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.hoqii.fxpc.sales.event.GenericEvent;
@@ -98,10 +92,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -138,7 +130,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     private JobManager jobManager;
 
     private List<String> orderMenuListSerial = new ArrayList<String>();
-    private List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
     private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
 
     private int position;
@@ -148,9 +140,9 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
     private Shipment shipment = null;
 
     //manual add serial
-    private List<SerialNumber> tempSerial = new ArrayList<SerialNumber>();
-    private List<SerialNumber> verifiedSerial = new ArrayList<SerialNumber>();
-    private List<SerialNumber> unVerifiedSerial = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> tempSerial = new ArrayList<OrderMenuSerial>();
+    private List<OrderMenuSerial> verifiedSerial = new ArrayList<OrderMenuSerial>();
+    private List<OrderMenuSerial> unVerifiedSerial = new ArrayList<OrderMenuSerial>();
     private int countTocheck = 0;
     private int maxSerialistTocheck = 0;
 
@@ -351,7 +343,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                 Log.d("check serial", "y");
                 countTocheck++;
                 SerialEvent serialEvent = (SerialEvent) result;
-                for (SerialNumber sn : tempSerial){
+                for (OrderMenuSerial sn : tempSerial){
                     if (sn.getSerialNumber() == serialEvent.getSerial()){
                         boolean status = (boolean) serialEvent.isStatus();
                         if (status == true) {
@@ -572,7 +564,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                     Log.d(getClass().getSimpleName(), "shipment sucess");
                     shipment = (Shipment) requestSuccess.getResponse().getContent();
 
-                    List<SerialNumber> serialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+                    List<OrderMenuSerial> serialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
                     maxSerialist = 0;
                     count = 0;
                     maxSerialist = serialList.size();
@@ -580,7 +572,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
                     Log.d(getClass().getSimpleName(), " getted order menu serial count" + orderMenuListSerial.size() + " ================================================ ");
 
-                    for (SerialNumber snn : serialList) {
+                    for (OrderMenuSerial snn : serialList) {
                         Log.d(getClass().getSimpleName(), " getted serial " + snn.getId() + " ================================================ ");
                         Log.d(getClass().getSimpleName(), " getted serial shipment id " + requestSuccess.getEntityId() + " ================================================ ");
                         jobManager.addJobInBackground(new SerialJob(preferences.getString("server_url", ""), snn.getId(), requestSuccess.getEntityId()));
@@ -831,11 +823,11 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
     private void checkOrderMenuSerialList() {
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(this);
-        serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+        orderMenuSerials = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
 
-        if (serialNumbers.size() > 0) {
-            for (int x = 0; x < serialNumbers.size(); x++) {
-                String id = serialNumbers.get(x).getOrderMenu().getId();
+        if (orderMenuSerials.size() > 0) {
+            for (int x = 0; x < orderMenuSerials.size(); x++) {
+                String id = orderMenuSerials.get(x).getOrderMenu().getId();
                 if (!orderMenuListSerial.contains(id)) {
                     orderMenuListSerial.add(id);
                     Log.d(getClass().getSimpleName(), "check order menu list size " + orderMenuListSerial.size());
@@ -849,11 +841,11 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 
     private void checkOrderMenuSerialListHasSync() {
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(this);
-        serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndhasSync(orderId);
+        orderMenuSerials = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndhasSync(orderId);
 
-        if (serialNumbers.size() > 0) {
-            for (int x = 0; x < serialNumbers.size(); x++) {
-                String id = serialNumbers.get(x).getOrderMenu().getId();
+        if (orderMenuSerials.size() > 0) {
+            for (int x = 0; x < orderMenuSerials.size(); x++) {
+                String id = orderMenuSerials.get(x).getOrderMenu().getId();
                 if (!orderMenuListSerial.contains(id)) {
                     orderMenuListSerial.add(id);
                     Log.d(getClass().getSimpleName(), "check order menu list size " + orderMenuListSerial.size());
@@ -931,12 +923,12 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                     final TextInputLayout titleEditSerial = (TextInputLayout) customView.findViewById(R.id.title_edit_serial);
                     ImageButton btnEnter = (ImageButton) customView.findViewById(R.id.btn_enter);
 
-                    List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
-                    final List<SerialNumber> allSerial = sn;
+                    List<OrderMenuSerial> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
+                    final List<OrderMenuSerial> allSerial = sn;
                     textCount.setText(getString(R.string.text_already_inputted)+allSerial.size()+getResources().getString(R.string.text_verivy_of_total)+qty);
 
                     final List<String> serialstring = new ArrayList<String>();
-                    for (SerialNumber s:allSerial){
+                    for (OrderMenuSerial s:allSerial){
                         serialstring.add(s.getSerialNumber());
                     }
 
@@ -949,13 +941,13 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                                         if (!serialstring.contains(editSerial.getText().toString())) {
                                             titleEditSerial.setError(null);
 
-                                            SerialNumber serialNumberObj = new SerialNumber();
-                                            serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
-                                            serialNumberObj.getOrderMenu().getOrder().setId(orderId);
-                                            serialNumberObj.getOrderMenu().setId(orderMenuId);
-                                            serialNumberObj.setSerialNumber(editSerial.getText().toString());
-                                            allSerial.add(serialNumberObj);
-                                            tempSerial.add(serialNumberObj);
+                                            OrderMenuSerial orderMenuSerialObj = new OrderMenuSerial();
+                                            orderMenuSerialObj.setId(DefaultDatabaseAdapter.generateId());
+                                            orderMenuSerialObj.getOrderMenu().getOrder().setId(orderId);
+                                            orderMenuSerialObj.getOrderMenu().setId(orderMenuId);
+                                            orderMenuSerialObj.setSerialNumber(editSerial.getText().toString());
+                                            allSerial.add(orderMenuSerialObj);
+                                            tempSerial.add(orderMenuSerialObj);
                                             serialstring.add(editSerial.getText().toString());
                                             textCount.setText(getString(R.string.text_already_inputted) + allSerial.size() + getResources().getString(R.string.text_verivy_of_total) + qty);
 
@@ -982,13 +974,13 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                                     if (!serialstring.contains(editSerial.getText().toString())) {
                                         titleEditSerial.setError(null);
 
-                                        SerialNumber serialNumberObj = new SerialNumber();
-                                        serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
-                                        serialNumberObj.getOrderMenu().getOrder().setId(orderId);
-                                        serialNumberObj.getOrderMenu().setId(orderMenuId);
-                                        serialNumberObj.setSerialNumber(editSerial.getText().toString());
-                                        allSerial.add(serialNumberObj);
-                                        tempSerial.add(serialNumberObj);
+                                        OrderMenuSerial orderMenuSerialObj = new OrderMenuSerial();
+                                        orderMenuSerialObj.setId(DefaultDatabaseAdapter.generateId());
+                                        orderMenuSerialObj.getOrderMenu().getOrder().setId(orderId);
+                                        orderMenuSerialObj.getOrderMenu().setId(orderMenuId);
+                                        orderMenuSerialObj.setSerialNumber(editSerial.getText().toString());
+                                        allSerial.add(orderMenuSerialObj);
+                                        tempSerial.add(orderMenuSerialObj);
                                         serialstring.add(editSerial.getText().toString());
                                         textCount.setText(getString(R.string.text_already_inputted)+allSerial.size()+getResources().getString(R.string.text_verivy_of_total)+qty);
 
@@ -1012,7 +1004,7 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                             if (tempSerial.size() > 0) {
                                 loadProgressCheckSerial.show();
                                 maxSerialistTocheck = tempSerial.size();
-                                for (SerialNumber s : tempSerial) {
+                                for (OrderMenuSerial s : tempSerial) {
                                     StockSync check = new StockSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, StockSync.StockUri.bySerialUri.name());
                                     check.execute(productId, s.getSerialNumber());
                                 }
@@ -1073,13 +1065,13 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 //                    final TextInputLayout titleEditSerial = (TextInputLayout) customView.findViewById(R.id.title_edit_serial);
 //                    ImageButton btnEnter = (ImageButton) customView.findViewById(R.id.btn_enter);
 //
-//                    List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
-//                    final List<SerialNumber> allSerial = sn;
+//                    List<OrderMenuSerial> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
+//                    final List<OrderMenuSerial> allSerial = sn;
 //                    textCount.setText(getString(R.string.text_already_inputted)+allSerial.size()+getResources().getString(R.string.text_verivy_of_total)+qty);
 //
 //                    final List<String> serialstring = new ArrayList<String>();
-//                    for (SerialNumber s:allSerial){
-//                        serialstring.add(s.getSerialNumber());
+//                    for (OrderMenuSerial s:allSerial){
+//                        serialstring.add(s.getOrderMenuSerial());
 //                    }
 //
 //                    editSerial.setOnKeyListener(new View.OnKeyListener() {
@@ -1090,11 +1082,11 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 //                                    if (!serialstring.contains(editSerial.getText().toString())) {
 //                                        titleEditSerial.setError(null);
 //
-//                                        SerialNumber serialNumberObj = new SerialNumber();
+//                                        OrderMenuSerial serialNumberObj = new OrderMenuSerial();
 //                                        serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
 //                                        serialNumberObj.getOrderMenu().getOrder().setId(orderId);
 //                                        serialNumberObj.getOrderMenu().setId(orderMenuId);
-//                                        serialNumberObj.setSerialNumber(editSerial.getText().toString());
+//                                        serialNumberObj.setOrderMenuSerial(editSerial.getText().toString());
 //                                        allSerial.add(serialNumberObj);
 //                                        tempSerial.add(serialNumberObj);
 //                                        serialstring.add(editSerial.getText().toString());
@@ -1122,11 +1114,11 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 //                                    if (!serialstring.contains(editSerial.getText().toString())) {
 //                                        titleEditSerial.setError(null);
 //
-//                                        SerialNumber serialNumberObj = new SerialNumber();
+//                                        OrderMenuSerial serialNumberObj = new OrderMenuSerial();
 //                                        serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
 //                                        serialNumberObj.getOrderMenu().getOrder().setId(orderId);
 //                                        serialNumberObj.getOrderMenu().setId(orderMenuId);
-//                                        serialNumberObj.setSerialNumber(editSerial.getText().toString());
+//                                        serialNumberObj.setOrderMenuSerial(editSerial.getText().toString());
 //                                        allSerial.add(serialNumberObj);
 //                                        tempSerial.add(serialNumberObj);
 //                                        serialstring.add(editSerial.getText().toString());
@@ -1151,9 +1143,9 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
 //                        public void onClick(DialogInterface dialog, int which) {
 //                            loadProgressCheckSerial.show();
 //                            maxSerialistTocheck = tempSerial.size();
-//                            for (SerialNumber s : tempSerial){
+//                            for (OrderMenuSerial s : tempSerial){
 //                                StockSync check = new StockSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, StockSync.StockUri.bySerialUri.name());
-//                                check.execute(productId,s.getSerialNumber());
+//                                check.execute(productId,s.getOrderMenuSerial());
 //                            }
 //                        }
 //                    });
@@ -1232,11 +1224,11 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
         unverifiedSize.setText(Integer.toString(unVerifiedSerial.size()));
 
         List<String> verifiedString = new ArrayList<String>();
-        for (SerialNumber s : verifiedSerial){
+        for (OrderMenuSerial s : verifiedSerial){
             verifiedString.add(s.getSerialNumber());
         }
         List<String> unverifiedString = new ArrayList<String>();
-        for (SerialNumber s : unVerifiedSerial){
+        for (OrderMenuSerial s : unVerifiedSerial){
             unverifiedString.add(s.getSerialNumber());
         }
 
@@ -1305,11 +1297,11 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 progressDialog.show();
-                List<SerialNumber> serialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+                List<OrderMenuSerial> serialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
                 maxSerialist = 0;
                 count = 0;
                 maxSerialist = serialList.size();
-                for (SerialNumber snn : serialList) {
+                for (OrderMenuSerial snn : serialList) {
                     Log.d(getClass().getSimpleName(), " getted serial " + snn.getId() + " ================================================ ");
                     jobManager.addJobInBackground(new SerialJob(preferences.getString("server_url", ""), snn.getId(), shipment.getId()));
                 }
@@ -1461,12 +1453,12 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                     String name = serialLineColl[0];
                     String serial = serialLineColl[1];
 
-                    SerialNumber serialNumberObj = new SerialNumber();
-                    serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
-                    serialNumberObj.getOrderMenu().getOrder().setId(orderId);
-                    serialNumberObj.getOrderMenu().setId(getOrderMenuId(name));
-                    serialNumberObj.setSerialNumber(serial);
-                    tempSerial.add(serialNumberObj);
+                    OrderMenuSerial orderMenuSerialObj = new OrderMenuSerial();
+                    orderMenuSerialObj.setId(DefaultDatabaseAdapter.generateId());
+                    orderMenuSerialObj.getOrderMenu().getOrder().setId(orderId);
+                    orderMenuSerialObj.getOrderMenu().setId(getOrderMenuId(name));
+                    orderMenuSerialObj.setSerialNumber(serial);
+                    tempSerial.add(orderMenuSerialObj);
 
                     SerialTemplate st = new SerialTemplate();
                     String sku = serialLineColl[0].replaceAll(" ","_");
@@ -1554,12 +1546,12 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                 String name = tempCell.get(0);
                 String serial = tempCell.get(1);
 
-                SerialNumber serialNumberObj = new SerialNumber();
-                serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
-                serialNumberObj.getOrderMenu().getOrder().setId(orderId);
-                serialNumberObj.getOrderMenu().setId(getOrderMenuId(name));
-                serialNumberObj.setSerialNumber(serial);
-                tempSerial.add(serialNumberObj);
+                OrderMenuSerial orderMenuSerialObj = new OrderMenuSerial();
+                orderMenuSerialObj.setId(DefaultDatabaseAdapter.generateId());
+                orderMenuSerialObj.getOrderMenu().getOrder().setId(orderId);
+                orderMenuSerialObj.getOrderMenu().setId(getOrderMenuId(name));
+                orderMenuSerialObj.setSerialNumber(serial);
+                tempSerial.add(orderMenuSerialObj);
 
 
                 SerialTemplate st = new SerialTemplate();

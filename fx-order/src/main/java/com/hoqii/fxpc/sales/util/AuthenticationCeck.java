@@ -106,16 +106,14 @@ public class AuthenticationCeck {
         this.currentProcess = processId;
 
         dialogRefresh = new ProgressDialog(context);
-        dialogRefresh.setMessage("Pleace wait ...");
+        dialogRefresh.setMessage("Please wait ...");
         dialogRefresh.setCancelable(false);
 
-        Log.d(TAG, "process id : " + currentProcess);
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
 
         if (EventBus.getDefault().isRegistered(this)) {
-            Log.d(TAG, "[ event registered ]");
         }
 
         dialogRefresh.show();

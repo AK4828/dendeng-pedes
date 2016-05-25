@@ -127,6 +127,8 @@
     <string name="message_title_logout">Logout</string>
     <string name="message_logout">Logout current session ?</string>
     <string name="text_receive_from">"Received From : "</string>
+    <string name="text_return_from">"Returned From : "</string>
+    <string name="text_return_description">"Description : "</string>
     <string name="message_confirm_sipment">Confirm shipment</string>
     <string name="message_verified">Already verified !</string>
     <string name="message_fetch_data">Fetching data...</string>
@@ -168,6 +170,7 @@
     <string name="button_add_to_cart">Add to cart</string>
     <string name="text_company">Company</string>
     <string name="text_detail_order">Detail order</string>
+    <string name="text_detail_return">Detail return</string>
     <string name="text_serial_number">Serial Number</string>
     <string name="text_info">Info</string>
     <string name="button_check">Check</string>
@@ -215,6 +218,8 @@
     <string name="adapter_seller_order_number">{typcn-tag} Order number :</string>
     <string name="adapter_receive_date">Receive date :</string>
     <string name="adapter_receive_from">Receive from :</string>
+    <string name="adapter_return_date">Return date :</string>
+    <string name="adapter_return_from">Return from :</string>
     <string name="adapter_receive_order_number">Order number :</string>
     <string name="adapter_receive_order_date">Order date :</string>
 

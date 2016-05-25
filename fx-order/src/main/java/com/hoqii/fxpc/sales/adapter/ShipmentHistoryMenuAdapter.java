@@ -2,7 +2,6 @@ package com.hoqii.fxpc.sales.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +13,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageVariables;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 import com.hoqii.fxpc.sales.fragment.ShipmentMenuListFragment;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.widget.IconTextView;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +28,7 @@ public class ShipmentHistoryMenuAdapter extends RecyclerView.Adapter<ShipmentHis
 
 
     private Context context;
-    private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> orderMenuSerialList = new ArrayList<OrderMenuSerial>();
     private SharedPreferences preferences;
     private ShipmentMenuListFragment f;
 
@@ -54,11 +49,11 @@ public class ShipmentHistoryMenuAdapter extends RecyclerView.Adapter<ShipmentHis
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.productName.setText(serialNumberList.get(position).getOrderMenu().getProduct().getName());
-        holder.description.setText(serialNumberList.get(position).getOrderMenu().getProduct().getDescription());
-        holder.serial.setText(context.getResources().getString(R.string.holder_serial)+serialNumberList.get(position).getSerialNumber());
+        holder.productName.setText(orderMenuSerialList.get(position).getOrderMenu().getProduct().getName());
+        holder.description.setText(orderMenuSerialList.get(position).getOrderMenu().getProduct().getDescription());
+        holder.serial.setText(context.getResources().getString(R.string.holder_serial)+ orderMenuSerialList.get(position).getSerialNumber());
 
-        String imageUrl = preferences.getString("server_url", "")+"/api/products/"+serialNumberList.get(position).getOrderMenu().getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
+        String imageUrl = preferences.getString("server_url", "")+"/api/products/"+ orderMenuSerialList.get(position).getOrderMenu().getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
 
         Glide.with(context).load(imageUrl).error(R.drawable.no_image).into(holder.preview);
 
@@ -72,14 +67,14 @@ public class ShipmentHistoryMenuAdapter extends RecyclerView.Adapter<ShipmentHis
             holder.layout.setLayoutParams(params);
         }
 
-        if (position == serialNumberList.size() - 1){
+        if (position == orderMenuSerialList.size() - 1){
             f.loadMoreContent();
         }
     }
 
     @Override
     public int getItemCount() {
-        return serialNumberList.size();
+        return orderMenuSerialList.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -98,9 +93,9 @@ public class ShipmentHistoryMenuAdapter extends RecyclerView.Adapter<ShipmentHis
         }
     }
 
-    public void addItems(List<SerialNumber> serialNumbers){
-        for (SerialNumber s : serialNumbers){
-            serialNumberList.add(s);
+    public void addItems(List<OrderMenuSerial> orderMenuSerials){
+        for (OrderMenuSerial s : orderMenuSerials){
+            orderMenuSerialList.add(s);
             notifyDataSetChanged();
         }
     }

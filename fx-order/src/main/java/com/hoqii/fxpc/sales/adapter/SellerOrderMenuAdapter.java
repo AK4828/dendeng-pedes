@@ -19,7 +19,7 @@ import com.hoqii.fxpc.sales.activity.ScannerActivityCustom;
 import com.hoqii.fxpc.sales.activity.SellerOrderMenuListActivity;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.widget.IconTextView;
 
@@ -34,7 +34,7 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
     private String orderId;
     private List<OrderMenu> orderMenuList = new ArrayList<OrderMenu>();
     private List<String> orderMenuListSerial = new ArrayList<String>();
-    private List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
     private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
     private SharedPreferences preferences;
 
@@ -43,9 +43,9 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
         this.orderId = orderId;
 
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
-        serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-        for (int x = 0; x < serialNumbers.size(); x++) {
-            String id = serialNumbers.get(x).getOrderMenu().getId();
+        orderMenuSerials = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+        for (int x = 0; x < orderMenuSerials.size(); x++) {
+            String id = orderMenuSerials.get(x).getOrderMenu().getId();
             if (!orderMenuListSerial.contains(id)){
                 orderMenuListSerial.add(id);
             }
@@ -62,9 +62,9 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
 //
 //        orderMenuListSerial.add("default");
 //        serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
-//        serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-//        for (int x = 0; x < serialNumbers.size(); x++) {
-//            String id = serialNumbers.get(x).getOrderMenu().getId();
+//        orderMenuSerials = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+//        for (int x = 0; x < orderMenuSerials.size(); x++) {
+//            String id = orderMenuSerials.get(x).getOrderMenu().getId();
 //            if (!orderMenuListSerial.contains(id)){
 //                orderMenuListSerial.add(id);
 //            }
@@ -79,9 +79,9 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
 //
 //        orderMenuListSerial.add("default");
 //        serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
-//        serialNumbers = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-//        for (int x = 0; x < serialNumbers.size(); x++) {
-//            orderMenuListSerial.add(serialNumbers.get(x).getOrderMenu().getId());
+//        orderMenuSerials = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+//        for (int x = 0; x < orderMenuSerials.size(); x++) {
+//            orderMenuListSerial.add(orderMenuSerials.get(x).getOrderMenu().getId());
 //        }
 //    }
 
@@ -108,7 +108,7 @@ public class SellerOrderMenuAdapter extends RecyclerView.Adapter<SellerOrderMenu
 
         for (String orderMenuId : orderMenuListSerial){
             if (orderMenuList.get(position).getId().equalsIgnoreCase(orderMenuId)) {
-                List<SerialNumber> serials = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
+                List<OrderMenuSerial> serials = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
                 if (serials.size() > 0){
                     holder.scanCount.setText("{typcn-tick-outline} " + serials.size());
                     holder.scanCount.setTextColor(context.getResources().getColor(R.color.colorAccent));

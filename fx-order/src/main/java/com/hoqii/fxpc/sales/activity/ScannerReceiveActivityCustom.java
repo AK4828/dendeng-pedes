@@ -25,7 +25,7 @@ import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.adapter.SerialAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.DefaultDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -53,9 +53,9 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
     private RecyclerView serialRecycle;
     private CoordinatorLayout coordinatorLayout;
     private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
-    private List<SerialNumber> tempSerialNumberList = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> tempOrderMenuSerialList = new ArrayList<OrderMenuSerial>();
 
-    private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> orderMenuSerialList = new ArrayList<OrderMenuSerial>();
     private boolean isScanning = true;
 
 
@@ -129,14 +129,14 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
             String jsonSerial = getIntent().getStringExtra("jsonSerial");
             ObjectMapper mapper = SignageApplication.getObjectMapper();
             try {
-                tempSerialNumberList = mapper.readValue(jsonSerial, new TypeReference<List<SerialNumber>>(){});
+                tempOrderMenuSerialList = mapper.readValue(jsonSerial, new TypeReference<List<OrderMenuSerial>>(){});
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
 
             Log.d(getClass().getSimpleName(), "order id : " + orderId);
-            Log.d(getClass().getSimpleName(), "tem serial size : " + tempSerialNumberList.size());
+            Log.d(getClass().getSimpleName(), "tem serial size : " + tempOrderMenuSerialList.size());
         }
 
         serialRecycle = (RecyclerView) findViewById(R.id.serial_number_recycle);
@@ -151,9 +151,9 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
 
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(this);
 
-        serialNumberList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-        for (int x = 0; x < serialNumberList.size(); x++) {
-            serialAdapter.addSerialNumber(serialNumberList.get(x));
+        orderMenuSerialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+        for (int x = 0; x < orderMenuSerialList.size(); x++) {
+            serialAdapter.addSerialNumber(orderMenuSerialList.get(x));
         }
 
 
@@ -218,36 +218,36 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
     }
 
     private void dialogSubmit() {
-        serialNumberList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+        orderMenuSerialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getResources().getString(R.string.message_serial_title_serial_number));
-        builder.setMessage(getResources().getString(R.string.message_total_items)+ tempSerialNumberList.size() +"\n" +
+        builder.setMessage(getResources().getString(R.string.message_total_items)+ tempOrderMenuSerialList.size() +"\n" +
                 getString(R.string.message_total_scanned_item)+ serialAdapter.getItemCount() +"\n\n" +
                 getResources().getString(R.string.message_submit_serial_number));
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                for (SerialNumber serial : serialAdapter.getSerialNumber()) {
+                for (OrderMenuSerial serial : serialAdapter.getSerialNumber()) {
 
-                    SerialNumber serialNumberObj = new SerialNumber();
+                    OrderMenuSerial orderMenuSerialObj = new OrderMenuSerial();
 
-                    serialNumberObj.setId(DefaultDatabaseAdapter.generateId());
-                    serialNumberObj.getOrderMenu().getOrder().setId(orderId);
-                    serialNumberObj.getOrderMenu().setId(null);
-                    serialNumberObj.setSerialNumber(serial.getSerialNumber());
-                    serialNumberObj.getShipment().setId(shipmentId);
+                    orderMenuSerialObj.setId(DefaultDatabaseAdapter.generateId());
+                    orderMenuSerialObj.getOrderMenu().getOrder().setId(orderId);
+                    orderMenuSerialObj.getOrderMenu().setId(null);
+                    orderMenuSerialObj.setSerialNumber(serial.getSerialNumber());
+                    orderMenuSerialObj.getShipment().setId(shipmentId);
 
                     List<String> serialNumber = new ArrayList<String>();
-                    for (SerialNumber sn : serialNumberList){
+                    for (OrderMenuSerial sn : orderMenuSerialList){
                         serialNumber.add(sn.getSerialNumber());
                     }
 
                     if (!serialNumber.contains(serial.getSerialNumber())) {
-                        serialNumberList.add(serialNumberObj);
+                        orderMenuSerialList.add(orderMenuSerialObj);
                     }
                 }
 
-                serialNumberDatabaseAdapter.save(serialNumberList);
+                serialNumberDatabaseAdapter.save(orderMenuSerialList);
                 Log.d(getClass().getSimpleName(), "Serial number saved");
 
                 setResult(RESULT_OK);
@@ -266,27 +266,27 @@ public class ScannerReceiveActivityCustom extends AppCompatActivity {
     }
 
     public void scannedCount(){
-        viewScannedCount.setText(getResources().getString(R.string.text_serial_alredy_scan)+ serialAdapter.getItemCount() +getResources().getString(R.string.text_of_total)+ tempSerialNumberList.size() +getResources().getString(R.string.text_item_end));
+        viewScannedCount.setText(getResources().getString(R.string.text_serial_alredy_scan)+ serialAdapter.getItemCount() +getResources().getString(R.string.text_of_total)+ tempOrderMenuSerialList.size() +getResources().getString(R.string.text_item_end));
     }
 
     private void checkSerial(String serialNumber){
         Log.d(getClass().getSimpleName(), "serial : " + serialNumber);
-        if (serialAdapter.getItemCount() < tempSerialNumberList.size()){
+        if (serialAdapter.getItemCount() < tempOrderMenuSerialList.size()){
             List<String> tempSerial = new ArrayList<String>();
             List<String> tempSerialScan = new ArrayList<String>();
 
-            for (SerialNumber serial : tempSerialNumberList){
+            for (OrderMenuSerial serial : tempOrderMenuSerialList){
                 tempSerial.add(serial.getSerialNumber());
             }
-            for (SerialNumber serial : serialAdapter.getSerialNumber()){
+            for (OrderMenuSerial serial : serialAdapter.getSerialNumber()){
                 tempSerialScan.add(serial.getSerialNumber());
             }
 
             if (tempSerial.contains(serialNumber)){
                 if (!tempSerialScan.contains(serialNumber)){
                     barcodeView.setStatusText(serialNumber);
-                    SerialNumber s = new SerialNumber();
-                    for (SerialNumber x : tempSerialNumberList){
+                    OrderMenuSerial s = new OrderMenuSerial();
+                    for (OrderMenuSerial x : tempOrderMenuSerialList){
                         if (x.getSerialNumber().equalsIgnoreCase(serialNumber)){
                             s.getOrderMenu().getProduct().setName(x.getOrderMenu().getProduct().getName());
                         }

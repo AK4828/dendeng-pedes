@@ -53,7 +53,7 @@ import de.greenrobot.event.EventBus;
 public class ReturnListActivity extends AppCompatActivity implements TaskService {
 
     private int requestDetailCode = 101;
-    private static final int REFRESH_TOKEN_RECEIVE_LIST = 301;
+    private static final int REFRESH_TOKEN_RETUR_LIST = 301;
 
     private List<Retur> returList = new ArrayList<Retur>();
     private SharedPreferences preferences;
@@ -66,7 +66,7 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
     private int page = 1, totalPage;
     private AuthenticationCeck authenticationCeck = new AuthenticationCeck();
 
-    private String receiveUrl = "/api/order/receives";
+    private String returUrl = "/api/order/returns";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +85,7 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Retur");
+        actionBar.setTitle("Return");
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
 
         returnAdapter = new ReturnAdapter(this);
@@ -121,7 +121,7 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
                     Log.d(getClass().getSimpleName(), "[ acces true / refreshing token not needed]");
                 } else {
                     Log.d(getClass().getSimpleName(), "[ acces false / refreshing token]");
-                    authenticationCeck.refreshToken(ReturnListActivity.this, REFRESH_TOKEN_RECEIVE_LIST);
+                    authenticationCeck.refreshToken(ReturnListActivity.this, REFRESH_TOKEN_RETUR_LIST);
                 }
             }
         });
@@ -189,13 +189,13 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
         @Override
         protected JSONObject doInBackground(String... JsonObject) {
             Log.d(getClass().getSimpleName(), "?acces_token= " + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
-            return ConnectionUtil.get(preferences.getString("server_url", "") + receiveUrl + "?access_token="
+            return ConnectionUtil.get(preferences.getString("server_url", "") + returUrl + "?access_token="
                     + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&page=" + JsonObject[0]);
         }
 
         @Override
         protected void onCancelled() {
-            taskService.onCancel(SignageVariables.RECEIVE_GET_TASK, "Batal");
+            taskService.onCancel(SignageVariables.RETUR_GET_TASK, "Batal");
         }
 
         @Override
@@ -203,7 +203,7 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
             if (!isLoadMore) {
                 swipeRefreshLayout.setRefreshing(true);
             }
-            taskService.onExecute(SignageVariables.RECEIVE_GET_TASK);
+            taskService.onExecute(SignageVariables.RETUR_GET_TASK);
         }
 
         @Override
@@ -232,15 +232,25 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
                             aRetur.setLogInformation(logInformation);
                         }
 
-                        JSONObject shipmentObject = new JSONObject();
-
                         if (object.getString("status").equalsIgnoreCase("RETURNED")) {
                             aRetur.setStatus(Retur.ReturnStatus.RETURNED);
                         } else if (object.getString("status").equalsIgnoreCase("FAILED")) {
                             aRetur.setStatus(Retur.ReturnStatus.FAILED);
                         }
 
-                        aRetur.setRecipient(object.getString("recipient"));
+                        JSONObject siteFromObject = new JSONObject();
+                        if (!object.isNull("siteFrom")) {
+                            siteFromObject = object.getJSONObject("siteFrom");
+                            Log.d("ID", siteFromObject.getString("id"));
+                            Site siteFrom = new Site();
+                            siteFrom.setId(siteFromObject.getString("id"));
+                            siteFrom.setName(siteFromObject.getString("name"));
+                            siteFromObject.getString("description");
+
+                            aRetur.setSiteFrom(siteFrom);
+                        }
+                        aRetur.setDescription(object.getString("description"));
+
                         returs.add(aRetur);
                     }
 
@@ -250,13 +260,13 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
                     }
 
                     returList = returs;
-                    taskService.onSuccess(SignageVariables.RECEIVE_GET_TASK, true);
+                    taskService.onSuccess(SignageVariables.RETUR_GET_TASK, true);
                 } else {
-                    taskService.onError(SignageVariables.RECEIVE_GET_TASK, "Error");
+                    taskService.onError(SignageVariables.RETUR_GET_TASK, "Error");
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                taskService.onError(SignageVariables.RECEIVE_GET_TASK, "Error");
+                taskService.onError(SignageVariables.RETUR_GET_TASK, "Error");
             }
 
 
@@ -312,7 +322,7 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
     public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
         Log.d(getClass().getSimpleName(), "RequestSuccess: " + requestSuccess.getProcessId());
         switch (requestSuccess.getProcessId()) {
-            case REFRESH_TOKEN_RECEIVE_LIST:
+            case REFRESH_TOKEN_RETUR_LIST:
                 ReceiveSync receiveSync = new ReceiveSync(ReturnListActivity.this, ReturnListActivity.this, false);
                 receiveSync.execute("0");
                 break;

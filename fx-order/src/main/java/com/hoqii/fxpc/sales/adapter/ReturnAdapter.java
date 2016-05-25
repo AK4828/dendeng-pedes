@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.activity.ReturnDetailActivity;
+import com.hoqii.fxpc.sales.activity.ReturnDetalListActivity;
 import com.hoqii.fxpc.sales.activity.ReturnListActivity;
 import com.hoqii.fxpc.sales.entity.Retur;
 import com.hoqii.fxpc.sales.entity.Shipment;
@@ -59,19 +60,15 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
         Date date = new Date();
         date.setTime(returList.get(position).getLogInformation().getCreateDate().getTime());
 
-        Date orderDate = new Date();
-        orderDate.setTime(returList.get(position).getSerialNumber().getOrderMenu().getOrder().getLogInformation().getCreateDate().getTime());
-
-        holder.site.setText(context.getResources().getString(R.string.text_receive_from)+ returList.get(position).getSerialNumber().getOrderMenu().getOrder().getSite().getName());
+        holder.site.setText(context.getResources().getString(R.string.text_return_from)+ returList.get(position).getSiteFrom().getName());
         holder.shipmentDate.setText(context.getResources().getString(R.string.text_date)+ simpleDateFormat.format(date));
-        holder.orderNumber.setText(context.getResources().getString(R.string.text_order_receipt)+ returList.get(position).getSerialNumber().getOrderMenu().getOrder().getReceiptNumber());
-        holder.orderDate.setText(context.getResources().getString(R.string.text_order_date)+ simpleDateFormat.format(orderDate));
+        holder.orderNumber.setText(context.getResources().getString(R.string.text_return_description)+ returList.get(position).getDescription());
 
-        switch (returList.get(position).getSerialNumber().getShipment().getStatus()){
+        switch (returList.get(position).getStatus()){
             case WAIT:
                 holder.statusDelivery.setVisibility(View.GONE);
                 break;
-            case DELIVERED:
+            case RETURNED:
                 holder.statusDelivery.setVisibility(View.VISIBLE);
                 break;
             default:
@@ -82,15 +79,12 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, ReturnDetailActivity.class);
-                intent.putExtra("receiveId", returList.get(position).getId());
-                intent.putExtra("receiveDate", returList.get(position).getLogInformation().getCreateDate().getTime());
-                intent.putExtra("orderId", returList.get(position).getSerialNumber().getOrderMenu().getOrder().getId());
-                intent.putExtra("orderReceipt", returList.get(position).getSerialNumber().getOrderMenu().getOrder().getReceiptNumber());
-                intent.putExtra("orderDate", returList.get(position).getSerialNumber().getOrderMenu().getOrder().getLogInformation().getCreateDate().getTime());
-                intent.putExtra("shipmentId", returList.get(position).getSerialNumber().getShipment().getId());
-                intent.putExtra("site", returList.get(position).getSerialNumber().getOrderMenu().getOrder().getSite().getName());
-                intent.putExtra("siteDescription", returList.get(position).getSerialNumber().getOrderMenu().getOrder().getSite().getDescription());
+                Intent intent = new Intent(context, ReturnDetalListActivity.class);
+                intent.putExtra("returId", returList.get(position).getId());
+                intent.putExtra("returDate", returList.get(position).getLogInformation().getCreateDate().getTime());
+                intent.putExtra("site", returList.get(position).getOrderMenuSerial().getOrderMenu().getOrder().getSite().getName());
+                intent.putExtra("siteDescription", returList.get(position).getOrderMenuSerial().getOrderMenu().getOrder().getSite().getDescription());
+                intent.putExtra("description", returList.get(position).getDescription());
 
                 ObjectMapper om = SignageApplication.getObjectMapper();
                 try {
@@ -125,13 +119,12 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView orderNumber, orderDate, shipmentDate, site, statusDelivery;
+        private TextView orderNumber, shipmentDate, site, statusDelivery;
         private LinearLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
             orderNumber = (TextView) itemView.findViewById(R.id.rl_number);
-            orderDate = (TextView) itemView.findViewById(R.id.rl_tgl);
             shipmentDate = (TextView) itemView.findViewById(R.id.rl_tgl_receive);
             site = (TextView) itemView.findViewById(R.id.rl_site);
             statusDelivery = (TextView) itemView.findViewById(R.id.rl_delivery);
@@ -153,7 +146,7 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
         for (int x = 0; x < returList.size(); x++){
             if (returList.get(x).getId().equalsIgnoreCase(receiveId)){
                 Log.d(getClass().getSimpleName(), "[ data id "+receiveId+" ditemukan]");
-                returList.get(x).getSerialNumber().getShipment().setStatus(Shipment.ShipmentStatus.DELIVERED);
+                returList.get(x).getOrderMenuSerial().getShipment().setStatus(Shipment.ShipmentStatus.DELIVERED);
                 notifyItemChanged(x);
             }
         }

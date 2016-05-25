@@ -117,9 +117,7 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
                 if (authenticationCeck.isAccess()) {
                     ReceiveSync receiveSync = new ReceiveSync(ReceiveListActivity.this, ReceiveListActivity.this, false);
                     receiveSync.execute("0");
-                    Log.d(getClass().getSimpleName(), "[ acces true / refreshing token not needed]");
                 } else {
-                    Log.d(getClass().getSimpleName(), "[ acces false / refreshing token]");
                     authenticationCeck.refreshToken(ReceiveListActivity.this, REFRESH_TOKEN_RECEIVE_LIST);
                 }
             }
@@ -356,7 +354,6 @@ public class ReceiveListActivity extends AppCompatActivity implements TaskServic
             Log.d(getClass().getSimpleName(), "result ok");
             if (data != null) {
                 String receiveId = data.getStringExtra("receiveId");
-                Log.d(getClass().getSimpleName(), "receive id " + receiveId);
                 receiveAdapter.updateStatusDelivered(receiveId);
             }
         }

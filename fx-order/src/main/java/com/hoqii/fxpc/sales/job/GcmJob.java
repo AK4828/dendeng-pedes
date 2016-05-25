@@ -3,10 +3,6 @@ package com.hoqii.fxpc.sales.job;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.hoqii.fxpc.sales.SignageApplication;
-import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.service.GcmUtils;
 import com.hoqii.fxpc.sales.util.JsonRequestUtils;

@@ -32,7 +32,7 @@ import com.hoqii.fxpc.sales.core.commons.Site;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.entity.Product;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.job.OrderStatusUpdateJob;
@@ -71,7 +71,7 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
     private int page = 1, totalPage, orderMenuPage, orderMenuTotalpage, serialPage = 1,serialTotalPage;
     private JobManager jobManager;
     private List<OrderMenu> tempOrderMenus = new ArrayList<OrderMenu>();
-    private List<SerialNumber> tempSerialnumberList = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> tempSerialnumberList = new ArrayList<OrderMenuSerial>();
 
     private String shipmentUrl = "/api/order/shipments";
     private String orderMenuUrl = "/api/orderHistory/";
@@ -611,9 +611,9 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
                     Log.d(getClass().getSimpleName(), "serial menu : "+result.toString());
                     for (int a = 0; a < jsonArray.length(); a++) {
                         JSONObject object = jsonArray.getJSONObject(a);
-                        SerialNumber serialNumber = new SerialNumber();
-                        serialNumber.setId(object.getString("id"));
-                        serialNumber.setSerialNumber(object.getString("serialNumber"));
+                        OrderMenuSerial orderMenuSerial = new OrderMenuSerial();
+                        orderMenuSerial.setId(object.getString("id"));
+                        orderMenuSerial.setSerialNumber(object.getString("orderMenuSerial"));
 
                         JSONObject orderMenuObject = new JSONObject();
                         if (!object.isNull("orderMenu")) {
@@ -634,10 +634,10 @@ public class ShipmentListActivity extends AppCompatActivity implements TaskServi
                                 product.setName(productObject.getString("name"));
                                 orderMenu.setProduct(product);
                             }
-                            serialNumber.setOrderMenu(orderMenu);
+                            orderMenuSerial.setOrderMenu(orderMenu);
                         }
-                        tempSerialnumberList.add(serialNumber);
-                        Log.d(getClass().getSimpleName(), "serial added, id "+serialNumber.getId()+" size curent "+tempSerialnumberList.size());
+                        tempSerialnumberList.add(orderMenuSerial);
+                        Log.d(getClass().getSimpleName(), "serial added, id "+ orderMenuSerial.getId()+" size curent "+tempSerialnumberList.size());
                     }
 
                     taskService.onSuccess(SignageVariables.SERIAL_ORDER_MENU_GET_TASK, true);
