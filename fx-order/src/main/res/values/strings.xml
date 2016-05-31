@@ -127,7 +127,7 @@
     <string name="message_title_logout">Logout</string>
     <string name="message_logout">Logout current session ?</string>
     <string name="text_receive_from">"Received From : "</string>
-    <string name="text_return_from">"Returned From : "</string>
+    <string name="text_return_from">"Return From : "</string>
     <string name="text_return_description">"Description : "</string>
     <string name="message_confirm_sipment">Confirm shipment</string>
     <string name="message_verified">Already verified !</string>

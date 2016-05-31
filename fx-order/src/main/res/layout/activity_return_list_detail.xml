@@ -31,26 +31,16 @@
                     android:id="@+id/rl_site"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/text_receive_from"
+                    android:text="@string/text_return_from"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"/>
 
                 <TextView
-                    android:id="@+id/rl_tgl_receive"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="Receive date"
-                    android:textSize="12sp"
-                    android:textColor="@color/white"/>
-
-
-                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="@string/text_detail_order"
+                    android:text="@string/text_detail_return"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"/>
@@ -64,7 +54,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/text_order_receipt"
+                            android:text="@string/text_return_description"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
                         <TextView
@@ -81,7 +71,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/text_order_date"
+                            android:text="@string/text_date"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
                         <TextView
@@ -89,7 +79,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
-                            android:text="order date"
                             android:textSize="12sp"
                             android:textColor="@color/white"/>
                     </TableRow>
@@ -112,7 +101,7 @@
                 android:layout_weight="1">
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/receive_list"
+                    android:id="@+id/return_list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 

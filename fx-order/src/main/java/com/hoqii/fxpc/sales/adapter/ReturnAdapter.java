@@ -20,6 +20,7 @@ import com.hoqii.fxpc.sales.activity.ReturnListActivity;
 import com.hoqii.fxpc.sales.entity.Retur;
 import com.hoqii.fxpc.sales.entity.Shipment;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,7 +58,7 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
     public void onBindViewHolder(ReturnAdapter.ViewHolder holder, final int position) {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy / hh:mm:ss");
-        Date date = new Date();
+        final Date date = new Date();
         date.setTime(returList.get(position).getLogInformation().getCreateDate().getTime());
 
         holder.site.setText(context.getResources().getString(R.string.text_return_from)+ returList.get(position).getSiteFrom().getName());
@@ -79,12 +80,19 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                String returnDate = df.format(date);
                 Intent intent = new Intent(context, ReturnDetalListActivity.class);
+
                 intent.putExtra("returId", returList.get(position).getId());
-                intent.putExtra("returDate", returList.get(position).getLogInformation().getCreateDate().getTime());
-                intent.putExtra("site", returList.get(position).getOrderMenuSerial().getOrderMenu().getOrder().getSite().getName());
-                intent.putExtra("siteDescription", returList.get(position).getOrderMenuSerial().getOrderMenu().getOrder().getSite().getDescription());
+                intent.putExtra("returDate", returnDate);
+                intent.putExtra("site", returList.get(position).getSiteFrom().getName());
+                intent.putExtra("siteDescription", returList.get(position).getSiteFrom().getDescription());
                 intent.putExtra("description", returList.get(position).getDescription());
+
+                Log.d("DATE", String.valueOf(returnDate));
+                Log.d("SITE", returList.get(position).getSiteFrom().getName());
+                Log.d("description",returList.get(position).getDescription());
 
                 ObjectMapper om = SignageApplication.getObjectMapper();
                 try {
@@ -142,10 +150,8 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
     }
 
     public void updateStatusDelivered(String receiveId){
-        Log.d(getClass().getSimpleName(), "[ mencari receive berdasarkan id "+receiveId+" ]");
         for (int x = 0; x < returList.size(); x++){
             if (returList.get(x).getId().equalsIgnoreCase(receiveId)){
-                Log.d(getClass().getSimpleName(), "[ data id "+receiveId+" ditemukan]");
                 returList.get(x).getOrderMenuSerial().getShipment().setStatus(Shipment.ShipmentStatus.DELIVERED);
                 notifyItemChanged(x);
             }

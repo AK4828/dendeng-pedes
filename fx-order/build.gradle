@@ -13,7 +13,7 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.hoqii.fxpc.sales"
@@ -21,6 +21,8 @@ android {
         targetSdkVersion 21
         versionCode 16
         versionName "2.9.5"
+
+        multiDexEnabled false
     }
 
     packagingOptions {
@@ -29,6 +31,10 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
     }
 
     buildTypes {

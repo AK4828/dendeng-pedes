@@ -118,9 +118,7 @@ public class ReturnListActivity extends AppCompatActivity implements TaskService
                 if (authenticationCeck.isAccess()) {
                     ReceiveSync receiveSync = new ReceiveSync(ReturnListActivity.this, ReturnListActivity.this, false);
                     receiveSync.execute("0");
-                    Log.d(getClass().getSimpleName(), "[ acces true / refreshing token not needed]");
                 } else {
-                    Log.d(getClass().getSimpleName(), "[ acces false / refreshing token]");
                     authenticationCeck.refreshToken(ReturnListActivity.this, REFRESH_TOKEN_RETUR_LIST);
                 }
             }
