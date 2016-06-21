@@ -75,4 +75,8 @@ public class GcmUtils {
         editor.commit();
     }
 
+    public static void unregisterGcmToken() {
+
+    }
+
 }

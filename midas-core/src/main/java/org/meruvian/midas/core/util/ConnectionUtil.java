@@ -74,12 +74,8 @@ public class ConnectionUtil {
 		try {
 			Log.d("ConnectionUtil", "URL Get: " + url);
 
-//			String encodeUrl = URLEncoder.encode(url, "UTF-8");
-
 			HttpClient httpClient = new DefaultHttpClient(getHttpParams(TIMEOUT, TIMEOUT));
 			HttpGet httpGet = new HttpGet(url);
-
-//			Log.d("ConnectionUtil", "URL Get: " + encodeUrl);
 
 			httpGet.setHeader("Content-Type", "application/json");
 			HttpResponse response = httpClient.execute(httpGet);

@@ -89,6 +89,7 @@ public class ReceiveAdapter extends RecyclerView.Adapter<ReceiveAdapter.ViewHold
                 intent.putExtra("shipmentId", receiveList.get(position).getShipment().getId());
                 intent.putExtra("site", receiveList.get(position).getOrder().getSite().getName());
                 intent.putExtra("siteDescription", receiveList.get(position).getOrder().getSite().getDescription());
+                intent.putExtra("siteToId", receiveList.get(position).getOrder().getSite().getId());
 
                 ObjectMapper om = SignageApplication.getObjectMapper();
                 try {

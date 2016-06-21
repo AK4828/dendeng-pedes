@@ -45,7 +45,7 @@
                     android:id="@+id/rl_site"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/adapter_receive_from"
+                    android:text="@string/adapter_return_from"
                     android:textColor="@color/colorAccent"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -69,7 +69,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="8dp"
-                        android:text="@string/adapter_receive_date" />
+                        android:text="@string/adapter_return_date" />
 
                 </LinearLayout>
 
@@ -78,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/text_detail_order"
+                    android:text="@string/text_detail_return"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -101,35 +101,10 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="8dp"
-                        android:text="@string/adapter_receive_order_number" />
+                        android:text="@string/text_return_description" />
 
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_schedule_black_18dp"
-                        android:tint="@color/grey" />
-
-                    <TextView
-                        android:id="@+id/rl_tgl"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="8dp"
-                        android:text="@string/adapter_receive_order_date" />
-
-                </LinearLayout>
-
             </LinearLayout>
-
-
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>

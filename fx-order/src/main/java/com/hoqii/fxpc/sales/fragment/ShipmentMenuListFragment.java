@@ -22,8 +22,8 @@ import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.ShipmentHistoryMenuAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 import com.hoqii.fxpc.sales.entity.Product;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
 import com.hoqii.fxpc.sales.entity.Shipment;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 
@@ -45,7 +45,7 @@ public class ShipmentMenuListFragment extends Fragment implements TaskService{
     private LinearLayout dataNull, dataFailed;
     private RecyclerView recyclerView;
     private ShipmentHistoryMenuAdapter shipmentMenuAdapter;
-    private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> orderMenuSerialList = new ArrayList<OrderMenuSerial>();
     private SharedPreferences preferences;
     private int page = 1, totalPage;
     private String shipmentDetailUrl = "/api/shipmentHistory/";
@@ -102,12 +102,12 @@ public class ShipmentMenuListFragment extends Fragment implements TaskService{
     @Override
     public void onSuccess(int code, Object result) {
 
-        shipmentMenuAdapter.addItems(serialNumberList);
-        Log.d(getClass().getSimpleName(), "jumlah serial "+ serialNumberList.size());
+        shipmentMenuAdapter.addItems(orderMenuSerialList);
+        Log.d(getClass().getSimpleName(), "jumlah serial "+ orderMenuSerialList.size());
 
         dataFailed.setVisibility(View.GONE);
 
-        if (serialNumberList.size() > 0) {
+        if (orderMenuSerialList.size() > 0) {
             dataNull.setVisibility(View.GONE);
         } else {
             dataNull.setVisibility(View.VISIBLE);
@@ -163,16 +163,16 @@ public class ShipmentMenuListFragment extends Fragment implements TaskService{
         protected void onPostExecute(JSONObject result) {
             try {
                 if (result != null) {
-                    List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+                    List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
                     JSONArray jsonArray = result.getJSONArray("content");
 
                     totalPage = result.getInt("totalPages");
                     Log.d(getClass().getSimpleName(), "serial menu : "+result.toString());
                     for (int a = 0; a < jsonArray.length(); a++) {
                         JSONObject object = jsonArray.getJSONObject(a);
-                        SerialNumber serialNumber = new SerialNumber();
-                        serialNumber.setId(object.getString("id"));
-                        serialNumber.setSerialNumber(object.getString("serialNumber"));
+                        OrderMenuSerial orderMenuSerial = new OrderMenuSerial();
+                        orderMenuSerial.setId(object.getString("id"));
+                        orderMenuSerial.setSerialNumber(object.getString("orderMenuSerial"));
 
                         JSONObject orderMenuObject = new JSONObject();
                         if (!object.isNull("orderMenu")) {
@@ -194,11 +194,11 @@ public class ShipmentMenuListFragment extends Fragment implements TaskService{
                                 product.setDescription(productObject.getString("description"));
                                 orderMenu.setProduct(product);
                             }
-                            serialNumber.setOrderMenu(orderMenu);
+                            orderMenuSerial.setOrderMenu(orderMenu);
                         }
-                        serialNumbers.add(serialNumber);
+                        orderMenuSerials.add(orderMenuSerial);
                     }
-                    serialNumberList = serialNumbers;
+                    orderMenuSerialList = orderMenuSerials;
 
                     if (isLoadMore){
                         page++;

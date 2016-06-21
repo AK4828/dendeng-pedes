@@ -1,25 +1,19 @@
 package com.hoqii.fxpc.sales.adapter;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Build;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
-import com.hoqii.fxpc.sales.activity.ReceiveDetailActivity;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
-import com.hoqii.fxpc.sales.entity.OrderMenu;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +25,7 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
 
 
     private Context context;
-    private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> orderMenuSerialList = new ArrayList<OrderMenuSerial>();
     private List<String> tempSerialNumberList = new ArrayList<String>();
     private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
     private boolean verify = false;
@@ -41,8 +35,8 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
         this.context = context;
 
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
-        List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-        for (SerialNumber s : sn) {
+        List<OrderMenuSerial> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+        for (OrderMenuSerial s : sn) {
             tempSerialNumberList.add(s.getSerialNumber());
         }
 
@@ -53,8 +47,8 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
         this.verify = verify;
 
         serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(context);
-        List<SerialNumber> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
-        for (SerialNumber s : sn) {
+        List<OrderMenuSerial> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+        for (OrderMenuSerial s : sn) {
             tempSerialNumberList.add(s.getSerialNumber());
         }
     }
@@ -68,14 +62,14 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        holder.productName.setText(context.getString(R.string.holder_product) + serialNumberList.get(position).getOrderMenu().getProduct().getName());
-        holder.productSerial.setText(context.getString(R.string.holder_serial) + serialNumberList.get(position).getSerialNumber());
+        holder.productName.setText(context.getString(R.string.holder_product) + orderMenuSerialList.get(position).getOrderMenu().getProduct().getName());
+        holder.productSerial.setText(context.getString(R.string.holder_serial) + orderMenuSerialList.get(position).getSerialNumber());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isMinLoli = true;
         } else {
             isMinLoli = false;
         }
-        if (tempSerialNumberList.contains(serialNumberList.get(position).getSerialNumber())) {
+        if (tempSerialNumberList.contains(orderMenuSerialList.get(position).getSerialNumber())) {
             holder.imageStatus.setVisibility(View.VISIBLE);
         } else {
             holder.imageStatus.setVisibility(View.GONE);
@@ -98,7 +92,7 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
 
     @Override
     public int getItemCount() {
-        return serialNumberList.size();
+        return orderMenuSerialList.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -115,13 +109,13 @@ public class ReceiveOrderMenuAdapter extends RecyclerView.Adapter<ReceiveOrderMe
         }
     }
 
-    public void addItems(List<SerialNumber> serialNumbers) {
-        for (SerialNumber s : serialNumbers) {
-            if (!serialNumberList.contains(s)) {
-                serialNumberList.add(s);
+    public void addItems(List<OrderMenuSerial> orderMenuSerials) {
+        for (OrderMenuSerial s : orderMenuSerials) {
+            if (!orderMenuSerialList.contains(s)) {
+                orderMenuSerialList.add(s);
             }
         }
-        if (tempSerialNumberList.size() == serialNumberList.size()) {
+        if (tempSerialNumberList.size() == orderMenuSerialList.size()) {
             this.verify = true;
             Log.d(getClass().getSimpleName(), "verify true");
         }

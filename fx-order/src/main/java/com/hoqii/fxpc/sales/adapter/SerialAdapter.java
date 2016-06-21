@@ -12,7 +12,7 @@ import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.activity.ScannerActivityCustom;
 import com.hoqii.fxpc.sales.activity.ScannerReceiveActivityCustom;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 public class SerialAdapter extends RecyclerView.Adapter<SerialAdapter.ViewHolder>{
 
     private Context context;
-    private List<SerialNumber> serialNumbersList = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> orderMenuSerialNumbersList = new ArrayList<OrderMenuSerial>();
     private String productName;
     private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
 
@@ -48,16 +48,16 @@ public class SerialAdapter extends RecyclerView.Adapter<SerialAdapter.ViewHolder
         if (productName != null ){
             holder.productName.setText(productName);
         }else {
-            holder.productName.setText(serialNumbersList.get(position).getOrderMenu().getProduct().getName());
+            holder.productName.setText(orderMenuSerialNumbersList.get(position).getOrderMenu().getProduct().getName());
         }
 
-        holder.productSerialNumber.setText(serialNumbersList.get(position).getSerialNumber());
+        holder.productSerialNumber.setText(orderMenuSerialNumbersList.get(position).getSerialNumber());
 
         holder.delteSerial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                serialNumberDatabaseAdapter.deleteBySerialNumber(serialNumbersList.get(position).getSerialNumber());
-                serialNumbersList.remove(position);
+                serialNumberDatabaseAdapter.deleteBySerialNumber(orderMenuSerialNumbersList.get(position).getSerialNumber());
+                orderMenuSerialNumbersList.remove(position);
                 notifyItemRemoved(position);
                 notifyDataSetChanged();
 
@@ -72,7 +72,7 @@ public class SerialAdapter extends RecyclerView.Adapter<SerialAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return serialNumbersList.size();
+        return orderMenuSerialNumbersList.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
@@ -90,12 +90,12 @@ public class SerialAdapter extends RecyclerView.Adapter<SerialAdapter.ViewHolder
     }
 
 
-    public void addSerialNumber(SerialNumber serialNumber){
-        serialNumbersList.add(serialNumber);
-        notifyItemInserted(serialNumbersList.size());
+    public void addSerialNumber(OrderMenuSerial orderMenuSerial){
+        orderMenuSerialNumbersList.add(orderMenuSerial);
+        notifyItemInserted(orderMenuSerialNumbersList.size());
     }
 
-    public List<SerialNumber> getSerialNumber(){
-        return serialNumbersList;
+    public List<OrderMenuSerial> getSerialNumber(){
+        return orderMenuSerialNumbersList;
     }
 }

@@ -34,6 +34,10 @@ android {
         exclude 'META-INF/LICENSE.txt'
     }
 
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
     buildTypes {
         release {
             minifyEnabled false

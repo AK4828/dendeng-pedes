@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 import com.hoqii.fxpc.sales.event.GenericEvent;
 import com.hoqii.fxpc.sales.util.JsonRequestUtils;
 import com.path.android.jobqueue.Job;
@@ -51,27 +51,17 @@ public class MenuUpdateJob extends Job {
         Log.d(getClass().getSimpleName(), "Update orde menu running");
         JsonRequestUtils request = new JsonRequestUtils(url + "/api/orders/" + orderId + "/menu/" + orderMenuId );
 
-        responseGetOrderMenu = request.get(new TypeReference<OrderMenu>() {
-        });
+        responseGetOrderMenu = request.get(new TypeReference<OrderMenu>() {});
 
         HttpResponse rOm = responseGetOrderMenu.getHttpResponse();
-        Log.d(getClass().getSimpleName(), "response : " + rOm.getStatusLine().getStatusCode());
-        Log.d(getClass().getSimpleName(), "response : " + rOm.getStatusLine().getReasonPhrase());
 
         if (rOm.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            Log.d(getClass().getSimpleName(), "order menu Response Code :" + rOm.getStatusLine().getStatusCode());
             OrderMenu orderMenu = responseGetOrderMenu.getContent();
 
-            Log.d(getClass().getSimpleName(), "order menu id : " + orderMenu.getId().toString());
-            Log.d(getClass().getSimpleName(), "order menu data : " + orderMenu.toString());
-            Log.d(getClass().getSimpleName(), "order menu data : " + String.valueOf(orderMenu));
-
-            //====================
-            Log.d(getClass().getSimpleName(), "Updating order menu running");
             JsonRequestUtils requestUpdate = new JsonRequestUtils(url + "/api/orders/" + orderId + "/menu/" + orderMenuId );
 
             SerialNumberDatabaseAdapter snAdapter = new SerialNumberDatabaseAdapter(SignageApplication.getInstance());
-            List<SerialNumber> sn = snAdapter.getSerialNumberListByOrderIdAndOrderMenuIdAndHasSync(orderId, orderMenuId);
+            List<OrderMenuSerial> sn = snAdapter.getSerialNumberListByOrderIdAndOrderMenuIdAndHasSync(orderId, orderMenuId);
 
             Log.d(getClass().getSimpleName(), "menu quantity =========================: "+orderMenu.getQty());
             Log.d(getClass().getSimpleName(), "serial quantity =========================: "+sn.size());

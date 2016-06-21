@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -26,30 +25,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
-import com.hoqii.fxpc.sales.adapter.ReceiveOrderMenuAdapter;
 import com.hoqii.fxpc.sales.adapter.ReturnOrderMenuAdapter;
-import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
-import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.entity.Receive;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.Retur;
 import com.hoqii.fxpc.sales.entity.Shipment;
-import com.hoqii.fxpc.sales.event.GenericEvent;
-import com.hoqii.fxpc.sales.job.OrderStatusUpdateJob;
-import com.hoqii.fxpc.sales.job.ShipmentUpdateJob;
+import com.hoqii.fxpc.sales.job.ReturnJob;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
@@ -65,9 +55,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.greenrobot.event.EventBus;
 
@@ -77,9 +65,7 @@ import de.greenrobot.event.EventBus;
 public class ReturnDetailActivity extends AppCompatActivity implements TaskService {
     private int requestScannerCode = 124;
 
-    private List<SerialNumber> serialNumberList = new ArrayList<SerialNumber>();
-    private List<OrderMenu> tempOrderMenus = new ArrayList<OrderMenu>();
-    private List<SerialNumber> tempSerialNumbers = new ArrayList<SerialNumber>();
+    private List<OrderMenuSerial> orderMenuSerialList = new ArrayList<OrderMenuSerial>();
     private SharedPreferences preferences;
     private RecyclerView recyclerView;
     private ReturnOrderMenuAdapter returnOrderMenuAdapter;
@@ -90,13 +76,12 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
     private ProgressDialog loadProgress;
     private int page = 1, totalPage;
     private String receiveUrl = "/api/order/receives/";
-    private String historyCheckUrl = "/api/orderHistory/";
-    private String shipmentCheckUrl = "/api/order/shipments/";
     private boolean isLoli = false;
     private Receive receive;
     private JobManager jobManager;
     private ProgressDialog progressDialog;
     private boolean statusDelivery = false;
+    private Retur retur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +111,6 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
         if (getIntent().getExtras() != null) {
             shipmentId = getIntent().getStringExtra("shipmentId");
 
-            Log.d(getClass().getSimpleName(), "shipment id : " + shipmentId);
             orderNumber.setText(getIntent().getStringExtra("orderReceipt"));
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy / hh:mm:ss");
@@ -198,7 +182,23 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                super.onBackPressed();
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -216,47 +216,7 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
                 returnOrderMenuAdapter = new ReturnOrderMenuAdapter(this, orderId);
             }
             recyclerView.setAdapter(returnOrderMenuAdapter);
-            returnOrderMenuAdapter.addItems(serialNumberList);
-
-        } else if (code == SignageVariables.HISTORY_ORDER_MENU_GET_TASK) {
-            CheckSerialOrderMenus checkSerialOrderMenus = new CheckSerialOrderMenus(ReturnDetailActivity.this, ReturnDetailActivity.this);
-            checkSerialOrderMenus.execute(orderId);
-        } else if (code == SignageVariables.SERIAL_ORDER_MENU_CHECK_TASK) {
-
-            Map<OrderMenu, Integer> mapStatus = new HashMap<OrderMenu, Integer>();
-            for (OrderMenu om : tempOrderMenus) {
-
-
-                String orderMenuId = om.getId();
-                int qty = om.getQtyOrder();
-                int qtySerial = 0;
-
-
-                for (SerialNumber sn : tempSerialNumbers) {
-                    if (sn.getOrderMenu().getId().equalsIgnoreCase(orderMenuId)) {
-                        qtySerial += 1;
-                    }
-
-                }
-                if (qty == qtySerial) {
-                    mapStatus.put(om, 1);
-                } else {
-                    mapStatus.put(om, 0);
-                }
-            }
-
-
-            List<Integer> list = new ArrayList<Integer>(mapStatus.values());
-            for (Integer i : list) {
-            }
-
-            if (!mapStatus.containsValue(0)) {
-                jobManager.addJobInBackground(new OrderStatusUpdateJob(orderId, preferences.getString("server_url", ""), Order.OrderStatus.RECEIVED.name()));
-            } else {
-                progressDialog.dismiss();
-                AlertMessage(getString(R.string.message_progress_complete));
-            }
-
+            returnOrderMenuAdapter.addItems(orderMenuSerialList, getIntent().getStringExtra("siteToId"));
 
         }
     }
@@ -281,6 +241,13 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
         });
     }
 
+    public void onEventMainThread(ReturnJob.ReturnEvent event) {
+        int status = event.getStatus();
+        if (status == ReturnJob.ReturnEvent.SUCCESS) {
+            Toast.makeText(this, "Returned", Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void AlertMessage(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getResources().getString(R.string.message_title_warning));
@@ -294,84 +261,6 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
         builder.show();
     }
 
-    class CheckSerialOrderMenus extends AsyncTask<String, Void, JSONObject> {
-
-        private Context context;
-        private TaskService taskService;
-
-        public CheckSerialOrderMenus(Context context, TaskService taskService) {
-            this.context = context;
-            this.taskService = taskService;
-        }
-
-
-        @Override
-        protected JSONObject doInBackground(String... JsonObject) {
-            Log.d(getClass().getSimpleName(), "?acces_token= " + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
-            Log.d(getClass().getSimpleName(), " param : " + JsonObject[0]);
-            return ConnectionUtil.get(preferences.getString("server_url", "") + shipmentCheckUrl + JsonObject[0] + "/serial/check?access_token="
-                    + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&max=" + Integer.MAX_VALUE);
-        }
-
-        @Override
-        protected void onCancelled() {
-            taskService.onCancel(SignageVariables.SERIAL_ORDER_MENU_CHECK_TASK, "Batal");
-        }
-
-        @Override
-        protected void onPreExecute() {
-            taskService.onExecute(SignageVariables.SERIAL_ORDER_MENU_CHECK_TASK);
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            try {
-                if (result != null) {
-                    List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
-                    JSONArray jsonArray = result.getJSONArray("content");
-
-                    Log.d(getClass().getSimpleName(), "serial menu : " + result.toString());
-                    for (int a = 0; a < jsonArray.length(); a++) {
-                        JSONObject object = jsonArray.getJSONObject(a);
-                        SerialNumber serialNumber = new SerialNumber();
-                        serialNumber.setId(object.getString("id"));
-                        serialNumber.setSerialNumber(object.getString("serialNumber"));
-
-                        JSONObject orderMenuObject = new JSONObject();
-                        if (!object.isNull("orderMenu")) {
-                            orderMenuObject = object.getJSONObject("orderMenu");
-
-                            OrderMenu orderMenu = new OrderMenu();
-                            orderMenu.setId(orderMenuObject.getString("id"));
-                            orderMenu.setQty(orderMenuObject.getInt("qty"));
-                            orderMenu.setQtyOrder(orderMenuObject.getInt("qtyOrder"));
-                            orderMenu.setDescription(orderMenuObject.getString("description"));
-
-                            JSONObject productObject = new JSONObject();
-                            if (!orderMenuObject.isNull("product")) {
-                                productObject = orderMenuObject.getJSONObject("product");
-
-                                Product product = new Product();
-                                product.setId(productObject.getString("id"));
-                                product.setName(productObject.getString("name"));
-                                orderMenu.setProduct(product);
-                            }
-                            serialNumber.setOrderMenu(orderMenu);
-                        }
-                        serialNumbers.add(serialNumber);
-                    }
-                    tempSerialNumbers = serialNumbers;
-
-                    taskService.onSuccess(SignageVariables.SERIAL_ORDER_MENU_CHECK_TASK, true);
-                } else {
-                    taskService.onError(SignageVariables.SERIAL_ORDER_MENU_CHECK_TASK, "Error");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                taskService.onError(SignageVariables.SERIAL_ORDER_MENU_CHECK_TASK, "Error");
-            }
-        }
-    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void startAnimateRevealColorFromCoordinate(View view, int x, int y) {
@@ -399,65 +288,6 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
         anim.start();
     }
 
-    public void onEventMainThread(GenericEvent.RequestInProgress requestInProgress) {
-        switch (requestInProgress.getProcessId()) {
-            case ShipmentUpdateJob.PROCESS_ID:
-                progressDialog.show();
-                break;
-            case OrderStatusUpdateJob.PROCESS_ID:
-                break;
-        }
-    }
-
-    public void onEventMainThread(GenericEvent.RequestSuccess requestSuccess) {
-        try {
-            switch (requestSuccess.getProcessId()) {
-                case ShipmentUpdateJob.PROCESS_ID: {
-                    SerialNumberDatabaseAdapter serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(this);
-                    serialNumberDatabaseAdapter.updateStatusByShipmentId(requestSuccess.getEntityId());
-
-                    CheckOrderMenu checkOrderMenu = new CheckOrderMenu(ReturnDetailActivity.this, ReturnDetailActivity.this);
-                    checkOrderMenu.execute(orderId);
-
-                    statusDelivery = true;
-
-                    break;
-                }
-                case OrderStatusUpdateJob.PROCESS_ID: {
-                    progressDialog.dismiss();
-                    AlertMessage(getResources().getString(R.string.message_progress_complete));
-
-                    break;
-                }
-            }
-
-        } catch (Exception e) {
-            Log.e(getClass().getSimpleName(), e.getMessage(), e);
-        }
-
-    }
-
-    public void onEventMainThread(GenericEvent.RequestFailed failed) {
-        switch (failed.getProcessId()) {
-            case ShipmentUpdateJob.PROCESS_ID:
-                progressDialog.dismiss();
-                AlertMessage(getString(R.string.message_failed_confirm_shipment));
-                break;
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
 
     @Override
     public void onBackPressed() {
@@ -513,16 +343,16 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
         protected void onPostExecute(JSONObject result) {
             try {
                 if (result != null) {
-                    List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+                    List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
                     JSONArray jsonArray = result.getJSONArray("content");
 
                     totalPage = result.getInt("totalPages");
                     Log.d(getClass().getSimpleName(), "serial menu : " + result.toString());
                     for (int a = 0; a < jsonArray.length(); a++) {
                         JSONObject object = jsonArray.getJSONObject(a);
-                        SerialNumber serialNumber = new SerialNumber();
-                        serialNumber.setId(object.getString("id"));
-                        serialNumber.setSerialNumber(object.getString("serialNumber"));
+                        OrderMenuSerial orderMenuSerial = new OrderMenuSerial();
+                        orderMenuSerial.setId(object.getString("id"));
+                        orderMenuSerial.setSerialNumber(object.getString("serialNumber"));
 
                         JSONObject orderMenuObject = new JSONObject();
                         if (!object.isNull("orderMenu")) {
@@ -543,14 +373,14 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
                                 product.setName(productObject.getString("name"));
                                 orderMenu.setProduct(product);
                             }
-                            serialNumber.setOrderMenu(orderMenu);
+                            orderMenuSerial.setOrderMenu(orderMenu);
                         }
-                        serialNumbers.add(serialNumber);
+                        orderMenuSerials.add(orderMenuSerial);
                     }
-                    serialNumberList = serialNumbers;
+                    orderMenuSerialList = orderMenuSerials;
 
                     if (isLoadMore == true) {
-                        page ++;
+                        page++;
                         loadProgress.dismiss();
                     }
                     taskService.onSuccess(SignageVariables.SERIAL_ORDER_MENU_GET_TASK, true);
@@ -564,86 +394,12 @@ public class ReturnDetailActivity extends AppCompatActivity implements TaskServi
         }
     }
 
-    class CheckOrderMenu extends AsyncTask<String, Void, JSONObject> {
-
-        private Context context;
-        private TaskService taskService;
-
-        public CheckOrderMenu(Context context, TaskService taskService) {
-            this.context = context;
-            this.taskService = taskService;
-        }
-
-
-        @Override
-        protected JSONObject doInBackground(String... JsonObject) {
-            Log.d(getClass().getSimpleName(), "?acces_token= " + AuthenticationUtils.getCurrentAuthentication().getAccessToken());
-            Log.d(getClass().getSimpleName(), " param : " + JsonObject[0]);
-            return ConnectionUtil.get(preferences.getString("server_url", "") + historyCheckUrl + JsonObject[0] + "/menus?access_token="
-                    + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&max=" + Integer.MAX_VALUE);
-        }
-
-        @Override
-        protected void onCancelled() {
-            taskService.onCancel(SignageVariables.HISTORY_ORDER_MENU_GET_TASK, "Batal");
-        }
-
-        @Override
-        protected void onPreExecute() {
-            taskService.onExecute(SignageVariables.HISTORY_ORDER_MENU_GET_TASK);
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            try {
-                if (result != null) {
-
-                    Log.d("result order menu =====", result.toString());
-                    List<OrderMenu> orderMenus = new ArrayList<OrderMenu>();
-
-                    JSONArray jsonArray = result.getJSONArray("content");
-                    for (int a = 0; a < jsonArray.length(); a++) {
-                        JSONObject object = jsonArray.getJSONObject(a);
-
-                        OrderMenu orderMenu = new OrderMenu();
-                        orderMenu.setId(object.getString("id"));
-                        orderMenu.setQty(object.getInt("qty"));
-                        orderMenu.setQtyOrder(object.getInt("qtyOrder"));
-                        orderMenu.setDescription(object.getString("description"));
-
-
-                        JSONObject productObject = new JSONObject();
-                        if (!object.isNull("product")) {
-                            productObject = object.getJSONObject("product");
-
-                            Product product = new Product();
-                            product.setId(productObject.getString("id"));
-                            product.setName(productObject.getString("name"));
-
-                            orderMenu.setProduct(product);
-                        }
-                        orderMenus.add(orderMenu);
-                    }
-
-                    tempOrderMenus = orderMenus;
-
-                    taskService.onSuccess(SignageVariables.HISTORY_ORDER_MENU_GET_TASK, true);
-                } else {
-                    taskService.onError(SignageVariables.HISTORY_ORDER_MENU_GET_TASK, "Error");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                taskService.onError(SignageVariables.HISTORY_ORDER_MENU_GET_TASK, "Error");
-            }
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == requestScannerCode) {
             returnOrderMenuAdapter = new ReturnOrderMenuAdapter(this, orderId);
             recyclerView.setAdapter(returnOrderMenuAdapter);
-            returnOrderMenuAdapter.addItems(serialNumberList);
+            returnOrderMenuAdapter.addItems(orderMenuSerialList, getIntent().getStringExtra("siteToId"));
         }
 
         super.onActivityResult(requestCode, resultCode, data);

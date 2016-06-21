@@ -47,7 +47,7 @@ public class SignageApplication extends Application {
     private static SignageApplication instance;
     private static ObjectMapper objectMapper;
     private ObjectMapper jsonMapper;
-    private JobManager jobManager;
+    private static JobManager jobManager;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
@@ -132,7 +132,7 @@ public class SignageApplication extends Application {
         return instance;
     }
 
-    public JobManager getJobManager() {
+    public static JobManager getJobManager() {
         return jobManager;
     }
 

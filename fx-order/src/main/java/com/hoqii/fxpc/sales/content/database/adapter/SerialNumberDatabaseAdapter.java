@@ -8,7 +8,7 @@ import android.net.Uri;
 import com.hoqii.fxpc.sales.content.MidasContentProvider;
 import com.hoqii.fxpc.sales.content.database.model.DefaultPersistenceModel;
 import com.hoqii.fxpc.sales.content.database.model.SerialNumberDatabaseModel;
-import com.hoqii.fxpc.sales.entity.SerialNumber;
+import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,41 +27,41 @@ public class SerialNumberDatabaseAdapter {
         this.context = context;
     }
 
-    public SerialNumber findSerialNumber(String id) {
+    public OrderMenuSerial findSerialNumber(String id) {
         String criteria = SerialNumberDatabaseModel.ID + " = ? ";
         String param[] = {id};
 
         Cursor cursor = context.getContentResolver().query(dbUriSerial, null, criteria, param, null);
 
-        SerialNumber serialNumber = null;
+        OrderMenuSerial orderMenuSerial = null;
 
         if (cursor != null) {
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
 
-                serialNumber = new SerialNumber();
-                serialNumber.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
-                serialNumber.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
-                serialNumber.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
-                serialNumber.getShipment().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ShipmentId)));
-                serialNumber.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
+                orderMenuSerial = new OrderMenuSerial();
+                orderMenuSerial.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
+                orderMenuSerial.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
+                orderMenuSerial.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
+                orderMenuSerial.getShipment().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ShipmentId)));
+                orderMenuSerial.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
             }
         }
 
         cursor.close();
-        return serialNumber;
+        return orderMenuSerial;
     }
 
-    public void save(List<SerialNumber> serialNumbers) {
-        for (SerialNumber serialNumber : serialNumbers) {
+    public void save(List<OrderMenuSerial> orderMenuSerials) {
+        for (OrderMenuSerial orderMenuSerial : orderMenuSerials) {
 
-            if (findSerialNumber(serialNumber.getId()) == null) {
+            if (findSerialNumber(orderMenuSerial.getId()) == null) {
                 ContentValues values = new ContentValues();
-                values.put(DefaultPersistenceModel.ID, serialNumber.getId());
-                values.put(SerialNumberDatabaseModel.OrderId, serialNumber.getOrderMenu().getOrder().getId());
-                values.put(SerialNumberDatabaseModel.OrderMenuId, serialNumber.getOrderMenu().getId());
-                values.put(SerialNumberDatabaseModel.SerialNumber, serialNumber.getSerialNumber());
-                values.put(SerialNumberDatabaseModel.ShipmentId, serialNumber.getShipment().getId());
+                values.put(DefaultPersistenceModel.ID, orderMenuSerial.getId());
+                values.put(SerialNumberDatabaseModel.OrderId, orderMenuSerial.getOrderMenu().getOrder().getId());
+                values.put(SerialNumberDatabaseModel.OrderMenuId, orderMenuSerial.getOrderMenu().getId());
+                values.put(SerialNumberDatabaseModel.SerialNumber, orderMenuSerial.getSerialNumber());
+                values.put(SerialNumberDatabaseModel.ShipmentId, orderMenuSerial.getShipment().getId());
                 values.put(DefaultPersistenceModel.SYNC_STATUS, 0);
                 values.put(DefaultPersistenceModel.STATUS_FLAG, 0);
 
@@ -69,132 +69,132 @@ public class SerialNumberDatabaseAdapter {
             } else {
                 ContentValues values = new ContentValues();
 
-                values.put(SerialNumberDatabaseModel.OrderId, serialNumber.getOrderMenu().getOrder().getId());
-                values.put(SerialNumberDatabaseModel.OrderMenuId, serialNumber.getOrderMenu().getId());
-                values.put(SerialNumberDatabaseModel.SerialNumber, serialNumber.getSerialNumber());
-                values.put(SerialNumberDatabaseModel.ShipmentId, serialNumber.getShipment().getId());
+                values.put(SerialNumberDatabaseModel.OrderId, orderMenuSerial.getOrderMenu().getOrder().getId());
+                values.put(SerialNumberDatabaseModel.OrderMenuId, orderMenuSerial.getOrderMenu().getId());
+                values.put(SerialNumberDatabaseModel.SerialNumber, orderMenuSerial.getSerialNumber());
+                values.put(SerialNumberDatabaseModel.ShipmentId, orderMenuSerial.getShipment().getId());
                 values.put(DefaultPersistenceModel.SYNC_STATUS, 0);
                 values.put(DefaultPersistenceModel.STATUS_FLAG, 0);
 
-                context.getContentResolver().update(dbUriSerial, values, SerialNumberDatabaseModel.ID + " = ? ", new String[]{serialNumber.getId()});
+                context.getContentResolver().update(dbUriSerial, values, SerialNumberDatabaseModel.ID + " = ? ", new String[]{orderMenuSerial.getId()});
             }
         }
     }
 
-    public List<SerialNumber> getSerialNumberListByOrderId(String orderId) {
+    public List<OrderMenuSerial> getSerialNumberListByOrderId(String orderId) {
         String query = SerialNumberDatabaseModel.OrderId + " = ? AND " + DefaultPersistenceModel.SYNC_STATUS + " = 0";
         String param[] = {orderId};
 
-        List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+        List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
 
         Cursor cursor = context.getContentResolver().query(dbUriSerial, null, query, param, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                SerialNumber serialNumber = new SerialNumber();
-                serialNumber.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
-                serialNumber.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
-                serialNumber.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
-                serialNumber.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
+                OrderMenuSerial orderMenuSerial = new OrderMenuSerial();
+                orderMenuSerial.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
+                orderMenuSerial.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
+                orderMenuSerial.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
+                orderMenuSerial.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
 
-                serialNumbers.add(serialNumber);
+                orderMenuSerials.add(orderMenuSerial);
             }
         }
 
         cursor.close();
-        return serialNumbers;
+        return orderMenuSerials;
     }
 
-    public List<SerialNumber> getSerialNumberListByOrderIdAndhasSync(String orderId) {
+    public List<OrderMenuSerial> getSerialNumberListByOrderIdAndhasSync(String orderId) {
         String query = SerialNumberDatabaseModel.OrderId + " = ? AND " + DefaultPersistenceModel.SYNC_STATUS + " = ? AND " + DefaultPersistenceModel.STATUS_FLAG + " = ? ";
         String param[] = {orderId, "1", "0"};
 
-        List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+        List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
 
         Cursor cursor = context.getContentResolver().query(dbUriSerial, null, query, param, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                SerialNumber serialNumber = new SerialNumber();
-                serialNumber.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
-                serialNumber.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
-                serialNumber.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
-                serialNumber.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
+                OrderMenuSerial orderMenuSerial = new OrderMenuSerial();
+                orderMenuSerial.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
+                orderMenuSerial.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
+                orderMenuSerial.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
+                orderMenuSerial.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
 
-                serialNumbers.add(serialNumber);
+                orderMenuSerials.add(orderMenuSerial);
             }
         }
 
         cursor.close();
-        return serialNumbers;
+        return orderMenuSerials;
     }
 
-    public List<SerialNumber> getSerialNumberListByOrderIdAndOrderMenuIdAndHasSync(String orderId, String orderMenuId) {
+    public List<OrderMenuSerial> getSerialNumberListByOrderIdAndOrderMenuIdAndHasSync(String orderId, String orderMenuId) {
         String query = SerialNumberDatabaseModel.OrderId + " = ? AND " + SerialNumberDatabaseModel.OrderMenuId + " = ? AND " + DefaultPersistenceModel.SYNC_STATUS + " = 1 AND "+DefaultPersistenceModel.STATUS_FLAG + " = 0 ";
         String param[] = {orderId, orderMenuId};
 
-        List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+        List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
 
         Cursor cursor = context.getContentResolver().query(dbUriSerial, null, query, param, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                SerialNumber serialNumber = new SerialNumber();
-                serialNumber.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
-                serialNumber.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
-                serialNumber.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
-                serialNumber.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
+                OrderMenuSerial orderMenuSerial = new OrderMenuSerial();
+                orderMenuSerial.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
+                orderMenuSerial.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
+                orderMenuSerial.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
+                orderMenuSerial.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
 
-                serialNumbers.add(serialNumber);
+                orderMenuSerials.add(orderMenuSerial);
             }
         }
 
         cursor.close();
-        return serialNumbers;
+        return orderMenuSerials;
     }
 
-    public List<SerialNumber> getSerialNumberListByOrderIdAndOrderMenuId(String orderId, String orderMenuId) {
+    public List<OrderMenuSerial> getSerialNumberListByOrderIdAndOrderMenuId(String orderId, String orderMenuId) {
         String query = SerialNumberDatabaseModel.OrderId + " = ? AND " + SerialNumberDatabaseModel.OrderMenuId + " = ? AND " + DefaultPersistenceModel.SYNC_STATUS + " = 0";
         String param[] = {orderId, orderMenuId};
 
-        List<SerialNumber> serialNumbers = new ArrayList<SerialNumber>();
+        List<OrderMenuSerial> orderMenuSerials = new ArrayList<OrderMenuSerial>();
 
         Cursor cursor = context.getContentResolver().query(dbUriSerial, null, query, param, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                SerialNumber serialNumber = new SerialNumber();
-                serialNumber.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
-                serialNumber.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
-                serialNumber.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
-                serialNumber.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
+                OrderMenuSerial orderMenuSerial = new OrderMenuSerial();
+                orderMenuSerial.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
+                orderMenuSerial.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
+                orderMenuSerial.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
+                orderMenuSerial.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
 
-                serialNumbers.add(serialNumber);
+                orderMenuSerials.add(orderMenuSerial);
             }
         }
 
         cursor.close();
-        return serialNumbers;
+        return orderMenuSerials;
     }
 
-    public SerialNumber findSerialNumberByOrderId(String orderId) {
+    public OrderMenuSerial findSerialNumberByOrderId(String orderId) {
         String criteria = SerialNumberDatabaseModel.OrderId + " = ? ";
         String param[] = {orderId};
 
         Cursor cursor = context.getContentResolver().query(dbUriSerial, null, criteria, param, null);
 
-        SerialNumber serialNumber = null;
+        OrderMenuSerial orderMenuSerial = null;
 
         if (cursor != null) {
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
 
-                serialNumber = new SerialNumber();
-                serialNumber.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
-                serialNumber.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
-                serialNumber.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
-                serialNumber.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
+                orderMenuSerial = new OrderMenuSerial();
+                orderMenuSerial.setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.ID)));
+                orderMenuSerial.getOrderMenu().getOrder().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderId)));
+                orderMenuSerial.getOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.OrderMenuId)));
+                orderMenuSerial.setSerialNumber(cursor.getString(cursor.getColumnIndex(SerialNumberDatabaseModel.SerialNumber)));
             }
         }
 
         cursor.close();
-        return serialNumber;
+        return orderMenuSerial;
     }
 
     public void deleteBySerialNumber(String serialNumber) {
