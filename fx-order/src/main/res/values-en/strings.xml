@@ -9,7 +9,7 @@
     <string name="nav_order">Purchase Order</string>
     <string name="nav_rewards">Rewards</string>
     <string name="nav_shipment">Shipment</string>
-    <string name="nav_received"></string>
+    <string name="nav_received">Received</string>
     <string name="nav_title_preference">Preference</string>
     <string name="nav_title_stock_list">Stock</string>
     <string name="nav_title_receiving">Receiving</string>
@@ -241,6 +241,8 @@
     <string name="repeat">Repeat</string>
     <string name="text_already_inputted">"Already inputted "</string>
     <string name="text_manual_input_serial">Input serial number</string>
+    <string name="nav_return">Return</string>
+    <string name="text_add_return_description">Add return description ?</string>
 
 
 </resources>

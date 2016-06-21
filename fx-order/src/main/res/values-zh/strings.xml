@@ -10,7 +10,7 @@
     <string name="nav_order">购买订单</string>
     <string name="nav_rewards">奖励</string>
     <string name="nav_shipment">出货</string>
-    <string name="nav_received"></string>
+    <string name="nav_received">Received</string>
     <string name="nav_title_preference">优先</string>
     <string name="nav_title_stock_list">库存</string>
     <string name="nav_title_receiving">收货中</string>
@@ -250,5 +250,7 @@
     <string name="repeat">Repeat</string>
     <string name="text_already_inputted">"Already inputted "</string>
     <string name="text_manual_input_serial">Input serial number</string>
+    <string name="nav_return">Return</string>
+    <string name="text_add_return_description">Add return description ?</string>
 
 </resources>

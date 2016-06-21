@@ -66,12 +66,6 @@ public class StockSync extends AsyncTask<String, Void, JSONObject>{
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/site/"+params[0]+"?access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&max="+Integer.MAX_VALUE);
             case bySiteUriSearch:
-//                String encodeQ = null;
-//                try {
-//                    encodeQ = URLEncoder.encode(params[1], "UTF-8");
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                }
                 return ConnectionUtil.get(preferences.getString("server_url", "") + "/api/stocks/site/"+params[0]+"?q="+ StringUtils.encodeString(params[1])+"&access_token="
                         + AuthenticationUtils.getCurrentAuthentication().getAccessToken() + "&max="+Integer.MAX_VALUE);
             default:

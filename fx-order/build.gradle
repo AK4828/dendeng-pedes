@@ -21,6 +21,9 @@ android {
         targetSdkVersion 21
         versionCode 16
         versionName "2.9.5"
+
+        // Enabling multidex support.
+        multiDexEnabled true
     }
 
     packagingOptions {
@@ -100,6 +103,7 @@ dependencies {
     compile 'com.sothree.slidinguppanel:library:3.2.1'
     compile 'com.github.supervital:swipenumberpicker:1.0.3'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.android.support:multidex:1.0.0'
     compile('com.github.ozodrukh:CircularReveal:1.1.1@aar') {
         transitive = true;
     }
