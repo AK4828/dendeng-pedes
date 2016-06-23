@@ -249,7 +249,15 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
         Log.d("Status Code", String.valueOf(requestFailed.getResponse().getHttpResponse().getStatusLine().getStatusCode()));
         switch (requestFailed.getProcessId()) {
             case UNREGISTER:
-                Toast.makeText(this, "Logout failed", Toast.LENGTH_LONG).show();
+//                Toast.makeText(this, "Logout failed", Toast.LENGTH_LONG).show();
+                SharedPreferences.Editor editorHas = PreferenceManager.getDefaultSharedPreferences(this).edit();
+                editorHas.clear();
+                editorHas.commit();
+                setResult(RESULT_OK);
+                finish();
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
                 break;
         }
     }
