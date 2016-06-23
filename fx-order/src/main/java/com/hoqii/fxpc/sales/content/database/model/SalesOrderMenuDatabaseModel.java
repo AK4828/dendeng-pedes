@@ -5,10 +5,10 @@ package com.hoqii.fxpc.sales.content.database.model;
  */
 public class SalesOrderMenuDatabaseModel extends DefaultPersistenceModel {
     public static final String QUANTITY = "quantity";
-    public static final String QUANTITY_ORDER = "quantity_order";
+    public static final String QUANTITY_SALES_ORDER = "quantity_sales_order";
     public static final String DELIVERY_STATUS = "delivery_status";
     public static final String PRODUCT_ID = "product_id";
-    public static final String ORDER_ID = "order_id";
+    public static final String SALES_ORDER_ID = "sales_order_id";
     public static final String PRICE = "price";
     public static final String DESC = "desc";
     public static final String DISCOUNT_NOMINAL = "discount_nominal";
