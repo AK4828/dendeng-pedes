@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--<android.support.design.widget.AppBarLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
+
+        <!--<android.support.v7.widget.Toolbar-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content" />-->
+    <!--</android.support.design.widget.AppBarLayout>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Sales Order" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardElevation="2dp"
+                app:contentPadding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:columnCount="2">
+
+                    <TextView android:text="Name" />
+
+                    <EditText
+                        android:id="@+id/eu_name"
+                        android:layout_gravity="fill_horizontal"
+                        android:layout_marginLeft="16dp" />
+
+                    <TextView android:text="Email" />
+
+                    <EditText
+                        android:id="@+id/eu_email"
+                        android:layout_gravity="fill_horizontal"
+                        android:layout_marginLeft="16dp" />
+
+                    <TextView android:text="Telephone" />
+
+                    <EditText
+                        android:id="@+id/eu_telephone"
+                        android:layout_gravity="fill_horizontal"
+                        android:layout_marginLeft="16dp" />
+
+                    <TextView android:text="Alamat" />
+
+                    <EditText
+                        android:id="@+id/eu_address"
+                        android:layout_gravity="fill_horizontal"
+                        android:layout_marginLeft="16dp"
+                        android:minLines="2" />
+
+                </GridLayout>
+
+                    <Spinner
+                        android:id="@+id/eu_sku_spin_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Serialnumber"/>
+
+                    <EditText
+                        android:id="@+id/eu_serial"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <Button
+                android:id="@+id/eu_post"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="Ok"/>
+
+            <!--<Button-->
+                <!--android:id="@+id/eu_add_sku"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center_horizontal"-->
+                <!--android:text="Next"/>-->
+
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:weightSum="1">-->
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginLeft="16dp"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:layout_marginRight="8dp"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginBottom="8dp"-->
+                        <!--android:gravity=""-->
+                        <!--android:text="Sku" />-->
+
+                    <!--<EditText-->
+                        <!--android:id="@+id/eu_sku"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content" />-->
+                <!--</LinearLayout>-->
+
+
+                <!--<Button-->
+                    <!--android:id="@+id/eu_more_sku"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_weight="0"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_columnWeight="0"-->
+                    <!--android:layout_marginRight="16dp"-->
+                    <!--android:layout_gravity="right|center_vertical"-->
+                    <!--android:backgroundTint="@color/colorPrimary"-->
+                    <!--android:text="add sku"-->
+                    <!--android:textColor="@color/white" />-->
+            <!--</LinearLayout>-->
+
+            <!--<android.support.v7.widget.CardView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--app:cardElevation="2dp">-->
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<android.support.v7.widget.RecyclerView-->
+                        <!--android:id="@+id/eu_sku_list"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="match_parent" />-->
+
+                <!--</LinearLayout>-->
+
+            <!--</android.support.v7.widget.CardView>-->
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

@@ -147,6 +147,11 @@
         <activity android:name=".activity.SalesSkuActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"/>
+        <activity android:name=".activity.SalesOrderMenuActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".activity.SalesOrderActivityBack"
+            android:configChanges="orientation|screenSize"/>
         <!--<activity-->
             <!--android:name="com.hoqii.fxpc.sales.activity.LoginActivity"-->
             <!--android:configChanges="orientation|screenSize"-->

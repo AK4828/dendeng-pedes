@@ -24,11 +24,13 @@ import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.content.database.adapter.OrderDatabaseAdapter;
-import com.hoqii.fxpc.sales.content.database.adapter.OrderMenuDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.ProductDatabaseAdapter;
+import com.hoqii.fxpc.sales.content.database.adapter.SalesOrderDatabaseAdapter;
+import com.hoqii.fxpc.sales.content.database.adapter.SalesOrderMenuDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.Order;
 import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.entity.Product;
+import com.hoqii.fxpc.sales.entity.SalesOrderMenu;
 import com.hoqii.fxpc.sales.entity.Stock;
 import com.hoqii.fxpc.sales.task.StockSync;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
@@ -54,13 +56,13 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
     private TextView productName, productPrice, productDesc, productStock, orderDesc, orderCount;
     private IconTextView reward;
     private Product product;
-    private OrderMenu orderMenu;
+    private SalesOrderMenu salesOrderMenu;
     private Button orderButton;
     private ImageButton btnMin, btnPlus;
 
     private ProductDatabaseAdapter productDatabaseAdapter;
-    private OrderDatabaseAdapter orderDatabaseAdapter;
-    private OrderMenuDatabaseAdapter orderMenuDatabaseAdapter;
+    private SalesOrderDatabaseAdapter salesOrderDatabaseAdapter;
+    private SalesOrderMenuDatabaseAdapter salesOrderMenuDatabaseAdapter;
 
     private boolean isMinLoli = false;
     private long orderMenuPrice;
@@ -96,7 +98,7 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            orderMenu = orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId());
+            salesOrderMenu = salesOrderMenuDatabaseAdapter.findSalesOrderMenuByProductId(product.getId());
         }
 
         initSet();
@@ -135,8 +137,8 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
         btnPlus = (ImageButton) findViewById(R.id.btn_plus);
 
         productDatabaseAdapter = new ProductDatabaseAdapter(this);
-        orderDatabaseAdapter = new OrderDatabaseAdapter(this);
-        orderMenuDatabaseAdapter = new OrderMenuDatabaseAdapter(this);
+        salesOrderDatabaseAdapter = new SalesOrderDatabaseAdapter(this);
+        salesOrderMenuDatabaseAdapter = new SalesOrderMenuDatabaseAdapter(this);
     }
 
     private void initSet() {
@@ -153,7 +155,7 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
         productPrice.setText(getString(R.string.text_currency) + decimalFormat.format(product.getSellPrice()));
         reward.setText(getString(R.string.text_reward) + Double.toString(product.getReward()) + getString(R.string.text_point_end));
         productStock.setText(Integer.toString(stockProduct) + getString(R.string.text_item_end));
-        orderMenuType = OrderMenu.OrderType.PURCHASE_ORDER;
+//        orderMenuType = OrderMenu.OrderType.PURCHASE_ORDER;
 
         if (product.getDescription().toString().equalsIgnoreCase("null")) {
             Log.d(getClass().getSimpleName(), "desc null");
@@ -195,10 +197,10 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
         if (qty != 0) {
             orderCount.setText(Integer.toString(qty));
             orderButton.setText(R.string.text_button_update_order);
-            String orderId = orderDatabaseAdapter.getOrderId();
-            String siteId = orderDatabaseAdapter.findOrderById(orderId).getSite().getId();
+            String salesOrderId = salesOrderDatabaseAdapter.getSalesOrderId();
+            String siteFromId = salesOrderDatabaseAdapter.findOrderById(salesOrderId).getSiteFrom().getId();
             StockSync stockSync = new StockSync(this, this, StockSync.StockUri.byProductIdUri.name());
-            stockSync.execute(product.getId(), siteId);
+            stockSync.execute(product.getId(), siteFromId);
         } else {
             orderCount.setText(Integer.toString(1));
         }
@@ -252,21 +254,21 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
         }
     }
 
-    public String saveOrder() {
-        Order order = new Order();
-
-        order.setSiteId("");
-        order.setOrderType("1");
-        order.setReceiptNumber("");
-        order.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-        order.getLogInformation().setCreateDate(new Date());
-        order.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-        order.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
-
-        order.setStatus(Order.OrderStatus.PROCESSED);
-
-        return orderDatabaseAdapter.saveOrder(order);
-    }
+//    public String saveOrder() {
+//        Order order = new Order();
+//
+//        order.setSiteId("");
+//        order.setOrderType("1");
+//        order.setReceiptNumber("");
+//        order.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+//        order.getLogInformation().setCreateDate(new Date());
+//        order.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+//        order.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
+//
+//        order.setStatus(Order.OrderStatus.PROCESSED);
+//
+//        return salesOrderDatabaseAdapter.saveOrder(order);
+//    }
 
     private void dialogOrder() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -281,7 +283,7 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
         if (qty != 0) {
             layoutDesc.setVisibility(View.VISIBLE);
             addOrderDesc.setText(getResources().getString(R.string.cancel));
-            orderDesc.setText(orderMenu.getDescription());
+            orderDesc.setText(salesOrderMenu.getDescription());
         }
 
         addOrderDesc.setOnClickListener(new View.OnClickListener() {
@@ -304,103 +306,101 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 productDatabaseAdapter.saveProduct(product);
-                String orderId = orderDatabaseAdapter.getOrderId();
+                String salesOrderId = salesOrderDatabaseAdapter.getSalesOrderId();
                 int q = Integer.parseInt(orderCount.getText().toString());
+//                if (orderId == null) {
+//                    orderId = saveOrder();
+//
+//                    if (salesOrderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId()) == null) {
+//                        OrderMenu orderMenu = new OrderMenu();
+//
+//                        orderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+//                        orderMenu.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+//                        orderMenu.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
+//
+//                        orderMenu.getOrder().setId(orderId);
+//                        orderMenu.setQty(q);
+//                        orderMenu.setQtyOrder(q);
+//                        orderMenu.setProduct(product);
+//                        orderMenu.setSellPrice(orderMenuPrice);
+//                        orderMenu.setDescription(orderDesc.getText().toString());
+//                        orderMenu.setType(orderMenuType.name());
+//
+//                        salesOrderMenuDatabaseAdapter.saveOrderMenu(orderMenu);
+//                    } else {
+//                        OrderMenu tempOrdermenu = salesOrderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId());
+//
+//                        OrderMenu orderMenu = new OrderMenu();
+//                        orderMenu.setId(tempOrdermenu.getId());
+//                        orderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+//                        orderMenu.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+//                        orderMenu.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
+//
+//                        orderMenu.getOrder().setId(orderId);
+//                        orderMenu.setQty(q + tempOrdermenu.getQty());
+//                        orderMenu.setQtyOrder(q + tempOrdermenu.getQtyOrder());
+//                        orderMenu.setProduct(product);
+//                        orderMenu.setSellPrice(orderMenuPrice);
+//                        orderMenu.setDescription(orderDesc.getText().toString());
+//                        orderMenu.setType(orderMenuType.name());
+//
+//                        salesOrderMenuDatabaseAdapter.saveOrderMenu(orderMenu);
+//                    }
+//
+//                }
+//                else
+                if (salesOrderId != null && qty == 0) {
+                    if (salesOrderMenuDatabaseAdapter.findSalesOrderMenuByProductId(product.getId()) == null) {
+                        SalesOrderMenu salesOrderMenu = new SalesOrderMenu();
 
-                if (orderId == null) {
-                    orderId = saveOrder();
+                        salesOrderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+                        salesOrderMenu.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+                        salesOrderMenu.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
 
-                    if (orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId()) == null) {
-                        OrderMenu orderMenu = new OrderMenu();
+                        salesOrderMenu.getSalesOrder().setId(salesOrderId);
+                        salesOrderMenu.setQty(q);
+                        salesOrderMenu.setQtySalesOrder(q);
+                        salesOrderMenu.setProduct(product);
+                        salesOrderMenu.setSellPrice(orderMenuPrice);
+                        salesOrderMenu.setDescription(orderDesc.getText().toString());
 
-                        orderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-                        orderMenu.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-                        orderMenu.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
-
-                        orderMenu.getOrder().setId(orderId);
-                        orderMenu.setQty(q);
-                        orderMenu.setQtyOrder(q);
-                        orderMenu.setProduct(product);
-                        orderMenu.setSellPrice(orderMenuPrice);
-                        orderMenu.setDescription(orderDesc.getText().toString());
-                        orderMenu.setType(orderMenuType.name());
-
-                        orderMenuDatabaseAdapter.saveOrderMenu(orderMenu);
+                        salesOrderMenuDatabaseAdapter.saveSalesOrderMenu(salesOrderMenu);
                     } else {
-                        OrderMenu tempOrdermenu = orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId());
 
-                        OrderMenu orderMenu = new OrderMenu();
-                        orderMenu.setId(tempOrdermenu.getId());
-                        orderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-                        orderMenu.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-                        orderMenu.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
+                        SalesOrderMenu tempOrdermenu = salesOrderMenuDatabaseAdapter.findSalesOrderMenuByProductId(product.getId());
 
-                        orderMenu.getOrder().setId(orderId);
-                        orderMenu.setQty(q + tempOrdermenu.getQty());
-                        orderMenu.setQtyOrder(q + tempOrdermenu.getQtyOrder());
-                        orderMenu.setProduct(product);
-                        orderMenu.setSellPrice(orderMenuPrice);
-                        orderMenu.setDescription(orderDesc.getText().toString());
-                        orderMenu.setType(orderMenuType.name());
+                        SalesOrderMenu salesOrderMenu = new SalesOrderMenu();
+                        salesOrderMenu.setId(tempOrdermenu.getId());
+                        salesOrderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+                        salesOrderMenu.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+                        salesOrderMenu.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
 
-                        orderMenuDatabaseAdapter.saveOrderMenu(orderMenu);
+                        salesOrderMenu.getSalesOrder().setId(salesOrderId);
+                        salesOrderMenu.setQty(q + tempOrdermenu.getQty());
+                        salesOrderMenu.setQtySalesOrder(q + tempOrdermenu.getQtySalesOrder());
+                        salesOrderMenu.setProduct(product);
+                        salesOrderMenu.setSellPrice(orderMenuPrice);
+                        salesOrderMenu.setDescription(orderDesc.getText().toString());
+
+                        salesOrderMenuDatabaseAdapter.saveSalesOrderMenu(salesOrderMenu);
                     }
+                } else if (salesOrderId != null && qty > 0) {
+                    SalesOrderMenu tempOrdermenu = salesOrderMenuDatabaseAdapter.findSalesOrderMenuByProductId(product.getId());
 
-                } else if (orderId != null && qty == 0) {
-                    if (orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId()) == null) {
-                        OrderMenu orderMenu = new OrderMenu();
+                    SalesOrderMenu salesOrderMenu = new SalesOrderMenu();
+                    salesOrderMenu.setId(tempOrdermenu.getId());
+                    salesOrderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+                    salesOrderMenu.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
+                    salesOrderMenu.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
 
-                        orderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-                        orderMenu.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-                        orderMenu.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
+                    salesOrderMenu.getSalesOrder().setId(salesOrderId);
+                    salesOrderMenu.setQty(q);
+                    salesOrderMenu.setQtySalesOrder(q);
+                    salesOrderMenu.setProduct(product);
+                    salesOrderMenu.setSellPrice(orderMenuPrice);
+                    salesOrderMenu.setDescription(orderDesc.getText().toString());
 
-                        orderMenu.getOrder().setId(orderId);
-                        orderMenu.setQty(q);
-                        orderMenu.setQtyOrder(q);
-                        orderMenu.setProduct(product);
-                        orderMenu.setSellPrice(orderMenuPrice);
-                        orderMenu.setDescription(orderDesc.getText().toString());
-                        orderMenu.setType(orderMenuType.name());
-
-                        orderMenuDatabaseAdapter.saveOrderMenu(orderMenu);
-                    } else {
-
-                        OrderMenu tempOrdermenu = orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId());
-
-                        OrderMenu orderMenu = new OrderMenu();
-                        orderMenu.setId(tempOrdermenu.getId());
-                        orderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-                        orderMenu.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-                        orderMenu.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
-
-                        orderMenu.getOrder().setId(orderId);
-                        orderMenu.setQty(q + tempOrdermenu.getQty());
-                        orderMenu.setQtyOrder(q + tempOrdermenu.getQtyOrder());
-                        orderMenu.setProduct(product);
-                        orderMenu.setSellPrice(orderMenuPrice);
-                        orderMenu.setDescription(orderDesc.getText().toString());
-                        orderMenu.setType(orderMenuType.name());
-
-                        orderMenuDatabaseAdapter.saveOrderMenu(orderMenu);
-                    }
-                } else if (orderId != null && qty > 0) {
-                    OrderMenu tempOrdermenu = orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId());
-
-                    OrderMenu orderMenu = new OrderMenu();
-                    orderMenu.setId(tempOrdermenu.getId());
-                    orderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-                    orderMenu.getLogInformation().setLastUpdateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
-                    orderMenu.getLogInformation().setSite(AuthenticationUtils.getCurrentAuthentication().getSite().getId());
-
-                    orderMenu.getOrder().setId(orderId);
-                    orderMenu.setQty(q);
-                    orderMenu.setQtyOrder(q);
-                    orderMenu.setProduct(product);
-                    orderMenu.setSellPrice(orderMenuPrice);
-                    orderMenu.setDescription(orderDesc.getText().toString());
-                    orderMenu.setType(orderMenuType.name());
-
-                    orderMenuDatabaseAdapter.saveOrderMenu(orderMenu);
+                    salesOrderMenuDatabaseAdapter.saveSalesOrderMenu(salesOrderMenu);
                 }
 
                 setResult(RESULT_OK);

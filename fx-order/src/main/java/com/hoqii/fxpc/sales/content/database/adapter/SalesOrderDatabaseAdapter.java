@@ -24,13 +24,9 @@ public class SalesOrderDatabaseAdapter extends DefaultDatabaseAdapter {
             + MidasContentProvider.TABLES[21]);
 
     private Context context;
-    private ContactDatabaseAdapter contactDatabaseAdapter;
-
 
     public SalesOrderDatabaseAdapter(Context context) {
         this.context = context;
-        contactDatabaseAdapter = new ContactDatabaseAdapter(context);
-
     }
 
     public String saveSalesOrder(SalesOrder salesOrder) {
@@ -57,11 +53,10 @@ public class SalesOrderDatabaseAdapter extends DefaultDatabaseAdapter {
     }
 
     public String getSalesOrderId() {
-        String query = OrderDatabaseModel.STATUS_FLAG + " = ? AND " + OrderDatabaseModel.SITE_ID+ " = ?";
+        String query = SalesOrderDatabaseModel.STATUS_FLAG + " = ? AND " + SalesOrderDatabaseModel.SITE_ID+ " = ?";
         String[] params = {"0",AuthenticationUtils.getCurrentAuthentication().getSite().getId().toString()};
 //        String query = OrderDatabaseModel.STATUS_FLAG + " = ? ";
 //        String[] params = {"0"};
-
         Cursor cursor = context.getContentResolver().query(dbUriSalesOrder, null,
                 query, params, null);
 
@@ -111,9 +106,6 @@ public class SalesOrderDatabaseAdapter extends DefaultDatabaseAdapter {
         return salesOrder;
     }
 
-
-
-
     public void updateSyncStatusById(String id) {
         ContentValues values = new ContentValues();
         values.put(OrderDatabaseModel.SYNC_STATUS, 1);
@@ -121,7 +113,5 @@ public class SalesOrderDatabaseAdapter extends DefaultDatabaseAdapter {
 
         context.getContentResolver().update(dbUriSalesOrder, values, OrderDatabaseModel.ID + " = ? ", new String[]{id});
     }
-
-
 
 }

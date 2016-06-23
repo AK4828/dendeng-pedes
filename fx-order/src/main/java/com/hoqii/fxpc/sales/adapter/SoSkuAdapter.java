@@ -66,16 +66,10 @@ public class SoSkuAdapter extends RecyclerView.Adapter<SoSkuAdapter.ViewHolder>{
         return list.size();
     }
 
-    public void addItem(String SoId, String sku){
-        SalesOrderMenu s = new SalesOrderMenu();
-        s.setId(UUID.randomUUID().toString());
-        s.getProduct().setName(sku);
-        s.getSalesOrder().setId(SoId);
-
-        Log.d("sales order menu id ", s.getId());
-        Log.d("sales order id ", s.getSalesOrder().getId());
-
-        list.add(s);
+    public void addItems(SalesOrderMenu salesOrderMenu){
+        if (!list.contains(salesOrderMenu)){
+            list.add(salesOrderMenu);
+        }
         notifyDataSetChanged();
     }
 

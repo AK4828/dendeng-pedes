@@ -24,7 +24,7 @@ import java.util.UUID;
  */
 public class SalesOrderMenuDatabaseAdapter extends DefaultDatabaseAdapter {
     private Uri dbUriSalesOrderMenu = Uri.parse(MidasContentProvider.CONTENT_PATH
-            + MidasContentProvider.TABLES[5]);
+            + MidasContentProvider.TABLES[22]);
 
     private Context context;
     private ProductDatabaseAdapter productDbAdapter;
