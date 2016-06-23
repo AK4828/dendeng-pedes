@@ -252,11 +252,9 @@
     <string name="text_manual_input_serial">Input serial number</string>
     <string name="nav_return">Return</string>
     <string name="text_add_return_description">Add return description ?</string>
-    <string name="text_add_return_description">Add return description ?</string>
     <string name="text_detail_return">Detail return</string>
     <string name="text_return_description">"Description : "</string>
     <string name="text_return_from">"Returned From : "</string>
-    <string name="nav_return">Return</string>
     <string name="adapter_return_date">Return date :</string>
     <string name="adapter_return_from">Return from :</string>
 

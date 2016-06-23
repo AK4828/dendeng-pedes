@@ -140,6 +140,13 @@
             android:label="Return"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".activity.SalesOrderActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".activity.SalesOrderMenuSerialActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".activity.SalesSkuActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|screenSize"/>
         <!--<activity-->
             <!--android:name="com.hoqii.fxpc.sales.activity.LoginActivity"-->
             <!--android:configChanges="orientation|screenSize"-->

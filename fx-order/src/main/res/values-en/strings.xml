@@ -248,8 +248,6 @@
     <string name="nav_return">Return</string>
     <string name="adapter_return_date">Return date :</string>
     <string name="adapter_return_from">Return from :</string>
-    <string name="nav_return">Return</string>
-    <string name="text_add_return_description">Add return description ?</string>
 
 
 </resources>

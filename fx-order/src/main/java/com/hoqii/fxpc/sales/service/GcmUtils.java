@@ -44,6 +44,9 @@ public class GcmUtils {
     public static GcmStatus getGcmModel() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(SignageApplication.getInstance());
         String gcmModel = preferences.getString("gcmModel", null);
+        if (gcmModel == null){
+            return null;
+        }
         ObjectMapper mapper = SignageApplication.getObjectMapper();
         GcmStatus gcmStatus = null;
         try {
@@ -52,7 +55,7 @@ public class GcmUtils {
             e.printStackTrace();
         }
 
-        Log.d("get token id vvvfvfvv", "[ " + gcmStatus.getToken() + " ]");
+        Log.d("get token id ", "[ " + gcmStatus.getToken() + " ]");
         return gcmStatus;
     }
 

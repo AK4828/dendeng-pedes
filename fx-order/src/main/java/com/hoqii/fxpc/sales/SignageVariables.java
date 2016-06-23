@@ -7,8 +7,8 @@ public class SignageVariables {
     public static final String PREFS_SERVER = "APP_SERVER";
     public static final String PGA_APP_ID = "419c6697-14b7-4853-880e-b68e3731e316";
     public static final String PGA_API_SECRET = "s3cr3t";
-    public static final String SERVER_URL = "http://fxpc-sales.pxchange.asia";
-//    public static final String SERVER_URL = "http://192.168.2.213:8080";
+    public static final String SERVER_URL = "http://fxpc-sales.pslabs.asia";
+//    public static final String SERVER_URL = "http://192.168.2.104:8080";
 
     public static final String PGA_REQUEST_TOKEN = "/oauth/token";
     public static final String PGA_CURRENT_ME = "/api/users/me";
@@ -58,5 +58,9 @@ public class SignageVariables {
     public static final int STOCK_GET_TASK = 27;
     public static final int SERIAL_CHECK_GET_TASK = 28;
     public static final int RETUR_GET_TASK = 29;
+    public static final int SALES_RECEIPT_TASK = 30;
+    public static final int SALES_POST_TASK = 31;
+    public static final int SALES_MENU_POST_TASK = 32;
+    public static final int SALES_MENU_SERIAL_POST_TASK = 33;
 
 }

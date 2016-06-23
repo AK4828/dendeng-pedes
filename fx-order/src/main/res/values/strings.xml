@@ -248,6 +248,9 @@
     <string name="repeat">Repeat</string>
     <string name="text_already_inputted">"Already inputted "</string>
     <string name="text_manual_input_serial">Input serial number</string>
+    <string name="nav_title_sales_order">Sales Order</string>
+    <string name="nav_sales_order">Sales Order</string>
+    <string name="text_menu_done">Done</string>
 
 
 </resources>

@@ -133,12 +133,24 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        Log.d("GCM TOKN", GcmUtils.getGcmModel().getToken());
+                        if (GcmUtils.getGcmModel() == null){
+                            AuthenticationUtils.logout();
+                            SharedPreferences.Editor editorHas = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+                            editorHas.clear();
+                            editorHas.commit();
+                            getActivity().setResult(RESULT_OK);
+                            getActivity().finish();
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }else {
+                            Log.d("GCM TOKN", GcmUtils.getGcmModel().getToken());
 
-                        String deviceId = GcmUtils.getGcmModel().getToken();
-                        mSharedPreferences = SignageApplication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
-                        jobManager = SignageApplication.getInstance().getJobManager();
-                        jobManager.addJobInBackground(new UnregisterGCMJob(mSharedPreferences.getString("server_url", ""), deviceId));
+                            String deviceId = GcmUtils.getGcmModel().getToken();
+                            mSharedPreferences = SignageApplication.getInstance().getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
+                            jobManager = SignageApplication.getInstance().getJobManager();
+                            jobManager.addJobInBackground(new UnregisterGCMJob(mSharedPreferences.getString("server_url", ""), deviceId));
+                        }
                     }
                 });
                 builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {

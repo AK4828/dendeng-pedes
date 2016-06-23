@@ -37,7 +37,10 @@ public class MidasContentProvider extends ContentProvider {
             MidasDatabase.SUPPLIER_TABLE,//17
             MidasDatabase.BUSINESS_PARTNER, //18
             MidasDatabase.SERIAL_NUMBER,//19
-            MidasDatabase.SITE//20
+            MidasDatabase.SITE,//20
+            MidasDatabase.SO_TABLE,//21
+            MidasDatabase.SO_MENU_TABLE,//22
+            MidasDatabase.SO_MENU_SERIAL_TABLE//23
 
     };
 
