@@ -26,7 +26,6 @@ public class ReturnOrderMenuDetailAdapter extends RecyclerView.Adapter<ReturnOrd
     private List<Product> productList = new ArrayList<Product>();
 
     public ReturnOrderMenuDetailAdapter(Context context) {
-        Log.d("IM HERe", "HALO1");
         this.context = context;
     }
 

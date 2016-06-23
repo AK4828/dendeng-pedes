@@ -46,7 +46,7 @@ public class ReturnAdapter extends RecyclerView.Adapter<ReturnAdapter.ViewHolder
 
 
     @Override
-    public ReturnAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_return_list, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
