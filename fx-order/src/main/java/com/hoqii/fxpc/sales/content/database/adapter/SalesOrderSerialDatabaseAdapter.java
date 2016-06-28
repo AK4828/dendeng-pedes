@@ -54,6 +54,7 @@ public class SalesOrderSerialDatabaseAdapter extends DefaultDatabaseAdapter{
         if (findSerialNumberById(salesOrderMenuSerial.getId()) == null) {
             ContentValues values = new ContentValues();
             values.put(DefaultPersistenceModel.ID, salesOrderMenuSerial.getId());
+            values.put(SalesOrderMenuSerialDatabaseModel.SALES_ORDER_ID, salesOrderMenuSerial.getSalesOrderMenu().getSalesOrder().getId());
             values.put(SalesOrderMenuSerialDatabaseModel.SALES_ORDER_MENU_ID, salesOrderMenuSerial.getSalesOrderMenu().getId());
             values.put(SalesOrderMenuSerialDatabaseModel.SERIAL, salesOrderMenuSerial.getSerialNumber());
             values.put(DefaultPersistenceModel.SYNC_STATUS, 0);
@@ -63,6 +64,7 @@ public class SalesOrderSerialDatabaseAdapter extends DefaultDatabaseAdapter{
         } else {
             ContentValues values = new ContentValues();
 
+            values.put(SalesOrderMenuSerialDatabaseModel.SALES_ORDER_ID, salesOrderMenuSerial.getSalesOrderMenu().getSalesOrder().getId());
             values.put(SalesOrderMenuSerialDatabaseModel.SALES_ORDER_MENU_ID, salesOrderMenuSerial.getSalesOrderMenu().getId());
             values.put(SalesOrderMenuSerialDatabaseModel.SERIAL, salesOrderMenuSerial.getSerialNumber());
             values.put(DefaultPersistenceModel.SYNC_STATUS, 0);
@@ -77,6 +79,7 @@ public class SalesOrderSerialDatabaseAdapter extends DefaultDatabaseAdapter{
             if (findSerialNumberById(x.getId()) == null) {
                 ContentValues values = new ContentValues();
                 values.put(DefaultPersistenceModel.ID, x.getId());
+                values.put(SalesOrderMenuSerialDatabaseModel.SALES_ORDER_ID, x.getSalesOrderMenu().getSalesOrder().getId());
                 values.put(SalesOrderMenuSerialDatabaseModel.SALES_ORDER_MENU_ID, x.getSalesOrderMenu().getId());
                 values.put(SalesOrderMenuSerialDatabaseModel.SERIAL, x.getSerialNumber());
                 values.put(DefaultPersistenceModel.SYNC_STATUS, 0);
@@ -86,6 +89,7 @@ public class SalesOrderSerialDatabaseAdapter extends DefaultDatabaseAdapter{
             } else {
                 ContentValues values = new ContentValues();
 
+                values.put(SalesOrderMenuSerialDatabaseModel.SALES_ORDER_ID, x.getSalesOrderMenu().getSalesOrder().getId());
                 values.put(SalesOrderMenuSerialDatabaseModel.SALES_ORDER_MENU_ID, x.getSalesOrderMenu().getId());
                 values.put(SalesOrderMenuSerialDatabaseModel.SERIAL, x.getSerialNumber());
                 values.put(DefaultPersistenceModel.SYNC_STATUS, 0);
@@ -137,6 +141,33 @@ public class SalesOrderSerialDatabaseAdapter extends DefaultDatabaseAdapter{
         return serials;
     }
 
+    public List<SalesOrderMenuSerial> getSerialNumberListBySalesOrderId(String salesOrderId) {
+        String query = SalesOrderMenuSerialDatabaseModel.SALES_ORDER_ID + " = ? AND " + DefaultPersistenceModel.SYNC_STATUS + " = 0";
+        String param[] = {salesOrderId};
+
+        List<SalesOrderMenuSerial> serials = new ArrayList<SalesOrderMenuSerial>();
+
+        Cursor cursor = context.getContentResolver().query(dbUriSerial, null, query, param, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                SalesOrderMenuSerial serial = new SalesOrderMenuSerial();
+                serial.setId(cursor.getString(cursor.getColumnIndex(SalesOrderMenuSerialDatabaseModel.ID)));
+                serial.getSalesOrderMenu().setId(cursor.getString(cursor.getColumnIndex(SalesOrderMenuSerialDatabaseModel.SALES_ORDER_MENU_ID)));
+                serial.setSerialNumber(cursor.getString(cursor.getColumnIndex(SalesOrderMenuSerialDatabaseModel.SERIAL)));
+                serials.add(serial);
+            }
+        }
+
+        cursor.close();
+        return serials;
+    }
+
+    public void deleteBySerialNumber(String serialNumber) {
+        String query = SalesOrderMenuSerialDatabaseModel.SERIAL + " = ? ";
+        String param[] = {serialNumber};
+
+        context.getContentResolver().delete(dbUriSerial, query, param);
+    }
 
     public void updateStatusFlag(String salesOrderMenuSerialId) {
 

@@ -257,5 +257,8 @@
     <string name="text_return_from">"Returned From : "</string>
     <string name="adapter_return_date">Return date :</string>
     <string name="adapter_return_from">Return from :</string>
+    <string name="nav_title_sales_order">Sales Order</string>
+    <string name="nav_sales_order">Sales Order</string>
+    <string name="text_menu_done">Done</string>
 
 </resources>

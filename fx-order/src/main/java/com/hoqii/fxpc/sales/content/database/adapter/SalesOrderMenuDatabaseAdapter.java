@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
+import android.util.Log;
 
 import com.hoqii.fxpc.sales.content.MidasContentProvider;
 import com.hoqii.fxpc.sales.content.database.model.DefaultPersistenceModel;
@@ -78,6 +79,7 @@ public class SalesOrderMenuDatabaseAdapter extends DefaultDatabaseAdapter {
             contentValues.put(DefaultPersistenceModel.SYNC_STATUS, 0);
 
             context.getContentResolver().insert(dbUriSalesOrderMenu, contentValues);
+            Log.d(getClass().getSimpleName(), "saved sales order menu success");
         }
     }
 
@@ -309,7 +311,7 @@ public class SalesOrderMenuDatabaseAdapter extends DefaultDatabaseAdapter {
 
     public void updateSyncStatusById(String id) {
         ContentValues values = new ContentValues();
-        values.put(OrderDatabaseModel.SYNC_STATUS, 1);
+        values.put(SalesOrderMenuDatabaseModel.SYNC_STATUS, 1);
 
         context.getContentResolver().update(dbUriSalesOrderMenu, values, SalesOrderMenuDatabaseModel.ID + " = ? ", new String[]{id});
     }

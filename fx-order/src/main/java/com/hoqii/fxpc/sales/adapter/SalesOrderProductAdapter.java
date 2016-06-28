@@ -19,6 +19,7 @@ import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.activity.MainActivityMaterial;
 import com.hoqii.fxpc.sales.activity.OrderActivity;
+import com.hoqii.fxpc.sales.activity.SalesOrderDetailActivity;
 import com.hoqii.fxpc.sales.activity.SalesSkuActivity;
 import com.hoqii.fxpc.sales.entity.Stock;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
@@ -97,7 +98,7 @@ public class SalesOrderProductAdapter extends BaseAdapter {
                     e.printStackTrace();
                 }
 
-                Intent intentOrder = new Intent(mcontext, OrderActivity.class);
+                Intent intentOrder = new Intent(mcontext, SalesOrderDetailActivity.class);
                 intentOrder.putExtra("jsonProduct", jsonProduct);
                 intentOrder.putExtra("stockProduct", stocks.get(position).getQty());
 

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 import com.hoqii.fxpc.sales.content.MidasContentProvider;
 import com.hoqii.fxpc.sales.content.database.model.DefaultPersistenceModel;
@@ -34,7 +35,7 @@ public class SalesOrderDatabaseAdapter extends DefaultDatabaseAdapter {
         String id = String.valueOf(uuid);
 
         ContentValues values = new ContentValues();
-        values.put(DefaultPersistenceModel.ID, id);
+        values.put(DefaultPersistenceModel.ID, salesOrder.getId());
         values.put(DefaultPersistenceModel.SITE_ID, salesOrder.getLogInformation().getSite());
         values.put(DefaultPersistenceModel.CREATE_BY, salesOrder.getLogInformation().getCreateBy());
         values.put(DefaultPersistenceModel.CREATE_DATE, salesOrder.getLogInformation().getCreateDate().getTime());
@@ -43,17 +44,39 @@ public class SalesOrderDatabaseAdapter extends DefaultDatabaseAdapter {
         values.put(DefaultPersistenceModel.STATUS_FLAG, 0);
         values.put(DefaultPersistenceModel.SYNC_STATUS, 0);
 
-        values.put(SalesOrderDatabaseModel.SITE_FROM_ORDER_ID, salesOrder.getSiteFrom().getId());
+        values.put(SalesOrderDatabaseModel.SITE_FROM_ORDER_ID, AuthenticationUtils.getCurrentAuthentication().getSite().getId());
         values.put(SalesOrderDatabaseModel.RECIEPT_NUMBER, salesOrder.getReceiptNumber());
         values.put(SalesOrderDatabaseModel.REF_ID, salesOrder.getRefId());
         values.put(SalesOrderDatabaseModel.STATUS, salesOrder.getStatus().name());
 
         context.getContentResolver().insert(dbUriSalesOrder, values);
-        return id;
+
+        Log.d(getClass().getSimpleName(), "sales order id "+salesOrder.getId());
+        return salesOrder.getId();
+    }
+
+    public void updateSalesOrder(SalesOrder salesOrder) {
+        ContentValues values = new ContentValues();
+        values.put(DefaultPersistenceModel.SITE_ID, salesOrder.getLogInformation().getSite());
+        values.put(DefaultPersistenceModel.CREATE_BY, salesOrder.getLogInformation().getCreateBy());
+        values.put(DefaultPersistenceModel.CREATE_DATE, salesOrder.getLogInformation().getCreateDate().getTime());
+        values.put(DefaultPersistenceModel.UPDATE_BY, salesOrder.getLogInformation().getLastUpdateBy());
+        values.put(DefaultPersistenceModel.UPDATE_DATE, salesOrder.getLogInformation().getLastUpdateDate().getTime());
+        values.put(DefaultPersistenceModel.STATUS_FLAG, 0);
+        values.put(DefaultPersistenceModel.SYNC_STATUS, 0);
+
+        values.put(SalesOrderDatabaseModel.NAME, salesOrder.getName());
+        values.put(SalesOrderDatabaseModel.EMAIL, salesOrder.getEmail());
+        values.put(SalesOrderDatabaseModel.TELEPHONE, salesOrder.getTelephone());
+        values.put(SalesOrderDatabaseModel.ADDRESS, salesOrder.getAddress());
+
+        context.getContentResolver().update(dbUriSalesOrder, values, SalesOrderDatabaseModel.ID+" = ? ", new String[]{salesOrder.getId()});
+
+        Log.d(getClass().getSimpleName(), "sales order id updated "+salesOrder.getId());
     }
 
     public String getSalesOrderId() {
-        String query = SalesOrderDatabaseModel.STATUS_FLAG + " = ? AND " + SalesOrderDatabaseModel.SITE_ID+ " = ?";
+        String query = SalesOrderDatabaseModel.STATUS_FLAG + " = ? AND " + SalesOrderDatabaseModel.SITE_FROM_ORDER_ID+ " = ?";
         String[] params = {"0",AuthenticationUtils.getCurrentAuthentication().getSite().getId().toString()};
 //        String query = OrderDatabaseModel.STATUS_FLAG + " = ? ";
 //        String[] params = {"0"};
@@ -65,7 +88,7 @@ public class SalesOrderDatabaseAdapter extends DefaultDatabaseAdapter {
             if (cursor.getCount() > 0) {
                 cursor.moveToLast();
                 id = cursor.getString(cursor
-                        .getColumnIndex(OrderDatabaseModel.ID));
+                        .getColumnIndex(SalesOrderDatabaseModel.ID));
             }
         }
 
@@ -98,7 +121,7 @@ public class SalesOrderDatabaseAdapter extends DefaultDatabaseAdapter {
                 salesOrder.setName(cursor.getString(cursor.getColumnIndex(SalesOrderDatabaseModel.EMAIL)));
                 salesOrder.setName(cursor.getString(cursor.getColumnIndex(SalesOrderDatabaseModel.ADDRESS)));
                 salesOrder.setName(cursor.getString(cursor.getColumnIndex(SalesOrderDatabaseModel.TELEPHONE)));
-                salesOrder.getSiteFrom().setId(cursor.getString(cursor.getColumnIndex(OrderDatabaseModel.SITE_ORDER_ID)));
+                salesOrder.getSiteFrom().setId(cursor.getString(cursor.getColumnIndex(SalesOrderDatabaseModel.SITE_FROM_ORDER_ID)));
             }
         }
         cursor.close();
@@ -108,10 +131,11 @@ public class SalesOrderDatabaseAdapter extends DefaultDatabaseAdapter {
 
     public void updateSyncStatusById(String id) {
         ContentValues values = new ContentValues();
-        values.put(OrderDatabaseModel.SYNC_STATUS, 1);
-        values.put(OrderDatabaseModel.STATUS_FLAG, 1);
+        values.put(SalesOrderDatabaseModel.SYNC_STATUS, 1);
+        values.put(SalesOrderDatabaseModel.STATUS_FLAG, 1);
 
-        context.getContentResolver().update(dbUriSalesOrder, values, OrderDatabaseModel.ID + " = ? ", new String[]{id});
+        context.getContentResolver().update(dbUriSalesOrder, values, SalesOrderDatabaseModel.ID + " = ? ", new String[]{id});
+        Log.d(getClass().getSimpleName(), "================ sales order updated");
     }
 
 }

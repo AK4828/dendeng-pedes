@@ -3,7 +3,9 @@ package com.hoqii.fxpc.sales.job;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.hoqii.fxpc.sales.SignageApplication;
 import com.hoqii.fxpc.sales.SignageVariables;
+import com.hoqii.fxpc.sales.content.database.adapter.SalesOrderMenuDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.SalesOrder;
 import com.hoqii.fxpc.sales.entity.SalesOrderMenu;
 import com.hoqii.fxpc.sales.event.GenericEvent;
@@ -24,6 +26,8 @@ public class SalesOrderMenuJob extends Job{
 
     private String url, salesOrderId;
     private SalesOrderMenu salesOrderMenu;
+    private SalesOrderMenuDatabaseAdapter salesOrderMenuDatabaseAdapter;
+    private String salesOrderMenuId;
 
 
     protected SalesOrderMenuJob() {
@@ -35,6 +39,8 @@ public class SalesOrderMenuJob extends Job{
         this.url = url;
         this.salesOrderId = salesOrderId;
         this.salesOrderMenu = salesOrderMenu;
+        this.salesOrderMenuId = salesOrderMenu.getId();
+        salesOrderMenuDatabaseAdapter = new SalesOrderMenuDatabaseAdapter(SignageApplication.getInstance());
     }
 
     @Override
@@ -55,6 +61,7 @@ public class SalesOrderMenuJob extends Job{
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
             SalesOrderMenu salesOrderMenu = responsePost.getContent();
             Log.d(getClass().getSimpleName(), "so menu job run success, "+salesOrderMenu.getProduct().getName());
+            salesOrderMenuDatabaseAdapter.updateSyncStatusById(salesOrderMenuId);
             EventBus.getDefault().post(new GenericEvent.RequestSuccess(SignageVariables.SALES_MENU_POST_TASK, responsePost, salesOrderMenu.getId(), null));
         }else {
             Log.d(getClass().getSimpleName(), "so menu job failed");

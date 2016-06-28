@@ -509,6 +509,7 @@ public class MidasDatabase extends SQLiteOpenHelper {
                 + DefaultPersistenceModel.STATUS_FLAG + " INTEGER, "
                 + DefaultPersistenceModel.SYNC_STATUS + " INTEGER, "
                 + DefaultPersistenceModel.REF_ID + " TEXT, "
+                + SalesOrderMenuSerialDatabaseModel.SALES_ORDER_ID + " TEXT, "
                 + SalesOrderMenuSerialDatabaseModel.SALES_ORDER_MENU_ID + " TEXT, "
                 + SalesOrderMenuSerialDatabaseModel.SERIAL + " TEXT )");
 

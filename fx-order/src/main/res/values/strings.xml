@@ -251,6 +251,12 @@
     <string name="nav_title_sales_order">Sales Order</string>
     <string name="nav_sales_order">Sales Order</string>
     <string name="text_menu_done">Done</string>
+    <string name="text_message_title_sales_order">Sales order</string>
+    <string name="text_message_success">Success</string>
+    <string name="text_message_failed">Failed</string>
+    <string name="text_sku_serial_exc">Some SKU don\'t have complete serial number</string>
+    <string name="text_message_select_sku">Please select SKU</string>
+    <string name="text_add_serial_number">Add Serialnumber</string>
 
 
 </resources>

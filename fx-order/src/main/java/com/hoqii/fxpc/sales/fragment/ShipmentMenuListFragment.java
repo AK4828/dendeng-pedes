@@ -172,7 +172,8 @@ public class ShipmentMenuListFragment extends Fragment implements TaskService{
                         JSONObject object = jsonArray.getJSONObject(a);
                         OrderMenuSerial orderMenuSerial = new OrderMenuSerial();
                         orderMenuSerial.setId(object.getString("id"));
-                        orderMenuSerial.setSerialNumber(object.getString("orderMenuSerial"));
+                        orderMenuSerial.setSerialNumber(object.getString("serialNumber"));
+//                        orderMenuSerial.setSerialNumber(object.getString("orderMenuSerial"));
 
                         JSONObject orderMenuObject = new JSONObject();
                         if (!object.isNull("orderMenu")) {

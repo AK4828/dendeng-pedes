@@ -147,7 +147,6 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
 
-//        Glide.with(this).load(preview).error(R.drawable.no_image).into(prodcutThumb);
         String imageUrl = preferences.getString("server_url", "") + "/api/products/" + product.getId() + "/image?access_token=" + AuthenticationUtils.getCurrentAuthentication().getAccessToken();
         Glide.with(this).load(imageUrl).error(R.drawable.ic_description_24dp).into(prodcutThumb);
         productName.setText(product.getName());
@@ -199,6 +198,9 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
             orderButton.setText(R.string.text_button_update_order);
             String salesOrderId = salesOrderDatabaseAdapter.getSalesOrderId();
             String siteFromId = salesOrderDatabaseAdapter.findOrderById(salesOrderId).getSiteFrom().getId();
+//            String siteFromId = AuthenticationUtils.getCurrentAuthentication().getSite().getId();
+
+            Log.d(getClass().getSimpleName(), "site from id === "+siteFromId);
             StockSync stockSync = new StockSync(this, this, StockSync.StockUri.byProductIdUri.name());
             stockSync.execute(product.getId(), siteFromId);
         } else {
@@ -307,6 +309,8 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
             public void onClick(DialogInterface dialog, int which) {
                 productDatabaseAdapter.saveProduct(product);
                 String salesOrderId = salesOrderDatabaseAdapter.getSalesOrderId();
+                Log.d(getClass().getSimpleName(), "sales order id "+salesOrderId);
+
                 int q = Integer.parseInt(orderCount.getText().toString());
 //                if (orderId == null) {
 //                    orderId = saveOrder();
@@ -350,7 +354,11 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
 //                }
 //                else
                 if (salesOrderId != null && qty == 0) {
+
+                    Log.d(getClass().getSimpleName(), "salesOrderId != null && qty == 0");
                     if (salesOrderMenuDatabaseAdapter.findSalesOrderMenuByProductId(product.getId()) == null) {
+                        Log.d(getClass().getSimpleName(), "find menu by product id == null");
+
                         SalesOrderMenu salesOrderMenu = new SalesOrderMenu();
 
                         salesOrderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
@@ -366,6 +374,8 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
 
                         salesOrderMenuDatabaseAdapter.saveSalesOrderMenu(salesOrderMenu);
                     } else {
+
+                        Log.d(getClass().getSimpleName(), "find menu by product id not null");
 
                         SalesOrderMenu tempOrdermenu = salesOrderMenuDatabaseAdapter.findSalesOrderMenuByProductId(product.getId());
 
@@ -385,6 +395,9 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
                         salesOrderMenuDatabaseAdapter.saveSalesOrderMenu(salesOrderMenu);
                     }
                 } else if (salesOrderId != null && qty > 0) {
+
+                    Log.d(getClass().getSimpleName(), "salesOrderId != null && qty > 0");
+
                     SalesOrderMenu tempOrdermenu = salesOrderMenuDatabaseAdapter.findSalesOrderMenuByProductId(product.getId());
 
                     SalesOrderMenu salesOrderMenu = new SalesOrderMenu();
@@ -427,6 +440,7 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
     public void onSuccess(int code, Object result) {
         Stock stock = (Stock) result;
         productStock.setText(Integer.toString(stock.getQty()) + getResources().getString(R.string.text_item_end));
+        stockProduct = stock.getQty();
         orderButton.setEnabled(true);
     }
 

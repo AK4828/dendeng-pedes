@@ -12,7 +12,7 @@ public class SalesOrder extends DefaultPersistence{
     }
 
     private String receiptNumber;
-    private Site siteFrom;
+    private Site siteFrom = new Site();
     private SalesOrderStatus status = SalesOrderStatus.PROCESSED;
     private String name;
     private String address;

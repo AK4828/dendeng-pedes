@@ -132,6 +132,7 @@ public class SalesSkuActivity extends AppCompatActivity implements TaskService{
 
     @Override
     public void onBackPressed() {
+        setResult(RESULT_OK);
         super.onBackPressed();
     }
 

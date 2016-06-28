@@ -49,8 +49,12 @@ public class ShipmentHistoryMenuAdapter extends RecyclerView.Adapter<ShipmentHis
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+        String description =
+                orderMenuSerialList.get(position).getOrderMenu().getProduct().getDescription().equals("null") ? "No description" :
+                        orderMenuSerialList.get(position).getOrderMenu().getProduct().getDescription();
+
         holder.productName.setText(orderMenuSerialList.get(position).getOrderMenu().getProduct().getName());
-        holder.description.setText(orderMenuSerialList.get(position).getOrderMenu().getProduct().getDescription());
+        holder.description.setText(description);
         holder.serial.setText(context.getResources().getString(R.string.holder_serial)+ orderMenuSerialList.get(position).getSerialNumber());
 
         String imageUrl = preferences.getString("server_url", "")+"/api/products/"+ orderMenuSerialList.get(position).getOrderMenu().getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();

@@ -142,16 +142,21 @@
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".activity.SalesOrderActivity"
             android:configChanges="orientation|screenSize"/>
+        <activity android:name=".activity.SalesOrderMenuActivity"
+            android:configChanges="orientation|screenSize"/>
         <activity android:name=".activity.SalesOrderMenuSerialActivity"
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".activity.SalesSkuActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"/>
-        <activity android:name=".activity.SalesOrderMenuActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="orientation|screenSize"/>
         <activity android:name=".activity.SalesOrderActivityBack"
             android:configChanges="orientation|screenSize"/>
+        <activity android:name=".activity.SalesOrderDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|screenSize"/>
+        <activity
+            android:name="com.hoqii.fxpc.sales.activity.ScannerSalesActivityCustom"
+            android:theme="@style/AppTheme.NoActionBar" />
         <!--<activity-->
             <!--android:name="com.hoqii.fxpc.sales.activity.LoginActivity"-->
             <!--android:configChanges="orientation|screenSize"-->
