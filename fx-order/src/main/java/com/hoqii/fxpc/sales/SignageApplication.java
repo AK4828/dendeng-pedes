@@ -1,10 +1,12 @@
 package com.hoqii.fxpc.sales;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -114,6 +116,12 @@ public class SignageApplication extends Application {
 
 
         Log.d(getClass().getName(), "App onCreate");
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     public static ObjectMapper getObjectMapper() {

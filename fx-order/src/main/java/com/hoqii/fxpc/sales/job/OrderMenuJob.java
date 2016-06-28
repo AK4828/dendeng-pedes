@@ -57,6 +57,7 @@ public class OrderMenuJob extends Job {
         Log.d(getClass().getSimpleName(), "Order Menu Site By : " + orderMenu.getLogInformation().getSite());
         Log.d(getClass().getSimpleName(), "Order Menu order qty : " + orderMenu.getQty());
         Log.d(getClass().getSimpleName(), "Order Menu order qty order : " + orderMenu.getQtyOrder());
+        Log.d(getClass().getSimpleName(), "Order Menu order Sell Price : " + orderMenu.getSellPrice());
 
         Log.d(getClass().getSimpleName(), "OrderMenu Id:" + orderMenu.getId());
         response = request.post(orderMenu, new TypeReference<OrderMenu>() {});

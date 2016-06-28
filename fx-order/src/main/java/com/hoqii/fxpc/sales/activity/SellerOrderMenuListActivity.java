@@ -247,21 +247,22 @@ public class SellerOrderMenuListActivity extends AppCompatActivity implements Ta
                 }
             });
         }
-        progress = new ProgressDialog(this);
-        progress.setMessage(getString(R.string.please_wait));
-        progress.setCancelable(false);
 
-        loadProgressCheckSerial = new ProgressDialog(this);
-        loadProgressCheckSerial.setMessage("Checking availability serial number");
-        loadProgressCheckSerial.setCancelable(false);
-
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                OrderMenuSync orderMenuSync = new OrderMenuSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, false);
-                orderMenuSync.execute(orderId, "0");
-            }
-        });
+//        progress = new ProgressDialog(this);
+//        progress.setMessage(getString(R.string.please_wait));
+//        progress.setCancelable(false);
+//
+//        loadProgressCheckSerial = new ProgressDialog(this);
+//        loadProgressCheckSerial.setMessage("Checking availability serial number");
+//        loadProgressCheckSerial.setCancelable(false);
+//
+//        new Handler().post(new Runnable() {
+//            @Override
+//            public void run() {
+//                OrderMenuSync orderMenuSync = new OrderMenuSync(SellerOrderMenuListActivity.this, SellerOrderMenuListActivity.this, false);
+//                orderMenuSync.execute(orderId, "0");
+//            }
+//        });
 
     }
 

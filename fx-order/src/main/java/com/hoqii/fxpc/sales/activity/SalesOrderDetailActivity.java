@@ -2,7 +2,6 @@ package com.hoqii.fxpc.sales.activity;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -20,7 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageApplication;
@@ -34,7 +32,6 @@ import com.hoqii.fxpc.sales.entity.Product;
 import com.hoqii.fxpc.sales.entity.Stock;
 import com.hoqii.fxpc.sales.task.StockSync;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
-import com.hoqii.fxpc.sales.util.ImageUtil;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
 import com.joanzapata.iconify.widget.IconTextView;
@@ -50,7 +47,7 @@ import java.util.List;
 /**
  * Created by miftakhul on 12/2/15.
  */
-public class OrderActivity extends AppCompatActivity implements TaskService {
+public class SalesOrderDetailActivity extends AppCompatActivity implements TaskService {
 
     private Toolbar toolbar;
     private ImageView prodcutThumb;
@@ -273,7 +270,7 @@ public class OrderActivity extends AppCompatActivity implements TaskService {
 
     private void dialogOrder() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        View view = getLayoutInflater().from(OrderActivity.this).inflate(R.layout.view_order_desc, null);
+        View view = getLayoutInflater().from(SalesOrderDetailActivity.this).inflate(R.layout.view_order_desc, null);
         orderDesc = (TextView) view.findViewById(R.id.order_desc);
         final LinearLayout layoutDesc = (LinearLayout) view.findViewById(R.id.layout_desc);
         final Button addOrderDesc = (Button) view.findViewById(R.id.btn_addOrderDesc);
@@ -311,11 +308,9 @@ public class OrderActivity extends AppCompatActivity implements TaskService {
                 int q = Integer.parseInt(orderCount.getText().toString());
 
                 if (orderId == null) {
-                    Log.d("1", "Pos1");
                     orderId = saveOrder();
 
                     if (orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId()) == null) {
-                        Log.d("2", "Pos2");
                         OrderMenu orderMenu = new OrderMenu();
 
                         orderMenu.getLogInformation().setCreateBy(AuthenticationUtils.getCurrentAuthentication().getUser().getId());
@@ -332,7 +327,6 @@ public class OrderActivity extends AppCompatActivity implements TaskService {
 
                         orderMenuDatabaseAdapter.saveOrderMenu(orderMenu);
                     } else {
-                        Log.d("3", "Pos3");
                         OrderMenu tempOrdermenu = orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId());
 
                         OrderMenu orderMenu = new OrderMenu();
@@ -353,7 +347,6 @@ public class OrderActivity extends AppCompatActivity implements TaskService {
                     }
 
                 } else if (orderId != null && qty == 0) {
-                    Log.d("4", "Pos4");
                     if (orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId()) == null) {
                         OrderMenu orderMenu = new OrderMenu();
 
@@ -365,14 +358,12 @@ public class OrderActivity extends AppCompatActivity implements TaskService {
                         orderMenu.setQty(q);
                         orderMenu.setQtyOrder(q);
                         orderMenu.setProduct(product);
-                        Log.d("PRICe", String.valueOf(orderMenuPrice));
                         orderMenu.setSellPrice(orderMenuPrice);
                         orderMenu.setDescription(orderDesc.getText().toString());
                         orderMenu.setType(orderMenuType.name());
 
                         orderMenuDatabaseAdapter.saveOrderMenu(orderMenu);
                     } else {
-                        Log.d("5", "Pos5");
 
                         OrderMenu tempOrdermenu = orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId());
 
@@ -393,7 +384,6 @@ public class OrderActivity extends AppCompatActivity implements TaskService {
                         orderMenuDatabaseAdapter.saveOrderMenu(orderMenu);
                     }
                 } else if (orderId != null && qty > 0) {
-                    Log.d("6", "Pos6");
                     OrderMenu tempOrdermenu = orderMenuDatabaseAdapter.findOrderMenuByProductId(product.getId());
 
                     OrderMenu orderMenu = new OrderMenu();

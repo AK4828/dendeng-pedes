@@ -375,6 +375,15 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                             startActivity(historyIntent);
                         }
                         break;
+                    case R.id.nav_sales_order:
+                        forceUnRegisterWhenExist();
+                        Intent so = new Intent(MainActivity.this, SalesOrderActivity.class);
+                        if (isMinLoli) {
+                            startActivity(so, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                        } else {
+                            startActivity(so);
+                        }
+                        break;
 
                     case R.id.nav_receiving:
                         forceUnRegisterWhenExist();

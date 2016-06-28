@@ -21,6 +21,9 @@ import com.hoqii.fxpc.sales.content.database.model.OrderMenuImeiDatabaseModel;
 import com.hoqii.fxpc.sales.content.database.model.ProductDatabaseModel;
 import com.hoqii.fxpc.sales.content.database.model.ProductStoreDatabaseModel;
 import com.hoqii.fxpc.sales.content.database.model.ProductUomDatabaseModel;
+import com.hoqii.fxpc.sales.content.database.model.SalesOrderDatabaseModel;
+import com.hoqii.fxpc.sales.content.database.model.SalesOrderMenuDatabaseModel;
+import com.hoqii.fxpc.sales.content.database.model.SalesOrderMenuSerialDatabaseModel;
 import com.hoqii.fxpc.sales.content.database.model.SerialNumberDatabaseModel;
 import com.hoqii.fxpc.sales.content.database.model.SettleDatabaseModel;
 import com.hoqii.fxpc.sales.content.database.model.SiteDatabaseModel;
@@ -62,6 +65,9 @@ public class MidasDatabase extends SQLiteOpenHelper {
     public static final String BUSINESS_PARTNER = "business_partner";
     public static final String SERIAL_NUMBER = "serial_number";
     public static final String SITE = "site";
+    public static final String SO_TABLE = "so_table";
+    public static final String SO_MENU_TABLE = "so_menu_table";
+    public static final String SO_MENU_SERIAL_TABLE = "so_menu_serial_table";
 
     private Context context;
 
@@ -451,6 +457,60 @@ public class MidasDatabase extends SQLiteOpenHelper {
                 + SiteDatabaseModel.POSTAL_CODE + " TEXT, "
                 + SiteDatabaseModel.CITY + " TEXT, "
                 + SiteDatabaseModel.TYPE + " TEXT )");
+
+        db.execSQL("CREATE TABLE " + SO_TABLE + " ("
+                + DefaultPersistenceModel.ID + " TEXT, "
+                + DefaultPersistenceModel.CREATE_BY + " TEXT, "
+                + DefaultPersistenceModel.CREATE_DATE + " INTEGER, "
+                + DefaultPersistenceModel.UPDATE_BY + " TEXT, "
+                + DefaultPersistenceModel.UPDATE_DATE + " INTEGER, "
+                + DefaultPersistenceModel.STATUS_FLAG + " INTEGER, "
+                + DefaultPersistenceModel.SITE_ID + " TEXT, "
+                + DefaultPersistenceModel.REF_ID + " TEXT, "
+                + DefaultPersistenceModel.SYNC_STATUS + " INTEGER, "
+                + SalesOrderDatabaseModel.NAME + " TEXT, "
+                + SalesOrderDatabaseModel.EMAIL + " TEXT, "
+                + SalesOrderDatabaseModel.ADDRESS + " TEXT, "
+                + SalesOrderDatabaseModel.TELEPHONE + " TEXT, "
+                + SalesOrderDatabaseModel.SITE_FROM_ORDER_ID + " TEXT, "
+                + SalesOrderDatabaseModel.RECIEPT_NUMBER + " TEXT, "
+                + SalesOrderDatabaseModel.STATUS + " TEXT)");
+
+        db.execSQL("CREATE TABLE " + SO_MENU_TABLE + " ("
+                + DefaultPersistenceModel.ID + " TEXT, "
+                + DefaultPersistenceModel.CREATE_BY + " TEXT, "
+                + DefaultPersistenceModel.CREATE_DATE + " INTEGER, "
+                + DefaultPersistenceModel.UPDATE_BY + " TEXT, "
+                + DefaultPersistenceModel.UPDATE_DATE + " INTEGER, "
+                + DefaultPersistenceModel.SITE_ID + " TEXT, "
+                + DefaultPersistenceModel.STATUS_FLAG + " INTEGER, "
+                + DefaultPersistenceModel.SYNC_STATUS + " INTEGER, "
+                + DefaultPersistenceModel.REF_ID + " TEXT, "
+                + SalesOrderMenuDatabaseModel.QUANTITY + " INTEGER, "
+                + SalesOrderMenuDatabaseModel.QUANTITY_ORDER + " INTEGER, "
+                + SalesOrderMenuDatabaseModel.DELIVERY_STATUS + " INTEGER, "
+                + SalesOrderMenuDatabaseModel.PRODUCT_ID + " TEXT, "
+                + SalesOrderMenuDatabaseModel.ORDER_ID + " TEXT, "
+                + SalesOrderMenuDatabaseModel.DISCOUNT_NOMINAL + " TEXT, "
+                + SalesOrderMenuDatabaseModel.DISCOUNT_PERCENT + " TEXT, "
+                + SalesOrderMenuDatabaseModel.DISCOUNT_NAME + " TEXT, "
+                + SalesOrderMenuDatabaseModel.DESC + " TEXT, "
+                + SalesOrderMenuDatabaseModel.PRICE + " TEXT, "
+                + SalesOrderMenuDatabaseModel.STATUS + " TEXT, "
+                + SalesOrderMenuDatabaseModel.TYPE + " TEXT )");
+
+        db.execSQL("CREATE TABLE " + SO_MENU_SERIAL_TABLE + " ("
+                + DefaultPersistenceModel.ID + " TEXT, "
+                + DefaultPersistenceModel.CREATE_BY + " TEXT, "
+                + DefaultPersistenceModel.CREATE_DATE + " INTEGER, "
+                + DefaultPersistenceModel.UPDATE_BY + " TEXT, "
+                + DefaultPersistenceModel.UPDATE_DATE + " INTEGER, "
+                + DefaultPersistenceModel.SITE_ID + " TEXT, "
+                + DefaultPersistenceModel.STATUS_FLAG + " INTEGER, "
+                + DefaultPersistenceModel.SYNC_STATUS + " INTEGER, "
+                + DefaultPersistenceModel.REF_ID + " TEXT, "
+                + SalesOrderMenuSerialDatabaseModel.SALES_ORDER_MENU_ID + " TEXT, "
+                + SalesOrderMenuSerialDatabaseModel.SERIAL + " TEXT )");
 
     }
 
