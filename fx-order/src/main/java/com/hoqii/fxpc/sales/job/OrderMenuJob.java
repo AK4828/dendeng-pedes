@@ -51,6 +51,7 @@ public class OrderMenuJob extends Job {
         OrderMenuDatabaseAdapter orderMenuDatabaseAdapter = new OrderMenuDatabaseAdapter(SignageApplication.getInstance());
         OrderMenu orderMenu = orderMenuDatabaseAdapter.findOrderMenuById(orderMenuId);
         orderMenu.setId(null);
+        orderMenu.setSellPrice(orderMenu.getSellPrice() / orderMenu.getQty());
         orderMenu.getOrder().setId(orderRefId);
 
         Log.d(getClass().getSimpleName(), "Order Menu Create By : " + orderMenu.getLogInformation().getCreateBy());

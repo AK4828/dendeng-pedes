@@ -104,6 +104,7 @@ public class SalesOrderMenuSerialActivity extends AppCompatActivity implements T
             @Override
             public void onClick(View v) {
                 if (serialAdapter.getItemCount() > 0) {
+                    setResult(RESULT_OK);
                     finish();
                 }
             }
@@ -120,6 +121,7 @@ public class SalesOrderMenuSerialActivity extends AppCompatActivity implements T
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home){
+            setResult(RESULT_OK);
             onBackPressed();
         }else if (id == R.id.menu_add_serial){
             inputSerial();

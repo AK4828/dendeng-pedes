@@ -47,6 +47,7 @@ import de.greenrobot.event.EventBus;
 public class SalesOrderMenuActivity extends AppCompatActivity{
 
     private static final int REQUEST_SKU = 300;
+    public static final int REQUEST_SKU_SERIAL = 301;
 
     private Button complate;
     private RecyclerView recyclerView;
@@ -59,6 +60,7 @@ public class SalesOrderMenuActivity extends AppCompatActivity{
     private SharedPreferences preferences;
     private ProgressDialog progressDialog;
     private JobCounting orderMenuCount = new JobCounting(), serialCount = new JobCounting();
+    private String receiptNumber;
 
     private String SalesOrderId;
     private List<SalesOrderMenu> salesOrderMenuList = new ArrayList<>();
@@ -108,6 +110,8 @@ public class SalesOrderMenuActivity extends AppCompatActivity{
             public void onClick(View v) {
                 if (isSerialSkuComplete()) {
                     SalesOrder salesOrder = salesOrderDatabaseAdapter.findOrderById(SalesOrderId);
+                    receiptNumber = salesOrder.getReceiptNumber();
+
                     jobManager.addJobInBackground(new SalesOrderUpdateJob(preferences.getString("server_url", ""), salesOrder));
                     progressDialog.show();
                 }
@@ -153,7 +157,7 @@ public class SalesOrderMenuActivity extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_SKU && resultCode == RESULT_OK){
+        if ((requestCode == REQUEST_SKU || requestCode == REQUEST_SKU_SERIAL ) && resultCode == RESULT_OK){
             salesOrderMenuList = salesOrderMenuDatabaseAdapter.findSalesOrderMenuByOrderId(SalesOrderId);
             Log.d(getClass().getSimpleName(), "sales order menu size "+salesOrderMenuList.size());
             skuAdapter.clear();
@@ -196,9 +200,12 @@ public class SalesOrderMenuActivity extends AppCompatActivity{
                 }
                 break;
             case SignageVariables.SALES_MENU_SERIAL_POST_TASK:
+                Log.d(getClass().getSimpleName(), "====== serial success size "+serialsPost.size());
                 if (serialCount.isJobFinish(serialsPost.size())) {
+                    Log.d(getClass().getSimpleName(), "====== serial success finish "+serialsPost.size());
                     progressDialog.dismiss();
                     AlertMessageComplete(getString(R.string.text_message_success));
+                    Log.d(getClass().getSimpleName(), "complate from success called");
 //                    Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -222,9 +229,12 @@ public class SalesOrderMenuActivity extends AppCompatActivity{
                 }
                 break;
             case SignageVariables.SALES_MENU_SERIAL_POST_TASK:
+                Log.d(getClass().getSimpleName(), "====== serial failed size "+serialsPost.size());
                 if (serialCount.isJobFinish(serialsPost.size())) {
+                    Log.d(getClass().getSimpleName(), "====== serial failed finish size "+serialsPost.size());
                     progressDialog.dismiss();
                     AlertMessageComplete(getString(R.string.text_message_success));
+                    Log.d(getClass().getSimpleName(), "complate from failed called");
 //                    Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -267,10 +277,11 @@ public class SalesOrderMenuActivity extends AppCompatActivity{
     private void AlertMessageComplete(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(SalesOrderMenuActivity.this);
         builder.setTitle(getString(R.string.text_message_title_sales_order));
-        builder.setMessage(message);
+        builder.setMessage(message+"\nReceiptnumber "+receiptNumber);
         builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
                 setResult(SalesOrderActivity.REQUEST_SKU_FINISH);
                 finish();
             }

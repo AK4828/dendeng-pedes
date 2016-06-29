@@ -54,6 +54,7 @@ public class SalesOrderMenuJob extends Job{
         Log.d(getClass().getSimpleName(), "so menu job run");
         JsonRequestUtils request = new JsonRequestUtils(url + "/api/salesorders/"+salesOrderId+"/menu");
         salesOrderMenu.setId(null);
+        salesOrderMenu.setSellPrice(salesOrderMenu.getSellPrice() / salesOrderMenu.getQty());
         responsePost = request.post(salesOrderMenu, new TypeReference<SalesOrderMenu>() {
         });
 

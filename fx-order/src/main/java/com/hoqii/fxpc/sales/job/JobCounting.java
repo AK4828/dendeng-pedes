@@ -12,7 +12,8 @@ public class JobCounting {
     public boolean isJobFinish(int size) {
         count ++;
         Log.d(getClass().getSimpleName(), "job count "+Integer.toString(count)+" and size "+Integer.toString(size));
-        if (size >= count){
+        if (count >= size){
+            Log.d(getClass().getSimpleName(), "counting finished");
             return true;
         }else {
             return false;
