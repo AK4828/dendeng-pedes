@@ -245,22 +245,22 @@ public class ReceiveDetailActivity extends AppCompatActivity implements TaskServ
             case android.R.id.home:
                 finishDetail();
                 break;
-            case R.id.menu_add_return:
-                String jsonReceive = getIntent().getStringExtra("jsonReceive");
-                orderId = getIntent().getStringExtra("orderId");
-                Intent intent = new Intent(ReceiveDetailActivity.this, ReturnDetailActivity.class);
-                intent.putExtra("orderId", orderId);
-                intent.putExtra("shipmentId", shipmentId);
-                intent.putExtra("jsonReceive", jsonReceive);
-                intent.putExtra("siteDescription", getIntent().getStringExtra("siteDescription"));
-                intent.putExtra("orderDate", getIntent().getLongExtra("orderDate", 0));
-                intent.putExtra("receiveDate", getIntent().getLongExtra("receiveDate", 0));
-                intent.putExtra("orderReceipt", getIntent().getStringExtra("orderReceipt"));
-                intent.putExtra("siteToId", getIntent().getStringExtra("siteToId"));
-
-
-                startActivity(intent);
-                break;
+//            case R.id.menu_add_return:
+//                String jsonReceive = getIntent().getStringExtra("jsonReceive");
+//                orderId = getIntent().getStringExtra("orderId");
+//                Intent intent = new Intent(ReceiveDetailActivity.this, ReturnDetailActivity.class);
+//                intent.putExtra("orderId", orderId);
+//                intent.putExtra("shipmentId", shipmentId);
+//                intent.putExtra("jsonReceive", jsonReceive);
+//                intent.putExtra("siteDescription", getIntent().getStringExtra("siteDescription"));
+//                intent.putExtra("orderDate", getIntent().getLongExtra("orderDate", 0));
+//                intent.putExtra("receiveDate", getIntent().getLongExtra("receiveDate", 0));
+//                intent.putExtra("orderReceipt", getIntent().getStringExtra("orderReceipt"));
+//                intent.putExtra("siteToId", getIntent().getStringExtra("siteToId"));
+//
+//
+//                startActivity(intent);
+//                break;
         }
         return super.onOptionsItemSelected(item);
     }

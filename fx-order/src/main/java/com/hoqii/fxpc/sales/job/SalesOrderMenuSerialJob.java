@@ -51,15 +51,15 @@ public class SalesOrderMenuSerialJob extends Job{
         SalesOrderMenuSerial salesSerial = orderMenuSerial;
         salesSerial.setId(null);
         Log.d(getClass().getSimpleName(), "so menu serial job run");
-        JsonRequestUtils request = new JsonRequestUtils(url + "api/order/menu/serialnumbers");
+        JsonRequestUtils request = new JsonRequestUtils(url + "/api/sales/order/menu/serialnumbers");
         responsePost = request.post(salesSerial, new TypeReference<SalesOrderMenuSerial>() {
         });
 
         HttpResponse httpResponse = responsePost.getHttpResponse();
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
             SalesOrderMenuSerial salesOrderMenuSerial = responsePost.getContent();
+            EventBus.getDefault().post(new GenericEvent.RequestSuccess(SignageVariables.SALES_MENU_SERIAL_POST_TASK, responsePost, salesOrderMenuSerial.getId(), null));
             Log.d(getClass().getSimpleName(), "so MENU SERIAL job success, "+salesOrderMenuSerial.getSerialNumber());
-            EventBus.getDefault().post(new GenericEvent.RequestSuccess(SignageVariables.SALES_MENU_POST_TASK, responsePost, salesOrderMenuSerial.getId(), null));
 
             databaseAdapter.updateStatusFlag(orderMenuSerial.getId());
         }else {

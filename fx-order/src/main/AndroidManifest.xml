@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hoqii.fxpc.sales">
 
@@ -5,13 +6,15 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <permission android:name="com.hoqii.fxpc.sales.permission.C2D_MESSAGE"
-        android:protectionLevel="signature"/>
-    <uses-permission android:name="com.hoqii.fxpc.sales.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <permission
+        android:name="com.hoqii.fxpc.sales.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.hoqii.fxpc.sales.permission.C2D_MESSAGE" />
 
     <application
         android:name=".SignageApplication"
@@ -19,173 +22,204 @@
         android:icon="@drawable/cyrcle_fx"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.LoginActivity"
+            android:name=".activity.LoginActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.MainActivityMaterialNew"
+            android:name=".activity.MainActivityMaterialNew"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.MainActivityMaterial"
+            android:name=".activity.MainActivityMaterial"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar.Transculent" />
         <activity
             android:name=".activity.OrderActivity"
             android:theme="@style/AppTheme.NoActionBar.Collapse" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.BusinessPartnerActivity"
+            android:name=".activity.BusinessPartnerActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.ContactsActivity"
+            android:name=".activity.ContactsActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.SellerOrderListActivity"
+            android:name=".activity.SellerOrderListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.SellerOrderMenuListActivity"
+            android:name=".activity.SellerOrderMenuListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.ScannerActivityCustom"
+            android:name=".activity.ScannerActivityCustom"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.ScannerReceiveActivityCustom"
+            android:name=".activity.ScannerReceiveActivityCustom"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.ShipmentListActivity"
+            android:name=".activity.ShipmentListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.ShipmentHistoryListActivity"
+            android:name=".activity.ShipmentHistoryListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.ShipmentHistoryDetailActivity"
+            android:name=".activity.ShipmentHistoryDetailActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.ReceiveListActivity"
+            android:name=".activity.ReceiveListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.ReceiveDetailActivity"
+            android:name=".activity.ReceiveDetailActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.HistoryOrderListActivity"
+            android:name=".activity.HistoryOrderListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.HistoryOrderMenuListActivity"
+            android:name=".activity.HistoryOrderMenuListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.SiteListActivity"
+            android:name=".activity.SiteListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.PointActivity"
+            android:name=".activity.PointActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.SelfHistoryOrderListActivity"
+            android:name=".activity.SelfHistoryOrderListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.SelfHistoryOrderMenuListActivity"
+            android:name=".activity.SelfHistoryOrderMenuListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.StockListActivity"
+            android:name=".activity.StockListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.PreferenceActivity"/>
-
+            android:name=".activity.SaleDestinationActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activity.PreferenceActivity" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.WizardActivity"
+            android:name=".activity.WizardActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/esales" />
         <activity
-            android:name="com.hoqii.fxpc.sales.activity.SyncActivity"
+            android:name=".activity.SyncActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/esales" />
-        <activity android:name=".activity.ReturnListActivity"
-            android:label="Return"
+        <activity
+            android:name=".activity.ReturnListActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
-        <activity android:name=".activity.ReturnDetailActivity"
             android:label="Return"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.ReturnDetailActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".activity.ReturnDetalListActivity"
             android:label="Return"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.ReturnDetalListActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".activity.SalesOrderActivity"
-            android:configChanges="orientation|screenSize"/>
-        <activity android:name=".activity.SalesOrderMenuSerialActivity"
-            android:configChanges="orientation|screenSize"/>
-        <activity android:name=".activity.SalesSkuActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="orientation|screenSize"/>
-        <!--<activity-->
-            <!--android:name="com.hoqii.fxpc.sales.activity.LoginActivity"-->
-            <!--android:configChanges="orientation|screenSize"-->
-            <!--android:theme="@style/AppTheme.Fullscreen" />-->
+            android:label="Return"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.SalesOrderActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activity.SalesOrderMenuActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activity.SalesOrderMenuSerialActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activity.SalesSkuActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.SalesOrderActivityBack"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activity.SalesOrderDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.ScannerSalesActivityCustom"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- <activity -->
+        <!-- android:name="com.hoqii.fxpc.sales.activity.LoginActivity" -->
+        <!-- android:configChanges="orientation|screenSize" -->
+        <!-- android:theme="@style/AppTheme.Fullscreen" /> -->
 
         <provider
-            android:name="com.hoqii.fxpc.sales.content.MidasContentProvider"
+            android:name=".content.MidasContentProvider"
             android:authorities="com.hoqii.fxpc.sales.content.midascontentprovider"
             android:syncable="true" />
-        
-        <receiver android:name="com.google.android.gms.gcm.GcmReceiver"
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <category android:name="com.hoqii.fxpc.sales"/>
+
+                <category android:name="com.hoqii.fxpc.sales" />
             </intent-filter>
         </receiver>
 
-        <service android:name=".service.MyGcmListenerService"
+        <service
+            android:name=".service.MyGcmListenerService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
-
-        <service android:name=".service.MyInstanceIDListenerService"
+        <service
+            android:name=".service.MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID"/>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
+        <service
+            android:name=".service.RegistrationIntentService"
+            android:exported="false" />
 
-        <service android:name=".service.RegistrationIntentService" android:exported="false"/>
-        
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="352d74e4f647a4e60429ac85c50649511ba11645" />
+
+        <activity
+            android:name=".activity.SalesReportActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.SKUListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

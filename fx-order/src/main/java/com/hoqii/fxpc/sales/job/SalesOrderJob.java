@@ -26,6 +26,7 @@ public class SalesOrderJob extends Job{
     private String url;
     private SalesOrder salesOrder;
     private SalesOrderDatabaseAdapter databaseAdapter;
+    private String salesOrderId;
 
     protected SalesOrderJob() {
         super(new Params(1).requireNetwork());
@@ -34,6 +35,7 @@ public class SalesOrderJob extends Job{
     public SalesOrderJob(String url){
         super(new Params(1).requireNetwork());
         this.url = url;
+        databaseAdapter = new SalesOrderDatabaseAdapter(SignageApplication.getInstance());
     }
 
     @Override
@@ -44,8 +46,6 @@ public class SalesOrderJob extends Job{
 
     @Override
     public void onRun() throws Throwable {
-        databaseAdapter = new SalesOrderDatabaseAdapter(SignageApplication.getInstance());
-
         Log.d(getClass().getSimpleName(), "so job run");
         JsonRequestUtils request = new JsonRequestUtils(url + "/api/salesorders/receiptnumber");
 
@@ -57,9 +57,11 @@ public class SalesOrderJob extends Job{
         HttpResponse httpResponse = responseGet.getHttpResponse();
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
             SalesOrder salesOrder = responseGet.getContent();
-            Log.d(getClass().getSimpleName(), "so get job success, "+salesOrder.getName());
+            Log.d(getClass().getSimpleName(), "so get job success, "+salesOrder.getReceiptNumber());
             EventBus.getDefault().post(new GenericEvent.RequestSuccess(SignageVariables.SALES_RECEIPT_TASK, responseGet, salesOrder.getId(), null));
-            databaseAdapter.saveSalesOrder(salesOrder);
+            Log.d(getClass().getSimpleName(), "=======");
+            salesOrderId = databaseAdapter.saveSalesOrder(salesOrder);
+            Log.d(getClass().getSimpleName(), "sales order id saved "+salesOrderId);
         }else {
             Log.d(getClass().getSimpleName(), "so get job failed");
             EventBus.getDefault().post(new GenericEvent.RequestFailed(SignageVariables.SALES_RECEIPT_TASK, responseGet));

@@ -62,6 +62,7 @@ public class SalesSkuActivity extends AppCompatActivity implements TaskService{
     private String siteFromId = null;
     private LinearLayout layoutNoItem;
     private TextView centerTitle;
+    private String SalesOrderId;
 
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -79,6 +80,10 @@ public class SalesSkuActivity extends AppCompatActivity implements TaskService{
             getWindow().setEnterTransition(new Fade());
         } else {
             isMinLoli = false;
+        }
+
+        if (getIntent().getStringExtra("salesOrderId") != null){
+            SalesOrderId = getIntent().getStringExtra("salesOrderId");
         }
 
         orderDatabaseAdapter = new OrderDatabaseAdapter(this);
@@ -127,6 +132,7 @@ public class SalesSkuActivity extends AppCompatActivity implements TaskService{
 
     @Override
     public void onBackPressed() {
+        setResult(RESULT_OK);
         super.onBackPressed();
     }
 

@@ -19,8 +19,8 @@ android {
         applicationId "com.hoqii.fxpc.sales"
         minSdkVersion 17
         targetSdkVersion 21
-        versionCode 16
-        versionName "2.9.6"
+        versionCode 18
+        versionName "2.9.7"
 
         // Enabling multidex support.
         multiDexEnabled true
@@ -118,4 +118,5 @@ dependencies {
 
     compile 'com.opencsv:opencsv:3.3'
     compile 'org.apache.poi:poi:3.15-beta1'
+    compile 'com.wdullaer:materialdatetimepicker:2.3.0'
 }

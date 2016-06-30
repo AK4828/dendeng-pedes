@@ -159,7 +159,6 @@ public class OrderListFragment extends Fragment implements TaskService {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.order_list, menu);
 
-        menu.findItem(R.id.menu_add_site).setIcon(new IconDrawable(getActivity(), TypiconsIcons.typcn_business_card).colorRes(R.color.white).actionBarSize());
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -222,10 +221,6 @@ public class OrderListFragment extends Fragment implements TaskService {
 //                ((MainActivity) getActivity()).openBusinessPartner();
 //                EventBus.getDefault().unregister(this);
 //                return true;
-
-            case R.id.menu_add_site:
-//                ((MainActivity) getActivity()).openSite();
-                return true;
 
             default:
                 return super.onOptionsItemSelected(item);

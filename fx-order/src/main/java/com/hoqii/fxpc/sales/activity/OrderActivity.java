@@ -437,6 +437,7 @@ public class OrderActivity extends AppCompatActivity implements TaskService {
     public void onSuccess(int code, Object result) {
         Stock stock = (Stock) result;
         productStock.setText(Integer.toString(stock.getQty()) + getResources().getString(R.string.text_item_end));
+        stockProduct = stock.getQty();
         orderButton.setEnabled(true);
     }
 

@@ -22,11 +22,12 @@ import android.widget.TextView;
 import com.google.zxing.ResultPoint;
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageVariables;
-import com.hoqii.fxpc.sales.adapter.SerialAdapter;
+import com.hoqii.fxpc.sales.adapter.SalesSerialAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.DefaultDatabaseAdapter;
-import com.hoqii.fxpc.sales.content.database.adapter.SerialNumberDatabaseAdapter;
+import com.hoqii.fxpc.sales.content.database.adapter.SalesOrderDatabaseAdapter;
+import com.hoqii.fxpc.sales.content.database.adapter.SalesOrderSerialDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.OrderMenuSerial;
-import com.hoqii.fxpc.sales.entity.SerialEvent;
+import com.hoqii.fxpc.sales.entity.SalesOrderMenuSerial;
 import com.hoqii.fxpc.sales.task.StockSync;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
@@ -48,19 +49,20 @@ import io.jsonwebtoken.SignatureAlgorithm;
 /**
  * Created by miftakhul on 12/16/15.
  */
-public class ScannerActivityCustom extends AppCompatActivity implements TaskService {
+public class ScannerSalesActivityCustom extends AppCompatActivity implements TaskService {
     private String productName = "product name", productId = null;
-    private String orderMenuId, orderId, tempSerial = null;
-    private int position, qty;
+    private String salesOrderMenuId, salesOrderId, tempSerial = null;
+    private int qty;
     private boolean isScanning = true;
 
     private TextView productNameView, viewScannedCount;
-    private SerialAdapter serialAdapter;
+    private SalesSerialAdapter serialAdapter;
     private CompoundBarcodeView barcodeView;
     private RecyclerView serialRecycle;
     private CoordinatorLayout coordinatorLayout;
-    private SerialNumberDatabaseAdapter serialNumberDatabaseAdapter;
-    private List<OrderMenuSerial> orderMenuSerialList = new ArrayList<OrderMenuSerial>();
+    private SalesOrderDatabaseAdapter salesOrderDatabaseAdapter;
+    private SalesOrderSerialDatabaseAdapter serialNumberDatabaseAdapter;
+    private List<SalesOrderMenuSerial> orderMenuSerialList = new ArrayList<SalesOrderMenuSerial>();
     private ProgressDialog dialog;
 
     public static final String KEY = "W06nIJR0uXN8WoZpqO5STOYDnyW59GQ9BMNy7egCWYo=";
@@ -131,20 +133,19 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
         actionBar.setHomeAsUpIndicator(new IconDrawable(this, TypiconsIcons.typcn_chevron_left).colorRes(R.color.white).actionBarSize());
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordianotorLayout);
+        salesOrderDatabaseAdapter = new SalesOrderDatabaseAdapter(this);
 
         if (getIntent().getExtras() != null) {
-            orderId = getIntent().getStringExtra("orderId");
-            orderMenuId = getIntent().getStringExtra("orderMenuId");
+            salesOrderId = salesOrderDatabaseAdapter.getSalesOrderId();
+            salesOrderMenuId = getIntent().getStringExtra("salesOrderMenuId");
             productId = getIntent().getStringExtra("productId");
             productName = getIntent().getStringExtra("productName");
             qty = getIntent().getIntExtra("productQty", 0);
-            position = getIntent().getIntExtra("position", 0);
 
-            Log.d(getClass().getSimpleName(), "order id : " + orderId);
-            Log.d(getClass().getSimpleName(), "order menu id : " + orderMenuId);
+            Log.d(getClass().getSimpleName(), "order id : " + salesOrderId);
+            Log.d(getClass().getSimpleName(), "order menu id : " + salesOrderMenuId);
             Log.d(getClass().getSimpleName(), "product name : " + productName);
             Log.d(getClass().getSimpleName(), "product quantity : " + qty);
-            Log.d(getClass().getSimpleName(), "position : " + position);
 
         }
 
@@ -153,15 +154,15 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
         serialRecycle.setLayoutManager(layoutManager);
 
 
-        serialAdapter = new SerialAdapter(this, productName);
+        serialAdapter = new SalesSerialAdapter(this, productName);
         serialRecycle.setAdapter(serialAdapter);
 
         productNameView = (TextView) findViewById(R.id.product_name);
         viewScannedCount = (TextView) findViewById(R.id.scanned_count);
         productNameView.setText(productName);
 
-        serialNumberDatabaseAdapter = new SerialNumberDatabaseAdapter(this);
-        orderMenuSerialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
+        serialNumberDatabaseAdapter = new SalesOrderSerialDatabaseAdapter(this);
+        orderMenuSerialList = serialNumberDatabaseAdapter.getSerialNumberListBySalesOrderMenuId(salesOrderMenuId);
         for (int x = 0; x < orderMenuSerialList.size(); x++) {
             serialAdapter.addSerialNumber(orderMenuSerialList.get(x));
         }
@@ -243,10 +244,10 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
     public void onSuccess(int code, Object result) {
         dialog.dismiss();
 
-        if (code == SignageVariables.STOCK_GET_TASK){
+        if (code == SignageVariables.STOCK_GET_TASK) {
             boolean status = (boolean) result;
             if (status == true) {
-                OrderMenuSerial s = new OrderMenuSerial();
+                SalesOrderMenuSerial s = new SalesOrderMenuSerial();
                 s.setSerialNumber(tempSerial);
                 serialAdapter.addSerialNumber(s);
                 tempSerial = null;
@@ -282,22 +283,21 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent dataSerial = new Intent();
-                dataSerial.putExtra("orderMenuId", orderMenuId);
-                dataSerial.putExtra("position", position);
+                dataSerial.putExtra("salesOrderMenuId", salesOrderMenuId);
                 dataSerial.putExtra("status", true);
 
-                orderMenuSerialList = serialNumberDatabaseAdapter.getSerialNumberListByOrderIdAndOrderMenuId(orderId, orderMenuId);
-                for (OrderMenuSerial serial : serialAdapter.getSerialNumber()) {
+                orderMenuSerialList = serialNumberDatabaseAdapter.getSerialNumberListBySalesOrderMenuId(salesOrderMenuId);
+                for (SalesOrderMenuSerial serial : serialAdapter.getSerialNumber()) {
 
-                    OrderMenuSerial orderMenuSerialObj = new OrderMenuSerial();
+                    SalesOrderMenuSerial orderMenuSerialObj = new SalesOrderMenuSerial();
 
                     orderMenuSerialObj.setId(DefaultDatabaseAdapter.generateId());
-                    orderMenuSerialObj.getOrderMenu().getOrder().setId(orderId);
-                    orderMenuSerialObj.getOrderMenu().setId(orderMenuId);
+                    orderMenuSerialObj.getSalesOrderMenu().getSalesOrder().setId(salesOrderId);
+                    orderMenuSerialObj.getSalesOrderMenu().setId(salesOrderMenuId);
                     orderMenuSerialObj.setSerialNumber(serial.getSerialNumber());
 
                     List<String> serialNumber = new ArrayList<String>();
-                    for (OrderMenuSerial sn : orderMenuSerialList) {
+                    for (SalesOrderMenuSerial sn : orderMenuSerialList) {
                         serialNumber.add(sn.getSerialNumber());
                     }
 
@@ -335,14 +335,14 @@ public class ScannerActivityCustom extends AppCompatActivity implements TaskServ
         Log.d(getClass().getSimpleName(), "product quantity : " + Integer.toString(qty));
         Log.d(getClass().getSimpleName(), "adapter quantity : " + Integer.toString(serialAdapter.getItemCount()));
         if (serialAdapter.getItemCount() < qty) {
-            List<OrderMenuSerial> sn = serialNumberDatabaseAdapter.getSerialNumberListByOrderId(orderId);
+            List<SalesOrderMenuSerial> sn = serialNumberDatabaseAdapter.getSerialNumberListBySalesOrderId(salesOrderId);
             List<String> tempSerial = new ArrayList<String>();
             List<String> tempSerialScan = new ArrayList<String>();
 
-            for (OrderMenuSerial serial : sn) {
+            for (SalesOrderMenuSerial serial : sn) {
                 tempSerial.add(serial.getSerialNumber());
             }
-            for (OrderMenuSerial s : serialAdapter.getSerialNumber()) {
+            for (SalesOrderMenuSerial s : serialAdapter.getSerialNumber()) {
                 tempSerialScan.add(s.getSerialNumber());
             }
 

@@ -9,18 +9,6 @@
         <!--app:showAsAction="always" />-->
 
     <item
-        android:id="@+id/menu_add_order"
-        android:icon="@drawable/ic_add_circle_white_24dp"
-        android:title="@string/add_order"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/menu_add_site"
-        android:icon="@drawable/ic_add_circle_white_24dp"
-        android:title="@string/add_destination"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/menu_pay_order"
         android:icon="@drawable/ic_send_white_24dp"
         android:title="@string/submit"

@@ -1,10 +1,12 @@
 package com.hoqii.fxpc.sales.activity;
 
 import android.app.SearchManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -20,14 +22,19 @@ import android.transition.Slide;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.hoqii.fxpc.sales.R;
 import com.hoqii.fxpc.sales.SignageVariables;
 import com.hoqii.fxpc.sales.adapter.SelfHistoryOrderAdapter;
 import com.hoqii.fxpc.sales.adapter.SiteAdapter;
+import com.hoqii.fxpc.sales.content.database.adapter.OrderDatabaseAdapter;
+import com.hoqii.fxpc.sales.content.database.adapter.OrderMenuDatabaseAdapter;
 import com.hoqii.fxpc.sales.content.database.adapter.SiteDatabaseAdapter;
 import com.hoqii.fxpc.sales.core.commons.Site;
+import com.hoqii.fxpc.sales.entity.Order;
+import com.hoqii.fxpc.sales.entity.OrderMenu;
 import com.hoqii.fxpc.sales.util.AuthenticationUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.TypiconsIcons;
@@ -47,6 +54,9 @@ public class SiteListActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout dataNull;
+    private static final int ORDER_REQUEST_OPTIONS = 301;
+    private String orderId = null;
+    private OrderDatabaseAdapter orderDbAdapter;
 
 
     @Override
@@ -60,6 +70,7 @@ public class SiteListActivity extends AppCompatActivity {
 
         preferences = getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         siteDatabaseAdapter = new SiteDatabaseAdapter(this);
+        orderDbAdapter = new OrderDatabaseAdapter(this);
 
         toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -178,8 +189,12 @@ public class SiteListActivity extends AppCompatActivity {
 
     public void finalChoise(){
         setResult(RESULT_OK);
-        finish();
+        orderId = orderDbAdapter.getOrderId();
+        Order order = orderDbAdapter.findOrderById(orderId);
+        if (order.getSite().getId() != null) {
+            Intent i = new Intent(this, MainActivityMaterial.class);
+            i.putExtra("siteId", order.getSite().getId());
+            startActivityForResult(i, ORDER_REQUEST_OPTIONS, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
+        }
     }
-
-
 }

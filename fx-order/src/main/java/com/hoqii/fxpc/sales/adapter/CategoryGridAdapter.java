@@ -56,29 +56,6 @@ public class CategoryGridAdapter extends BaseAdapter {
         preferences = c.getSharedPreferences(SignageVariables.PREFS_SERVER, 0);
         this.stocks = stocksList;
 
-//        List<String> categoriesId = new ArrayList<String>();
-//        for (Stock s : stocksList){
-//            if (s.getProduct().getParentCategory().getId() != null) {
-//                if (!categoriesId.contains(s.getProduct().getParentCategory().getId())) {
-//                    categoriesId.add(s.getProduct().getParentCategory().getId());
-//                    stocks.add(s);
-//                    Log.d(getClass().getSimpleName(), "category id " + s.getProduct().getParentCategory().getId());
-//                    Log.d(getClass().getSimpleName(), "category name "+ s.getProduct().getParentCategory().getName());
-//                    Log.d(getClass().getSimpleName(), "==============================");
-//
-//                }
-//            }else {
-//                Category cUncateg = new Category();
-//                cUncateg.setId("uncategorized");
-//                cUncateg.setName("Uncategorized");
-//                if (!categoriesId.contains(cUncateg.getId())) {
-//                    categoriesId.add(cUncateg.getId());
-//                    s.getProduct().setParentCategory(cUncateg);
-//                    stocks.add(s);
-//                }
-//            }
-//        }
-
         if (stocks.size() > 0){
             for (int x = 0; x < stocks.size(); x++){
                 if (color.size() < stocks.size()){
@@ -116,34 +93,10 @@ public class CategoryGridAdapter extends BaseAdapter {
         holder.title = (TextView) itemView.findViewById(R.id.category_title);
         holder.layout = (RelativeLayout) itemView.findViewById(R.id.detail_layout);
 
-//        List<Product> products = new ArrayList<Product>();
-//
-//        products = new ProductDatabaseAdapter(mcontext).getMenuByParentCategory(categories.get(position).getId());
-//        Log.d("prduk size", Integer.toString(products.size()));
-
-//        if (products.size() == 0) {
-//            holder.imageView.setImageResource(R.drawable.no_image);
-//        } else {
-//            Glide.with(mcontext).load("file://" + ImageUtil.getImagePath(mcontext, products.get(products.size() - 1).getId())).into(holder.imageView);
-//        }
-
         String imageUrl = preferences.getString("server_url", "")+"/api/products/"+stocks.get(position).getProduct().getId() + "/image?access_token="+ AuthenticationUtils.getCurrentAuthentication().getAccessToken();
         Glide.with(mcontext).load(imageUrl).error(R.drawable.ic_description_24dp).into(holder.imageView);
         holder.title.setText(stocks.get(position).getProduct().getParentCategory().getName());
         holder.layout.setBackgroundColor(Color.parseColor(color.get(position)));
-//
-//        itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                Bundle bundle = new Bundle();
-//                bundle.putString("parent_category", stocks.get(position).getProduct().getParentCategory().getId());
-//                bundle.putString("jsonStock", jsonStock);
-//                ProductFragmentGrid productFragment = new ProductFragmentGrid();
-//                productFragment.setArguments(bundle);
-//                getFragmentManager().beginTransaction().replace(R.id.category_frame, productFragment).addToBackStack(null).commit();
-//            }
-//        });
 
         return itemView;
 

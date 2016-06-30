@@ -83,33 +83,6 @@ public class ProductFragmentGrid extends Fragment {
         return view;
     }
 
-//    private List<Product> dataProduct() {
-//        List<Product> products = new ArrayList<Product>();
-//
-//        String parentCategory = null;
-//        String category = null;
-//        String name = null;
-//
-//        if (getArguments() != null) {
-//            parentCategory = getArguments().getString("parent_category", null);
-//            category = getArguments().getString("category", null);
-//            name = getArguments().getString("name", null);
-//        }
-//
-//        if (parentCategory != null) {
-//            products = productDatabaseAdapter.getMenuByParentCategory(parentCategory);
-//        } else if (category != null) {
-//            products = productDatabaseAdapter.getMenuByCategory(category);
-//        } else if (name != null) {
-//            products = productDatabaseAdapter.getMenuByName(name);
-//        } else {
-//            products = productDatabaseAdapter.getMenu();
-//        }
-//
-//        Log.d("jumlah total", Integer.toString(products.size()));
-//        return products;
-//    }
-
     private List<Stock> dataStock(){
         List<Stock> data = new ArrayList<Stock>();
         String parentCID = getArguments().getString("parent_category");

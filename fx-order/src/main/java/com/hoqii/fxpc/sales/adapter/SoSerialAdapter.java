@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.hoqii.fxpc.sales.R;
+import com.hoqii.fxpc.sales.activity.SalesOrderMenuSerialActivity;
+import com.hoqii.fxpc.sales.content.database.adapter.SalesOrderSerialDatabaseAdapter;
 import com.hoqii.fxpc.sales.entity.SalesOrderMenuSerial;
 
 import java.util.ArrayList;
@@ -21,9 +23,11 @@ public class SoSerialAdapter extends RecyclerView.Adapter<SoSerialAdapter.ViewHo
 
     private List<SalesOrderMenuSerial> serials = new ArrayList<>();
     private Context context;
+    private SalesOrderSerialDatabaseAdapter serialDatabaseAdapter;
 
     public SoSerialAdapter(Context context) {
         this.context = context;
+        serialDatabaseAdapter = new SalesOrderSerialDatabaseAdapter(context);
     }
 
     @Override
@@ -38,8 +42,10 @@ public class SoSerialAdapter extends RecyclerView.Adapter<SoSerialAdapter.ViewHo
         holder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                serialDatabaseAdapter.deleteBySerialNumber(serials.get(position).getSerialNumber());
                 serials.remove(position);
                 notifyDataSetChanged();
+                ((SalesOrderMenuSerialActivity)context).skuInfoUpdate();
             }
         });
     }
@@ -54,6 +60,11 @@ public class SoSerialAdapter extends RecyclerView.Adapter<SoSerialAdapter.ViewHo
             serials.add(salesOrderMenuSerial);
             notifyDataSetChanged();
         }
+    }
+
+    public void clear(){
+        serials.clear();
+        notifyDataSetChanged();
     }
 
     public List<SalesOrderMenuSerial> getSerials() {

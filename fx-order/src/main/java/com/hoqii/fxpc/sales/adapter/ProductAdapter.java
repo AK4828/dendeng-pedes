@@ -88,32 +88,6 @@ public class ProductAdapter extends BaseAdapter {
 //        Glide.with(mcontext).load("file://" + ImageUtil.getImagePath(mcontext, stocks.get(position).getProduct().getId())).error(R.drawable.no_image).into(holder.imageView);
         Glide.with(mcontext).load(imageUrl).error(R.drawable.ic_description_24dp).into(holder.imageView);
 
-//        Log.d("path image", ImageUtil.getImagePath(mcontext, stocks.get(position).getProduct().getId()));
-//        Log.d("image file", String.valueOf(ImageUtil.getImage(mcontext, stocks.get(position).getProduct().getId())));
-//        if (ImageUtil.getImage(mcontext, products.get(position).getId()) != null) {
-////            Bitmap bitmap = BitmapFactory.decodeFile(ImageUtil.getImagePath(mcontext, products.get(position).getId()));
-//
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inSampleSize = 8;
-//            Bitmap bitmap = BitmapFactory.decodeFile(ImageUtil.getImagePath(mcontext, products.get(position).getId()), options);
-//
-//            try {
-//                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-//                    @Override
-//                    public void onGenerated(Palette palette) {
-//                        mutedColor = palette.getMutedColor(R.attr.colorPrimary);
-//                        holder.detailLayout.setBackgroundColor(mutedColor);
-//                    }
-//                });
-//            } catch (IllegalArgumentException e) {
-//                Log.e("Bitmat status", e.getMessage());
-//            }
-//
-//
-//        } else {
-//            holder.detailLayout.setBackgroundColor(mcontext.getResources().getColor(R.color.grey));
-//        }
-
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

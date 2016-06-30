@@ -487,10 +487,10 @@ public class MidasDatabase extends SQLiteOpenHelper {
                 + DefaultPersistenceModel.SYNC_STATUS + " INTEGER, "
                 + DefaultPersistenceModel.REF_ID + " TEXT, "
                 + SalesOrderMenuDatabaseModel.QUANTITY + " INTEGER, "
-                + SalesOrderMenuDatabaseModel.QUANTITY_ORDER + " INTEGER, "
+                + SalesOrderMenuDatabaseModel.QUANTITY_SALES_ORDER + " INTEGER, "
                 + SalesOrderMenuDatabaseModel.DELIVERY_STATUS + " INTEGER, "
                 + SalesOrderMenuDatabaseModel.PRODUCT_ID + " TEXT, "
-                + SalesOrderMenuDatabaseModel.ORDER_ID + " TEXT, "
+                + SalesOrderMenuDatabaseModel.SALES_ORDER_ID + " TEXT, "
                 + SalesOrderMenuDatabaseModel.DISCOUNT_NOMINAL + " TEXT, "
                 + SalesOrderMenuDatabaseModel.DISCOUNT_PERCENT + " TEXT, "
                 + SalesOrderMenuDatabaseModel.DISCOUNT_NAME + " TEXT, "
@@ -509,6 +509,7 @@ public class MidasDatabase extends SQLiteOpenHelper {
                 + DefaultPersistenceModel.STATUS_FLAG + " INTEGER, "
                 + DefaultPersistenceModel.SYNC_STATUS + " INTEGER, "
                 + DefaultPersistenceModel.REF_ID + " TEXT, "
+                + SalesOrderMenuSerialDatabaseModel.SALES_ORDER_ID + " TEXT, "
                 + SalesOrderMenuSerialDatabaseModel.SALES_ORDER_MENU_ID + " TEXT, "
                 + SalesOrderMenuSerialDatabaseModel.SERIAL + " TEXT )");
 

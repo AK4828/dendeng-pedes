@@ -2,32 +2,55 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:weightSum="1">-->
+
+        <!--<EditText-->
+            <!--android:id="@+id/eu_serial"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_marginRight="16dp"/>-->
+
+        <!--<Button-->
+            <!--android:id="@+id/eu_add_serial"-->
+            <!--android:layout_width="60dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0"-->
+            <!--android:backgroundTint="@color/colorPrimary"-->
+            <!--android:text="@string/ok"-->
+            <!--android:textColor="@color/white" />-->
+
+    <!--</LinearLayout>-->
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
+        android:textStyle="bold"
+        android:text="Product Sku"/>
 
-        <EditText
-            android:id="@+id/eu_serial"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginRight="16dp"/>
+    <TextView
+        android:id="@+id/eu_sku"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:textStyle="bold"
+        android:text="---"/>
 
-        <Button
-            android:id="@+id/eu_add_serial"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:backgroundTint="@color/colorPrimary"
-            android:text="@string/ok"
-            android:textColor="@color/white" />
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/eu_serial_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:textStyle="bold"
+        android:text="---"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,13 +58,25 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/eu_serialList"
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:layout_marginBottom="16dp"/>
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/eu_serialList"
+                    android:layout_marginTop="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:layout_marginBottom="8dp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
 
     <Button
         android:id="@+id/eu_serial_complete"
@@ -50,7 +85,7 @@
         android:layout_weight="0"
         android:text="Complete"
         android:textColor="@color/white"
-        android:backgroundTint="@color/colorPrimary"/>
+        android:background="@color/colorPrimary"/>
 
     </LinearLayout>
 </LinearLayout>

@@ -237,16 +237,9 @@ public class MainActivity extends AppCompatActivity implements TaskService {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.order_list, menu);
 
-        MenuItem addOrder = menu.findItem(R.id.menu_add_order);
-        MenuItem addDestionation = menu.findItem(R.id.menu_add_site);
         MenuItem pay = menu.findItem(R.id.menu_pay_order);
 
-        addOrder.setIcon(new IconDrawable(this, TypiconsIcons.typcn_pen).colorRes(R.color.white).actionBarSize());
-        addDestionation.setIcon(new IconDrawable(this, TypiconsIcons.typcn_business_card).colorRes(R.color.white).actionBarSize());
-
         if (!menuItemVisibility) {
-            addOrder.setVisible(false);
-            addDestionation.setVisible(false);
             pay.setVisible(false);
         }
 
@@ -323,18 +316,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                 }
                 return true;
 
-            case R.id.menu_add_site:
-                if (isMinLoli) {
-                    startActivityForResult(new Intent(this, SiteListActivity.class), SITE_REQUEST, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
-                } else {
-                    startActivityForResult(new Intent(this, SiteListActivity.class), SITE_REQUEST);
-                }
-                return true;
-
-            case R.id.menu_add_order:
-                forceUnRegisterWhenExist();
-                orderOption();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -366,6 +347,18 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         updateInfo();
                         break;
 
+                    case R.id.nav_order_buy:
+                        if (isMinLoli) {
+                            startActivityForResult(new Intent(MainActivity.this, SiteListActivity.class), SITE_REQUEST, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                        } else {
+                            startActivityForResult(new Intent(MainActivity.this, SiteListActivity.class), SITE_REQUEST);
+                        }
+                        break;
+
+                    case R.id.nav_order_sale:
+                        startActivity(new Intent(MainActivity.this, SaleDestinationActivity.class));
+                        break;
+
                     case R.id.nav_order_purches_history:
                         forceUnRegisterWhenExist();
                         Intent historyIntent = new Intent(MainActivity.this, SelfHistoryOrderListActivity.class);
@@ -375,16 +368,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                             startActivity(historyIntent);
                         }
                         break;
-                    case R.id.nav_sales_order:
-                        forceUnRegisterWhenExist();
-                        Intent so = new Intent(MainActivity.this, SalesOrderActivity.class);
-                        if (isMinLoli) {
-                            startActivity(so, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
-                        } else {
-                            startActivity(so);
-                        }
-                        break;
-
                     case R.id.nav_receiving:
                         forceUnRegisterWhenExist();
                         Intent receiveIntent = new Intent(MainActivity.this, ReceiveListActivity.class);
@@ -395,16 +378,16 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         }
                         break;
 
-                    case R.id.nav_return:
-                        forceUnRegisterWhenExist();
-                        Intent returnIntent = new Intent(MainActivity.this, ReturnListActivity.class);
-                        if (isMinLoli) {
-                            startActivity(returnIntent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
-                        } else {
-                            startActivity(returnIntent);
-                        }
-
-                        break;
+//                    case R.id.nav_return:
+//                        forceUnRegisterWhenExist();
+//                        Intent returnIntent = new Intent(MainActivity.this, ReturnListActivity.class);
+//                        if (isMinLoli) {
+//                            startActivity(returnIntent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+//                        } else {
+//                            startActivity(returnIntent);
+//                        }
+//
+//                        break;
 
                     case R.id.seller_purchase_order_list:
                         forceUnRegisterWhenExist();
@@ -446,6 +429,16 @@ public class MainActivity extends AppCompatActivity implements TaskService {
                         }
                         break;
 
+                    case R.id.nav_sales_report:
+                        forceUnRegisterWhenExist();
+                        Intent skuList = new Intent(MainActivity.this, SKUListActivity.class);
+                        if (isMinLoli) {
+                            startActivity(skuList, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                        } else {
+                            startActivity(skuList);
+                        }
+                        break;
+
                     case R.id.preference:
                         forceUnRegisterWhenExist();
                         Intent pref = new Intent(MainActivity.this, PreferenceActivity.class);
@@ -467,7 +460,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
      **/
     public void updateInfo() {
         orderId = orderDbAdapter.getOrderId();
-        Log.d(getClass().getSimpleName(), "[ order id app update info " + orderId + " ]");
 
         if (orderId != null) {
             long totalPrice = 0;
@@ -578,41 +570,6 @@ public class MainActivity extends AppCompatActivity implements TaskService {
             builder.show();
         }
     }
-
-    public void orderOption() {
-        orderId = orderDbAdapter.getOrderId();
-        if (orderId != null) {
-            Order order = orderDbAdapter.findOrderById(orderId);
-            if (order.getSite().getId() != null) {
-                Intent i = new Intent(this, MainActivityMaterial.class);
-                i.putExtra("siteId", order.getSite().getId());
-                startActivityForResult(i, ORDER_REQUEST_OPTIONS, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
-            } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(getString(R.string.message_title_warning));
-                builder.setMessage(getString(R.string.message_order_destination));
-                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builder.show();
-            }
-        } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getString(R.string.message_title_warning));
-            builder.setMessage(getString(R.string.message_order_destination));
-            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            builder.show();
-        }
-    }
-
 
     /**
      * refresh token,

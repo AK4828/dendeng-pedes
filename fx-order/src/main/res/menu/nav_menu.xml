@@ -11,21 +11,19 @@
     <item android:title="@string/nav_order">
         <menu>
             <group android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/nav_order_buy"
+                    android:icon="@drawable/ic_shopping_cart_black_24dp"
+                    android:title="@string/order" />
+                <item
+                    android:id="@+id/nav_order_sale"
+                    android:icon="@drawable/ic_list_black_24dp"
+                    android:title="@string/nav_sale" />
                 <item
                     android:id="@+id/nav_order_purches_history"
                     android:icon="@drawable/ic_list_black_24dp"
                     android:title="@string/nav_order_purches_history" />
-            </group>
-        </menu>
-    </item>
-
-    <item android:title="@string/nav_title_sales_order">
-        <menu>
-            <group android:checkableBehavior="single">
-                <item
-                    android:id="@+id/nav_sales_order"
-                    android:icon="@drawable/ic_list_black_24dp"
-                    android:title="@string/nav_sales_order" />
             </group>
         </menu>
     </item>
@@ -56,17 +54,21 @@
                     android:id="@+id/nav_receiving"
                     android:icon="@drawable/ic_list_black_24dp"
                     android:title="@string/nav_order_receiving" />
-                <item
-                    android:id="@+id/nav_return"
-                    android:icon="@drawable/ic_list_black_24dp"
-                    android:title="@string/nav_return" />
+                <!--<item-->
+                    <!--android:id="@+id/nav_return"-->
+                    <!--android:icon="@drawable/ic_list_black_24dp"-->
+                    <!--android:title="@string/nav_return" />-->
             </group>
         </menu>
     </item>
 
-    <item android:title="@string/nav_title_stock_list">
+    <item android:title="@string/nav_report">
         <menu>
             <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_sales_report"
+                    android:icon="@drawable/ic_list_black_24dp"
+                    android:title="@string/nav_sell_report" />
                 <item
                     android:id="@+id/nav_stocks"
                     android:icon="@drawable/ic_list_black_24dp"

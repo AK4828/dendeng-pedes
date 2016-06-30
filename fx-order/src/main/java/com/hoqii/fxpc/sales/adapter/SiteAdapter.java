@@ -59,7 +59,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 String orderId = orderDatabaseAdapter.getOrderId();
-                Log.d(getClass().getSimpleName(), "order id value "+orderId);
 
                 if (orderId == null){
                     //create when not exist
@@ -76,7 +75,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.ViewHolder> {
 
                     order.setStatus(Order.OrderStatus.PROCESSED);
                     orderDatabaseAdapter.saveOrder(order);
-                    Log.d(getClass().getSimpleName(), "save order" + orderId);
                 }else {
                     //update when exist
                     Order order = new Order();
@@ -84,7 +82,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.ViewHolder> {
                     order.getSite().setId(siteList.get(position).getId());
                     orderDatabaseAdapter.updateSiteOrder(order);
 
-                    Log.d(getClass().getSimpleName(), "update order" + orderId);
                 }
 
                 ((SiteListActivity) context).finalChoise();
