@@ -253,11 +253,13 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
                     orderCount.setText(Integer.toString(c));
                 }
             }
-            orderMenuPrice = product.getSellPrice() * Integer.parseInt(orderCount.getText().toString());
+//            orderMenuPrice = product.getSellPrice() * Integer.parseInt(orderCount.getText().toString());
         }
     }
 
     private void dialogOrder() {
+        orderMenuPrice = product.getSellPrice() * Integer.parseInt(orderCount.getText().toString());
+
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         View view = getLayoutInflater().from(SalesOrderDetailActivity.this).inflate(R.layout.view_order_desc, null);
         orderDesc = (TextView) view.findViewById(R.id.order_desc);

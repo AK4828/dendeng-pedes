@@ -72,9 +72,8 @@ public class SoSkuAdapter extends RecyclerView.Adapter<SoSkuAdapter.ViewHolder>{
 
         int qty = list.get(position).getQtySalesOrder();
         List<SalesOrderMenuSerial> sn = serialDatabaseAdapter.getSerialNumberListBySalesOrderMenuId(list.get(position).getId());
-        final List<SalesOrderMenuSerial> allSerial = sn;
         holder.serialQty.setText(
-                context.getString(R.string.text_already_inputted)+allSerial.size()+
+                context.getString(R.string.text_already_inputted)+sn.size()+
                         context.getResources().getString(R.string.text_verivy_of_total)+qty);
 
         holder.btnSerial.setOnClickListener(new View.OnClickListener() {
@@ -144,7 +143,7 @@ public class SoSkuAdapter extends RecyclerView.Adapter<SoSkuAdapter.ViewHolder>{
                     i.putExtra("productId", list.get(location).getProduct().getId());
                     i.putExtra("productName", list.get(location).getProduct().getName());
                     i.putExtra("productQty", list.get(location).getQty());
-                    ((SalesOrderMenuActivity)context).startActivityForResult(i, SalesOrderActivity.SERIAL_CODE);
+                    ((SalesOrderMenuActivity)context).startActivityForResult(i, SalesOrderMenuActivity.REQUEST_SKU_SERIAL);
                 } else if (which == 1) {
                     SalesOrderMenu salesOrderMenu = databaseAdapter.getSalesOrderMenuById(salesOrderMenuId);
                     String jsonProduct = null;

@@ -49,6 +49,7 @@ public class SalesOrderMenuDatabaseAdapter extends DefaultDatabaseAdapter {
 
             contentValues.put(SalesOrderMenuDatabaseModel.DESC, salesOrderMenu.getDescription());
             contentValues.put(SalesOrderMenuDatabaseModel.STATUS, salesOrderMenu.getStatus().name());
+            contentValues.put(SalesOrderMenuDatabaseModel.PRICE, salesOrderMenu.getSellPrice());
 
             contentValues.put(DefaultPersistenceModel.SYNC_STATUS, 0);
 

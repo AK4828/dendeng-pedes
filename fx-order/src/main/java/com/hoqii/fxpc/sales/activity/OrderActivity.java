@@ -251,7 +251,7 @@ public class OrderActivity extends AppCompatActivity implements TaskService {
                     orderCount.setText(Integer.toString(c));
                 }
             }
-            orderMenuPrice = product.getSellPrice() * Integer.parseInt(orderCount.getText().toString());
+//            orderMenuPrice = product.getSellPrice() * Integer.parseInt(orderCount.getText().toString());
         }
     }
 
@@ -272,6 +272,8 @@ public class OrderActivity extends AppCompatActivity implements TaskService {
     }
 
     private void dialogOrder() {
+        orderMenuPrice = product.getSellPrice() * Integer.parseInt(orderCount.getText().toString());
+
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         View view = getLayoutInflater().from(OrderActivity.this).inflate(R.layout.view_order_desc, null);
         orderDesc = (TextView) view.findViewById(R.id.order_desc);
