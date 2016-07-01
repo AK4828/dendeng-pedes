@@ -363,8 +363,9 @@ public class SalesOrderDetailActivity extends AppCompatActivity implements TaskS
                 }
 
                 setResult(RESULT_OK);
-                Intent intent = new Intent(SalesOrderDetailActivity.this, MainActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(SalesOrderDetailActivity.this, MainActivity.class);
+//                startActivity(intent);
+                finish();
             }
         });
 
